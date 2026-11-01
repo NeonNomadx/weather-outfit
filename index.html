@@ -210,29 +210,26 @@ function wetKind(hr){
   return "";
 }
 function classify(hours){
-  let snow=false,snowFeels=999,rain=false,minFeels=999,minCode=0,strong=false;
-  hours.forEach(hr=>{
-    const feels=+hr.feels;
-    if(feels<minFeels){minFeels=feels;minCode=hr.code|0;}
-    const kind=wetKind(hr);
-    if(kind==="snow"){snow=true;snowFeels=Math.min(snowFeels,feels);}
-    else if(kind==="rain")rain=true;
-    if(strongWind(hr.wind,hr.gust))strong=true;
-  });
+  // The outfit matches the current hour only. A colder, wetter, or windier
+  // hour later stays in the card tip and does not change what she's wearing.
+  const now=hours[0]||{};
+  const feels=+now.feels;
+  const kind=wetKind(now);
+  const strong=strongWind(now.wind,now.gust);
   let key,why;
-  if(snow){
-    key=snowFeels>32?"cold":"freezing";
+  if(kind==="snow"){
+    key=feels>32?"cold":"freezing";
     if(strong&&key==="cold")key="freezing";
     why="snow";
-  }else if(rain){
+  }else if(kind==="rain"){
     key="rain";
     why="rain";
   }else{
-    key=tempBand(minFeels,minCode);
+    key=tempBand(feels,now.code|0);
     if(strong){key=colder(key);why="wind";}
     else why="temp";
   }
-  return {key,why,minFeels,strong,rain,snow};
+  return {key,why,minFeels:feels,strong,rain:kind==="rain",snow:kind==="snow"};
 }
 function hourOf(iso){return +String(iso||"").slice(11,13);}
 function dayOf(iso){return String(iso||"").slice(0,10);}
@@ -422,9 +419,11 @@ function render(d){
   if(picked!=null&&!D.time[picked])picked=null;
   const dayDecision=j=>{
     const day=D.time[j];
-    const span=rows.filter(hr=>dayOf(hr.time)===day&&hourOf(hr.time)>=7&&hourOf(hr.time)<=21);
-    const use=span.length?span:[{feels:(D.apparent_temperature_max[j]+D.apparent_temperature_min[j])/2,code:D.weather_code[j],wind:D.wind_speed_10m_max[j],gust:D.wind_gusts_10m_max?D.wind_gusts_10m_max[j]:0,pop:D.precipitation_probability_max[j]||0,amount:D.precipitation_sum?D.precipitation_sum[j]:0,temp:D.temperature_2m_max[j]}];
-    return classify(use);
+    const nowHour=rows.find(hr=>dayOf(hr.time)===day&&hr.time.slice(0,13)===c.time.slice(0,13));
+    const afternoon=nearestHour(rows,day,15);
+    const hour=nowHour||afternoon;
+    if(hour)return classify([hour]);
+    return classify([{feels:D.apparent_temperature_max[j],code:D.weather_code[j],wind:D.wind_speed_10m_max[j],gust:D.wind_gusts_10m_max?D.wind_gusts_10m_max[j]:0,pop:D.precipitation_probability_max[j]||0,amount:D.precipitation_sum?D.precipitation_sum[j]:0,temp:D.temperature_2m_max[j]}]);
   };
   $("days").innerHTML=D.time.map((t,j)=>{
     const dt=new Date(t+"T12:00:00");
@@ -484,8 +483,9 @@ function render(d){
     };
     $("wear-note").textContent="Demo: "+demo.key+". Try ?demo=sunny, warm, mild, cloudy, rain, cold, or freezing.";
   }else{
-    const windowHours=rows.slice(0,7);
-    const decided=classify(windowHours.length?windowHours:[{feels,code,wind,gust,pop:precip,amount:c.precipitation||0,temp,uv}]);
+    const nowHour=rows.find(hr=>hr.time.slice(0,13)===c.time.slice(0,13))||{time:c.time,feels,code,wind,gust,pop:precip,amount:c.precipitation||0,temp,uv};
+    nowHour.feels=feels;nowHour.code=code;nowHour.wind=wind;nowHour.gust=gust;nowHour.pop=precip;nowHour.amount=c.precipitation||0;nowHour.temp=temp;
+    const decided=classify([nowHour]);
     key=decided.key;
     const later=pickLater(rows.length?rows:[{time:c.time,temp,feels,code,wind,gust,pop:precip,amount:0,uv}]);
     skyCode=code;skyPrecip=precip;night=isNight(c.time);
