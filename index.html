@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Weather & Outfit</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:linear-gradient(160deg,#1e3c72,#2a5298 60%,#6dd5ed);color:#fff;min-height:100vh}
+.wrap{max-width:960px;margin:auto;padding:16px}h1{font-size:1.5rem;margin:8px 0}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}.bar input{flex:1;min-width:160px;padding:10px;border-radius:10px;border:0;font-size:1rem}
+button{padding:10px 14px;border:0;border-radius:10px;background:#ffffff26;color:#fff;font-size:.95rem;cursor:pointer}button:hover,button.on{background:#fff;color:#1e3c72}
+.card{background:#ffffff1f;backdrop-filter:blur(8px);border-radius:16px;padding:16px;margin-bottom:14px}
+.now{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:640px){.now{grid-template-columns:1fr}}
+.big{font-size:3.5rem;font-weight:700}.stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:.95rem;margin-top:8px}
+.outfit li{margin:6px 0;list-style:none}.outfit ul{padding:0;margin:0}
+.strip{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px}.h{min-width:70px;text-align:center;background:#ffffff1a;border-radius:12px;padding:8px}
+.day{display:grid;grid-template-columns:90px 40px 90px 1fr;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #ffffff22}.day:last-child{border:0}
+@media(max-width:640px){.day{grid-template-columns:70px 30px 80px;}.day .ol{grid-column:1/-1;font-size:.9rem}}
+small,.muted{opacity:.8}.err{color:#ffd2d2}
+</style></head><body><div class="wrap">
+<h1>🌤️ Weather & What to Wear</h1>
+<div class="bar"><input id="q" placeholder="Search a city…"><button id="go">Search</button><button id="loc">📍 Use my location</button></div>
+<div class="bar" id="styles"><button data-s="men">Men's</button><button data-s="women">Women's</button><button data-s="neutral" class="on">Neutral</button></div>
+<div id="msg" class="muted"></div>
+<div class="card now"><div><div id="place" style="font-size:1.2rem">Loading…</div><div class="big" id="temp">--</div><div id="desc"></div>
+<div class="stats" id="stats"></div></div><div class="outfit"><h3 style="margin-top:0">👕 Wear right now</h3><ul id="outfit"></ul></div></div>
+<div class="card"><h3 style="margin-top:0">Next 12 hours</h3><div class="strip" id="hours"></div></div>
+<div class="card"><h3 style="margin-top:0">7-day forecast</h3><div id="days"></div></div>
+<small id="upd"></small><br><small>Data: Open-Meteo.com · refreshes every 15 min</small>
+</div><script>
+const WMO={0:["Clear sky","☀️"],1:["Mainly clear","🌤️"],2:["Partly cloudy","⛅"],3:["Overcast","☁️"],45:["Fog","🌫️"],48:["Icy fog","🌫️"],51:["Light drizzle","🌦️"],53:["Drizzle","🌦️"],55:["Heavy drizzle","🌧️"],56:["Freezing drizzle","🌧️"],57:["Freezing drizzle","🌧️"],61:["Light rain","🌦️"],63:["Rain","🌧️"],65:["Heavy rain","🌧️"],66:["Freezing rain","🌧️"],67:["Freezing rain","🌧️"],71:["Light snow","🌨️"],73:["Snow","🌨️"],75:["Heavy snow","❄️"],77:["Snow grains","🌨️"],80:["Rain showers","🌦️"],81:["Rain showers","🌧️"],82:["Violent showers","⛈️"],85:["Snow showers","🌨️"],86:["Heavy snow showers","❄️"],95:["Thunderstorm","⛈️"],96:["Thunderstorm w/ hail","⛈️"],99:["Thunderstorm w/ hail","⛈️"]};
+const w=c=>WMO[c]||["Unknown","❔"];const isSnow=c=>[71,73,75,77,85,86].includes(c);
+let st={lat:39.7391,lon:-75.5398,name:"Wilmington, DE",tz:"America/New_York"},style="neutral",last=null;
+const $=id=>document.getElementById(id);
+function outfit(f,rain,wind,uv,code,s){const o={};
+ if(f<25){o.top="Thermal base layer + thick sweater";o.out="Heavy insulated parka";o.bot=s=="women"?"Lined leggings or thermal-lined jeans":"Thermal-lined pants";o.shoes="Insulated waterproof boots";}
+ else if(f<40){o.top=s=="women"?"Warm knit sweater":"Sweater or fleece";o.out="Insulated puffer jacket";o.bot="Jeans or warm pants";o.shoes="Boots";}
+ else if(f<55){o.top=s=="women"?"Long-sleeve top or light sweater":"Long-sleeve shirt or hoodie";o.out="Light jacket";o.bot="Jeans";o.shoes="Sneakers or boots";}
+ else if(f<68){o.top=s=="women"?"Blouse or long-sleeve tee":s=="men"?"Henley or long-sleeve tee":"Long-sleeve tee";o.out="Optional cardigan or overshirt";o.bot=s=="women"?"Jeans or midi skirt":"Jeans or chinos";o.shoes="Sneakers";}
+ else if(f<80){o.top="T-shirt";o.bot=s=="women"?"Light pants, skirt, or shorts":s=="men"?"Chinos or shorts":"Light pants or shorts";o.shoes="Sneakers";}
+ else{o.top=s=="women"?"Tank top or breezy sundress":"Breathable tee or tank";o.bot=s=="women"?"Shorts or skirt":"Shorts";o.shoes=s=="women"?"Sandals":"Sandals or light sneakers";}
+ const acc=[];const snow=isSnow(code);
+ if(snow||(rain>=40&&f<35)){o.shoes="Waterproof snow boots";acc.push("🧤 Gloves");}
+ else if(rain>=40){acc.push("☂️ Umbrella");o.out=(o.out&&!o.out.startsWith("Optional")?o.out+" (water-resistant)":"Rain jacket");if(f<68)o.shoes="Water-resistant shoes";}
+ if(f<40){acc.push("🧣 Scarf","🧢 Beanie");if(!acc.includes("🧤 Gloves"))acc.push("🧤 Gloves");}
+ if(wind>=15&&!o.out)o.out="Windbreaker";else if(wind>=15)acc.push("🌬️ Windproof layer");
+ if(uv>=6)acc.push("🕶️ Sunglasses","🧴 Sunscreen","👒 Sun hat");else if(uv>=3)acc.push("🕶️ Sunglasses");
+ o.acc=acc;return o;}
+function render(d){const c=d.current,o=outfit(c.apparent_temperature,c.precipitation_probability,c.wind_speed_10m,c.uv_index,c.weather_code,style);
+ $("place").textContent=st.name;$("temp").textContent=Math.round(c.temperature_2m)+"°F";$("desc").textContent=w(c.weather_code)[1]+" "+w(c.weather_code)[0];
+ $("stats").innerHTML=`<div>🌡️ Feels ${Math.round(c.apparent_temperature)}°</div><div>💨 ${Math.round(c.wind_speed_10m)} mph</div><div>🌧️ ${c.precipitation_probability??0}% rain</div><div>☀️ UV ${(c.uv_index??0).toFixed(1)}</div>`;
+ $("outfit").innerHTML=[["👕 Top",o.top],["👖 Bottom",o.bot],["🧥 Outerwear",o.out||"None needed"],["👟 Shoes",o.shoes],["🎒 Extras",o.acc.join(", ")||"None"]].map(([k,v])=>`<li><b>${k}:</b> ${v}</li>`).join("");
+ const h=d.hourly,now=c.time.slice(0,13);let i=h.time.findIndex(t=>t.slice(0,13)>=now);if(i<0)i=0;
+ $("hours").innerHTML=h.time.slice(i,i+12).map((t,k)=>{const j=i+k,hr=+t.slice(11,13);return`<div class="h"><div>${hr%12||12}${hr<12?"am":"pm"}</div><div style="font-size:1.5rem">${w(h.weather_code[j])[1]}</div><div>${Math.round(h.temperature_2m[j])}°</div><small>💧${h.precipitation_probability[j]??0}%</small></div>`}).join("");
+ const D=d.daily;$("days").innerHTML=D.time.map((t,j)=>{const dt=new Date(t+"T12:00");const fl=(D.apparent_temperature_max[j]+D.apparent_temperature_min[j])/2;
+  const x=outfit(fl,D.precipitation_probability_max[j],D.wind_speed_10m_max[j],D.uv_index_max[j],D.weather_code[j],style);
+  return`<div class="day"><div><b>${j?dt.toLocaleDateString("en-US",{weekday:"short"}):"Today"}</b><br><small>${dt.toLocaleDateString("en-US",{month:"short",day:"numeric"})}</small></div><div style="font-size:1.6rem" title="${w(D.weather_code[j])[0]}">${w(D.weather_code[j])[1]}</div><div>${Math.round(D.temperature_2m_max[j])}° / ${Math.round(D.temperature_2m_min[j])}°<br><small>💧${D.precipitation_probability_max[j]??0}%</small></div><div class="ol">${x.out||x.top}, ${x.bot.toLowerCase()}${x.acc.length?" + "+x.acc.slice(0,2).join(" "):""}</div></div>`}).join("");
+ $("upd").textContent="Last updated: "+new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});}
+async function load(){$("msg").textContent="";try{const u=`https://api.open-meteo.com/v1/forecast?latitude=${st.lat}&longitude=${st.lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,precipitation_probability,uv_index&hourly=temperature_2m,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,precipitation_probability_max,wind_speed_10m_max,uv_index_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=${encodeURIComponent(st.tz)}&forecast_days=7`;
+ const r=await fetch(u);if(!r.ok)throw 0;last=await r.json();render(last);}catch(e){$("msg").innerHTML='<span class="err">Couldn\'t load weather. Check your connection and try again.</span>';}}
+async function search(){const q=$("q").value.trim();if(!q)return;try{const r=await(await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=1&language=en&format=json`)).json();
+ if(!r.results||!r.results.length){$("msg").innerHTML='<span class="err">City not found.</span>';return;}const p=r.results[0];
+ st={lat:p.latitude,lon:p.longitude,name:[p.name,p.admin1,p.country_code].filter(Boolean).join(", "),tz:"auto"};load();}catch(e){$("msg").innerHTML='<span class="err">Search failed.</span>';}}
+$("go").onclick=search;$("q").onkeydown=e=>{if(e.key==="Enter")search()};
+$("loc").onclick=()=>{if(!navigator.geolocation){$("msg").textContent="Location isn't supported here; showing "+st.name+".";return;}
+ $("msg").textContent="Finding you…";navigator.geolocation.getCurrentPosition(p=>{st={lat:p.coords.latitude,lon:p.coords.longitude,name:"My location",tz:"auto"};load();},
+ ()=>{$("msg").textContent="Location access denied; showing "+st.name+" instead.";},{timeout:10000});};
+document.querySelectorAll("#styles button").forEach(b=>b.onclick=()=>{style=b.dataset.s;document.querySelectorAll("#styles button").forEach(x=>x.classList.toggle("on",x===b));if(last)render(last);});
+load();setInterval(load,15*60*1000);
+</script></body></html>
