@@ -7,27 +7,170 @@
 .bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}.bar input{flex:1;min-width:160px;padding:10px;border-radius:10px;border:0;font-size:1rem}
 button{padding:10px 14px;border:0;border-radius:10px;background:#ffffff26;color:#fff;font-size:.95rem;cursor:pointer}button:hover,button.on{background:#fff;color:#1e3c72}
 .card{background:#ffffff1f;backdrop-filter:blur(8px);border-radius:16px;padding:16px;margin-bottom:14px}
-.now{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:640px){.now{grid-template-columns:1fr}}
+.now{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}@media(max-width:640px){.now{grid-template-columns:1fr}}
 .big{font-size:3.5rem;font-weight:700}.stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:.95rem;margin-top:8px}
-.outfit li{margin:6px 0;list-style:none}.outfit ul{padding:0;margin:0}
+.outfit{text-align:center}.outfit h3{margin:0 0 4px}.outfit ul{padding:0;margin:8px 0 0;list-style:none;text-align:center}.outfit li{margin:3px 0}
+.stage{width:min(100%,280px);margin:0 auto;border-radius:22px;overflow:hidden;box-shadow:inset 0 0 0 2px #ffffff40;background:linear-gradient(#4da3e8,#b9e6ff)}
+.stage svg{width:100%;height:auto;display:block}
+.stage.sky-sun{background:linear-gradient(#4da3e8,#ffe9a8 70%,#b7e4a8)}
+.stage.sky-partly{background:linear-gradient(#6eb6ef,#e7f4ff 70%,#b7e4a8)}
+.stage.sky-cloud{background:linear-gradient(#8aa4b8,#d5e2ea 72%,#9bb592)}
+.stage.sky-rain{background:linear-gradient(#4d6275,#8ea0b0 70%,#6f8a68)}
+.stage.sky-snow{background:linear-gradient(#d5e4f2,#f7fbff 68%,#eef3f8)}
+.stage.sky-night{background:linear-gradient(#0b1026,#243b6b 72%,#1a2a22)}
+.stage.is-night.sky-rain{background:linear-gradient(#141c2c,#3d5166 70%,#243028)}
+.stage.is-night.sky-snow{background:linear-gradient(#1a2740,#6d7f99 68%,#d5deea)}
+.stage.look-men{--c1:#3a7fc1;--c2:#24588f;--pants:#2f3e50;--short:#2a4f7c;--jacket:#4e6e8a;--sweater:#2f6f4e}
+.stage.look-women{--c1:#ef8bb8;--c2:#d4608f;--pants:#5a4572;--short:#c44b86;--jacket:#c46b8a;--sweater:#b85c8a}
+.stage.look-neutral{--c1:#63c2b3;--c2:#2f9e8f;--pants:#355e56;--short:#21786e;--jacket:#5f8f86;--sweater:#3e8f9a}
+.skin{fill:#ffd2b0}.ground{fill:#00000022}
+.sky-night .ground,.is-night .ground{fill:#00000055}
+.part,.hair,.bg .sun,.bg .clouds,.bg .rain,.bg .snow,.bg .stars,.bg .moon,.only-men,.only-women,.only-neutral{display:none}
+.stage.show-tee .part-tee,.stage.show-long .part-long,.stage.show-sweater .part-sweater,.stage.show-light .part-light,.stage.show-puffer .part-puffer,.stage.show-rain .part-rain,.stage.show-shorts .part-shorts,.stage.show-pants .part-pants,.stage.show-sneakers .part-sneakers,.stage.show-boots .part-boots,.stage.show-umbrella .part-umbrella,.stage.show-beanie .part-beanie,.stage.show-scarf .part-scarf,.stage.show-gloves .part-gloves,.stage.show-sunglasses .part-sunglasses,.stage.show-cap .part-cap{display:inline}
+.stage.look-men .hair-men,.stage.look-women .hair-women,.stage.look-neutral .hair-neutral{display:inline}
+.stage.look-men .only-men,.stage.look-women .only-women,.stage.look-neutral .only-neutral{display:inline}
+.sky-sun .sun{display:inline}.sky-partly .sun,.sky-partly .clouds{display:inline}.sky-cloud .clouds{display:inline}
+.sky-rain .clouds,.sky-rain .rain{display:inline}.sky-snow .clouds,.sky-snow .snow{display:inline}.sky-night .stars,.sky-night .moon{display:inline}
+.sun .ball{animation:glow 3s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.clouds{animation:drift 8s ease-in-out infinite}
+.rain line{stroke:#e7f7ff;stroke-width:3;stroke-linecap:round;animation:fall 1.25s linear infinite}
+.rain line:nth-child(odd){animation-duration:1.5s}
+.snow circle{fill:#fff;stroke:#6d8eae;stroke-width:1.4;animation:snowfall 4.2s linear infinite}
+.snow circle:nth-child(2){animation-delay:-.6s}.snow circle:nth-child(3){animation-delay:-1.3s}.snow circle:nth-child(4){animation-delay:-2.1s}.snow circle:nth-child(5){animation-delay:-2.8s}.snow circle:nth-child(6){animation-delay:-3.4s}.snow circle:nth-child(7){animation-delay:-1.8s}
+.stars circle{fill:#fff;animation:twinkle 2.6s ease-in-out infinite}
+.moon{animation:glow 4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes glow{50%{transform:scale(1.08)}}
+@keyframes drift{50%{transform:translateX(12px)}}
+@keyframes fall{0%{transform:translateY(-24px);opacity:0}12%{opacity:.95}100%{transform:translateY(340px);opacity:.15}}
+@keyframes snowfall{0%{transform:translateY(-16px);opacity:0}15%{opacity:1}100%{transform:translate(10px,330px);opacity:.25}}
+@keyframes twinkle{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.stage *{animation:none !important}}
 .strip{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px}.h{min-width:70px;text-align:center;background:#ffffff1a;border-radius:12px;padding:8px}
-.day{display:grid;grid-template-columns:90px 40px 90px 1fr;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #ffffff22}.day:last-child{border:0}
-@media(max-width:640px){.day{grid-template-columns:70px 30px 80px;}.day .ol{grid-column:1/-1;font-size:.9rem}}
-small,.muted{opacity:.8}.err{color:#ffd2d2}
+.day{display:grid;grid-template-columns:90px 40px 90px 1fr;gap:8px;align-items:center;padding:10px 8px;border-bottom:1px solid #ffffff22;border-radius:12px;cursor:pointer;text-align:left;width:100%}
+.day:last-child{border-bottom:0}.day:hover,.day:focus-visible{background:#ffffff18;outline:none}.day.sel{background:#ffffff33;box-shadow:inset 0 0 0 2px #fff}
+@media(max-width:640px){.day{grid-template-columns:70px 30px 80px}.day .ol{grid-column:1/-1;font-size:.9rem}}
+small,.muted{opacity:.8}.err{color:#ffd2d2}.note{display:block;margin-top:6px}
 </style></head><body><div class="wrap">
 <h1>🌤️ Weather & What to Wear</h1>
 <div class="bar"><input id="q" placeholder="Search a city…"><button id="go">Search</button><button id="loc">📍 Use my location</button></div>
 <div class="bar" id="styles"><button data-s="men">Men's</button><button data-s="women">Women's</button><button data-s="neutral" class="on">Neutral</button></div>
 <div id="msg" class="muted"></div>
 <div class="card now"><div><div id="place" style="font-size:1.2rem">Loading…</div><div class="big" id="temp">--</div><div id="desc"></div>
-<div class="stats" id="stats"></div></div><div class="outfit"><h3 style="margin-top:0">👕 Wear right now</h3><ul id="outfit"></ul></div></div>
+<div class="stats" id="stats"></div></div>
+<div class="outfit"><h3 id="wear-title">👕 Wear right now</h3>
+<div class="stage look-neutral sky-sun show-tee show-shorts show-sneakers" id="stage">
+<svg id="person" viewBox="0 0 240 330" role="img" aria-label="Character dressed for the weather">
+<g class="bg">
+  <g class="sun"><circle class="ball" cx="188" cy="52" r="18" fill="#ffe36b"/><g stroke="#ffe36b" stroke-width="4" stroke-linecap="round"><line x1="188" y1="22" x2="188" y2="30"/><line x1="188" y1="74" x2="188" y2="82"/><line x1="158" y1="52" x2="166" y2="52"/><line x1="210" y1="52" x2="218" y2="52"/><line x1="166" y1="30" x2="172" y2="36"/><line x1="204" y1="68" x2="210" y2="74"/><line x1="166" y1="74" x2="172" y2="68"/><line x1="204" y1="36" x2="210" y2="30"/></g></g>
+  <g class="moon"><circle cx="186" cy="54" r="16" fill="#f4f1c8"/><circle cx="178" cy="48" r="12" fill="#243b6b"/></g>
+  <g class="stars"><circle cx="40" cy="36" r="1.6"/><circle cx="70" cy="58" r="1.2"/><circle cx="108" cy="28" r="1.8"/><circle cx="146" cy="48" r="1.3"/><circle cx="48" cy="88" r="1.1"/><circle cx="210" cy="96" r="1.4"/></g>
+  <g class="clouds" fill="#fff"><g><ellipse cx="62" cy="58" rx="26" ry="14"/><ellipse cx="86" cy="54" rx="20" ry="16"/><ellipse cx="104" cy="60" rx="18" ry="12"/></g><g><ellipse cx="150" cy="86" rx="22" ry="12"/><ellipse cx="172" cy="82" rx="16" ry="12"/></g></g>
+  <g class="rain"><line x1="24" y1="8" x2="18" y2="26"/><line x1="58" y1="0" x2="52" y2="18"/><line x1="92" y1="12" x2="86" y2="30"/><line x1="126" y1="4" x2="120" y2="22"/><line x1="160" y1="14" x2="154" y2="32"/><line x1="196" y1="2" x2="190" y2="20"/><line x1="220" y1="18" x2="214" y2="36"/><line x1="40" y1="28" x2="34" y2="46"/></g>
+  <g class="snow"><circle cx="36" cy="20" r="3"/><circle cx="78" cy="8" r="2.2"/><circle cx="120" cy="24" r="2.6"/><circle cx="168" cy="12" r="3"/><circle cx="206" cy="28" r="2"/><circle cx="54" cy="40" r="1.8"/><circle cx="146" cy="36" r="2.4"/></g>
+</g>
+<ellipse class="ground" cx="120" cy="312" rx="52" ry="8"/>
+<g class="hair hair-women"><path d="M88 108 C58 136 62 178 88 184 C104 164 100 136 112 118" fill="#a8643c"/><path d="M152 108 C182 136 178 178 152 184 C136 164 140 136 128 118" fill="#a8643c"/></g>
+<g class="hair hair-neutral"><path d="M84 104 Q74 156 106 164 Q120 170 134 164 Q166 156 156 104 Q152 52 120 48 Q88 52 84 104" fill="#6b4634"/></g>
+<ellipse class="skin" cx="80" cy="98" rx="7" ry="9"/><ellipse class="skin" cx="160" cy="98" rx="7" ry="9"/>
+<rect class="skin" x="58" y="142" width="22" height="72" rx="11"/><rect class="skin" x="160" y="142" width="22" height="72" rx="11"/>
+<rect class="skin" x="98" y="208" width="18" height="70" rx="9"/><rect class="skin" x="124" y="208" width="18" height="70" rx="9"/>
+<g class="part part-shorts" fill="var(--short)">
+  <g class="only-men"><rect x="92" y="204" width="24" height="40" rx="7"/><rect x="124" y="204" width="24" height="40" rx="7"/></g>
+  <g class="only-women"><rect x="94" y="204" width="22" height="38" rx="9"/><rect x="124" y="204" width="22" height="38" rx="9"/></g>
+  <g class="only-neutral"><rect x="94" y="204" width="22" height="38" rx="8"/><rect x="124" y="204" width="22" height="38" rx="8"/></g>
+</g>
+<g class="part part-pants" fill="var(--pants)">
+  <g class="only-men"><rect x="90" y="204" width="26" height="78" rx="8"/><rect x="124" y="204" width="26" height="78" rx="8"/></g>
+  <g class="only-women"><rect x="98" y="204" width="16" height="78" rx="8"/><rect x="126" y="204" width="16" height="78" rx="8"/></g>
+  <g class="only-neutral"><rect x="94" y="204" width="22" height="78" rx="10"/><rect x="124" y="204" width="22" height="78" rx="10"/></g>
+</g>
+<g class="part part-tee">
+  <rect x="86" y="138" width="68" height="72" rx="16" fill="var(--c1)"/>
+  <rect x="62" y="140" width="28" height="28" rx="12" fill="var(--c1)"/><rect x="150" y="140" width="28" height="28" rx="12" fill="var(--c1)"/>
+  <rect class="only-men" x="98" y="158" width="14" height="12" rx="2" fill="var(--c2)"/>
+  <path class="only-women" d="M102 138 Q120 158 138 138" fill="#ffd2b0"/>
+  <rect class="only-neutral" x="86" y="168" width="68" height="8" fill="#ffffff55"/>
+</g>
+<g class="part part-long">
+  <rect x="86" y="138" width="68" height="72" rx="16" fill="var(--c1)"/>
+  <rect x="56" y="140" width="26" height="74" rx="12" fill="var(--c1)"/><rect x="158" y="140" width="26" height="74" rx="12" fill="var(--c1)"/>
+  <rect x="56" y="204" width="26" height="8" rx="3" fill="#fff"/><rect x="158" y="204" width="26" height="8" rx="3" fill="#fff"/>
+  <path class="only-women" d="M102 138 Q120 158 138 138" fill="#ffd2b0"/>
+  <rect class="only-men" x="116" y="150" width="8" height="40" rx="2" fill="#ffffff44"/>
+</g>
+<g class="part part-sweater">
+  <ellipse cx="120" cy="136" rx="30" ry="14" fill="var(--sweater)"/>
+  <rect x="80" y="134" width="80" height="82" rx="20" fill="var(--sweater)"/>
+  <rect x="52" y="138" width="30" height="76" rx="14" fill="var(--sweater)"/><rect x="158" y="138" width="30" height="76" rx="14" fill="var(--sweater)"/>
+  <rect x="98" y="168" width="44" height="24" rx="8" fill="#00000022"/>
+  <rect x="80" y="208" width="80" height="8" fill="#00000022"/>
+  <circle class="only-women" cx="120" cy="160" r="5" fill="#fff"/>
+</g>
+<g class="part part-light">
+  <rect x="54" y="140" width="44" height="74" rx="14" fill="var(--jacket)"/><rect x="142" y="140" width="44" height="74" rx="14" fill="var(--jacket)"/>
+  <rect x="78" y="136" width="32" height="84" rx="14" fill="var(--jacket)"/><rect x="130" y="136" width="32" height="84" rx="14" fill="var(--jacket)"/>
+  <path d="M106 136 L120 152 L134 136" fill="var(--jacket)"/>
+  <rect x="58" y="204" width="36" height="8" rx="3" fill="#ffffff44"/><rect x="146" y="204" width="36" height="8" rx="3" fill="#ffffff44"/>
+</g>
+<g class="part part-puffer">
+  <rect x="50" y="142" width="44" height="70" rx="16" fill="var(--c2)"/><rect x="146" y="142" width="44" height="70" rx="16" fill="var(--c2)"/>
+  <rect x="86" y="132" width="68" height="100" rx="22" fill="var(--c2)"/>
+  <path d="M96 156 H144 M96 174 H144 M96 192 H144 M96 210 H144" stroke="#ffffff66" stroke-width="3" stroke-linecap="round"/>
+  <path d="M62 160 H82 M158 160 H178 M62 182 H82 M158 182 H178" stroke="#ffffff55" stroke-width="3" stroke-linecap="round"/>
+  <rect x="104" y="128" width="32" height="16" rx="6" fill="var(--c1)"/>
+</g>
+<g class="part part-rain">
+  <path d="M80 146 Q120 46 160 146" fill="#e6c43a"/>
+  <rect x="74" y="132" width="92" height="102" rx="20" fill="#f6d453"/>
+  <rect x="52" y="138" width="30" height="80" rx="14" fill="#f6d453"/><rect x="158" y="138" width="30" height="80" rx="14" fill="#f6d453"/>
+  <circle cx="120" cy="162" r="3" fill="#c8962e"/><circle cx="120" cy="182" r="3" fill="#c8962e"/><circle cx="120" cy="202" r="3" fill="#c8962e"/>
+  <path d="M96 148 H112" stroke="#fff" stroke-width="4" opacity=".7" stroke-linecap="round"/>
+</g>
+<g class="part part-sneakers">
+  <ellipse cx="106" cy="286" rx="16" ry="7" fill="#1c1c1c"/><ellipse cx="136" cy="286" rx="16" ry="7" fill="#1c1c1c"/>
+  <path d="M92 278 Q92 264 106 264 Q122 264 122 278 Q122 286 106 288 Q92 286 92 278" fill="#fff"/>
+  <path d="M122 278 Q122 264 136 264 Q152 264 152 278 Q152 286 136 288 Q122 286 122 278" fill="#fff"/>
+  <path d="M96 272 H118 M126 272 H148" stroke="var(--c1)" stroke-width="3" stroke-linecap="round"/>
+</g>
+<g class="part part-boots" fill="#6b442c">
+  <path d="M84 250 H116 Q120 250 120 270 V286 Q120 300 100 300 Q84 300 84 284 Z"/>
+  <path d="M124 250 H156 Q160 250 160 270 V286 Q160 300 140 300 Q124 300 124 284 Z"/>
+  <rect x="86" y="246" width="30" height="10" rx="3" fill="#8b5a38"/><rect x="126" y="246" width="30" height="10" rx="3" fill="#8b5a38"/>
+</g>
+<circle class="skin" cx="69" cy="216" r="10"/><circle class="skin" cx="171" cy="216" r="10"/>
+<g class="part part-gloves"><ellipse cx="69" cy="216" rx="12" ry="14" fill="#d4534a"/><ellipse cx="171" cy="216" rx="12" ry="14" fill="#d4534a"/></g>
+<rect class="skin" x="110" y="118" width="20" height="24" rx="8"/>
+<circle class="skin" cx="120" cy="92" r="36"/>
+<g class="face">
+  <ellipse cx="108" cy="78" rx="10" ry="6" fill="#fff" opacity=".28"/>
+  <path d="M100 80 Q108 76 116 80" fill="none" stroke="#5a3a32" stroke-width="2" stroke-linecap="round"/>
+  <path d="M124 80 Q132 76 140 80" fill="none" stroke="#5a3a32" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="108" cy="90" r="3.4" fill="#2a2a2a"/><circle cx="132" cy="90" r="3.4" fill="#2a2a2a"/>
+  <circle cx="109.4" cy="88.6" r="1.1" fill="#fff"/><circle cx="133.4" cy="88.6" r="1.1" fill="#fff"/>
+  <ellipse cx="98" cy="100" rx="5" ry="3" fill="#ff9b9b" opacity=".75"/><ellipse cx="142" cy="100" rx="5" ry="3" fill="#ff9b9b" opacity=".75"/>
+  <path d="M110 106 Q120 114 130 106" fill="none" stroke="#d07a6a" stroke-width="2.2" stroke-linecap="round"/>
+</g>
+<g class="hair hair-men"><path d="M118 58 L124 40 L132 58" fill="#3b2a22"/><path d="M90 84 Q86 48 120 44 Q154 48 150 84 Q136 70 120 66 Q104 70 90 84" fill="#3b2a22"/></g>
+<g class="hair hair-women"><path d="M94 80 Q120 94 146 80 Q136 58 120 56 Q104 58 94 80" fill="#a8643c"/><path d="M98 88 Q90 112 96 130" stroke="#a8643c" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M142 88 Q152 112 146 130" stroke="#a8643c" stroke-width="7" fill="none" stroke-linecap="round"/></g>
+<g class="hair hair-neutral"><path d="M96 76 Q120 94 144 76 Q134 58 120 56 Q106 58 96 76" fill="#6b4634"/></g>
+<g class="part part-scarf"><path d="M98 124 Q120 142 142 124 Q148 136 120 148 Q92 136 98 124" fill="#e35d5d"/><path d="M128 144 Q134 174 122 196" stroke="#e35d5d" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M122 160 Q130 168 118 176" stroke="#fff" stroke-width="2" fill="none"/></g>
+<g class="part part-cap"><path d="M94 82 Q96 50 120 46 Q150 50 146 80 Q120 70 94 82" fill="var(--c2)"/><ellipse cx="154" cy="80" rx="24" ry="8" fill="var(--c1)"/></g>
+<g class="part part-beanie"><path d="M92 86 Q90 48 120 42 Q150 48 148 86 Q120 76 92 86" fill="var(--sweater)"/><circle cx="120" cy="40" r="7" fill="#fff"/><rect x="96" y="78" width="48" height="10" rx="4" fill="var(--c2)"/></g>
+<g class="part part-sunglasses"><rect x="99" y="84" width="18" height="12" rx="5" fill="#1c2430"/><rect x="123" y="84" width="18" height="12" rx="5" fill="#1c2430"/><rect x="116" y="88" width="8" height="3" fill="#1c2430"/><rect x="102" y="86" width="6" height="2" rx="1" fill="#fff" opacity=".65"/></g>
+<g class="part part-umbrella"><path d="M18 72 Q18 30 54 30 Q90 30 90 72 Q54 62 18 72" fill="#ef4b4b"/><path d="M54 30 V72" stroke="#fff" stroke-width="2"/><path d="M36 36 Q40 64 30 72" stroke="#fff" stroke-width="2" fill="none"/><path d="M72 36 Q68 64 78 72" stroke="#fff" stroke-width="2" fill="none"/><line x1="54" y1="72" x2="66" y2="208" stroke="#6b442c" stroke-width="3.5" stroke-linecap="round"/><path d="M66 208 Q52 218 60 222" fill="none" stroke="#6b442c" stroke-width="3.5" stroke-linecap="round"/></g>
+</svg>
+</div>
+<ul id="outfit"></ul>
+<small class="note muted" id="wear-note">Tap a day below to dress for that forecast</small>
+</div></div>
 <div class="card"><h3 style="margin-top:0">Next 12 hours</h3><div class="strip" id="hours"></div></div>
 <div class="card"><h3 style="margin-top:0">7-day forecast</h3><div id="days"></div></div>
 <small id="upd"></small><br><small>Data: Open-Meteo.com · refreshes every 15 min</small>
 </div><script>
 const WMO={0:["Clear sky","☀️"],1:["Mainly clear","🌤️"],2:["Partly cloudy","⛅"],3:["Overcast","☁️"],45:["Fog","🌫️"],48:["Icy fog","🌫️"],51:["Light drizzle","🌦️"],53:["Drizzle","🌦️"],55:["Heavy drizzle","🌧️"],56:["Freezing drizzle","🌧️"],57:["Freezing drizzle","🌧️"],61:["Light rain","🌦️"],63:["Rain","🌧️"],65:["Heavy rain","🌧️"],66:["Freezing rain","🌧️"],67:["Freezing rain","🌧️"],71:["Light snow","🌨️"],73:["Snow","🌨️"],75:["Heavy snow","❄️"],77:["Snow grains","🌨️"],80:["Rain showers","🌦️"],81:["Rain showers","🌧️"],82:["Violent showers","⛈️"],85:["Snow showers","🌨️"],86:["Heavy snow showers","❄️"],95:["Thunderstorm","⛈️"],96:["Thunderstorm w/ hail","⛈️"],99:["Thunderstorm w/ hail","⛈️"]};
 const w=c=>WMO[c]||["Unknown","❔"];const isSnow=c=>[71,73,75,77,85,86].includes(c);
-let st={lat:39.7391,lon:-75.5398,name:"Wilmington, DE",tz:"America/New_York"},style="neutral",last=null;
+const RAIN=new Set([51,53,55,56,57,61,63,65,66,67,80,81,82,95,96,99]);
+let st={lat:39.7391,lon:-75.5398,name:"Wilmington, DE",tz:"America/New_York"},style="neutral",last=null,picked=null;
 const $=id=>document.getElementById(id);
 function outfit(f,rain,wind,uv,code,s){const o={};
  if(f<25){o.top="Thermal base layer + thick sweater";o.out="Heavy insulated parka";o.bot=s=="women"?"Lined leggings or thermal-lined jeans":"Thermal-lined pants";o.shoes="Insulated waterproof boots";}
@@ -43,25 +186,79 @@ function outfit(f,rain,wind,uv,code,s){const o={};
  if(wind>=15&&!o.out)o.out="Windbreaker";else if(wind>=15)acc.push("🌬️ Windproof layer");
  if(uv>=6)acc.push("🕶️ Sunglasses","🧴 Sunscreen","👒 Sun hat");else if(uv>=3)acc.push("🕶️ Sunglasses");
  o.acc=acc;return o;}
-function render(d){const c=d.current,o=outfit(c.apparent_temperature,c.precipitation_probability,c.wind_speed_10m,c.uv_index,c.weather_code,style);
+function layersOf(o){
+ const top=(o.top||"").toLowerCase(),out=(o.out||"").toLowerCase(),bot=(o.bot||"").toLowerCase(),shoes=(o.shoes||"").toLowerCase();
+ const acc=o.acc||[],has=word=>acc.some(a=>String(a).includes(word));
+ let base="tee";
+ if(/sweater|hoodie|fleece|knit|thermal/.test(top))base="sweater";
+ else if(/long-sleeve|henley|blouse/.test(top))base="long";
+ let outer="none";
+ if(/parka|puffer/.test(out))outer="puffer";
+ else if(/rain jacket|water-resistant/.test(out))outer="rain";
+ else if(/jacket|windbreaker|cardigan|overshirt/.test(out))outer="light";
+ const bottom=/jeans|leggings|thermal/.test(bot)?"pants":(/shorts|skirt/.test(bot)?"shorts":"pants");
+ const shoe=/snow boot|waterproof boot|^boots$/.test(shoes.trim())?"boots":"sneakers";
+ return {base,outer,bottom,shoe,umbrella:has("Umbrella"),beanie:has("Beanie"),scarf:has("Scarf"),gloves:has("Gloves"),sunglasses:has("Sunglasses"),cap:has("Sun hat")};
+}
+function isNight(iso){const h=+String(iso||"").slice(11,13);return h<6||h>=20;}
+function scene(code,precip,night){
+ let sky="cloud";
+ if(isSnow(code))sky="snow";
+ else if(RAIN.has(code)||precip>=50)sky="rain";
+ else if(code===0||code===1)sky="sun";
+ else if(code===2)sky="partly";
+ const wet=sky==="rain"||sky==="snow";
+ if(night&&!wet)sky="night";
+ return {sky,night:!!(night&&wet)};
+}
+function applyCharacter(o,sky,night,title,note){
+ const L=layersOf(o);
+ const cls=["stage","look-"+style,"sky-"+sky,"show-"+L.base,"show-"+L.bottom,"show-"+L.shoe];
+ if(L.outer!=="none")cls.push("show-"+L.outer);
+ ["umbrella","beanie","scarf","gloves","sunglasses","cap"].forEach(k=>{if(L[k])cls.push("show-"+k);});
+ if(night)cls.push("is-night");
+ $("stage").className=cls.join(" ");
+ $("wear-title").textContent=title;
+ $("wear-note").textContent=note;
+ $("person").setAttribute("aria-label",title.replace(/^👕\s*/,"")+": "+[o.top,o.bot,o.out||"no extra layer",o.shoes].filter(Boolean).join(", "));
+ $("outfit").innerHTML=[["👕 Top",o.top],["👖 Bottom",o.bot],["🧥 Outerwear",o.out||"None needed"],["👟 Shoes",o.shoes],["🎒 Extras",o.acc.length?o.acc.join(", "):"None"]].map(([k,v])=>`<li><b>${k}:</b> ${v}</li>`).join("");
+}
+function render(d){const c=d.current;
  $("place").textContent=st.name;$("temp").textContent=Math.round(c.temperature_2m)+"°F";$("desc").textContent=w(c.weather_code)[1]+" "+w(c.weather_code)[0];
  $("stats").innerHTML=`<div>🌡️ Feels ${Math.round(c.apparent_temperature)}°</div><div>💨 ${Math.round(c.wind_speed_10m)} mph</div><div>🌧️ ${c.precipitation_probability??0}% rain</div><div>☀️ UV ${(c.uv_index??0).toFixed(1)}</div>`;
- $("outfit").innerHTML=[["👕 Top",o.top],["👖 Bottom",o.bot],["🧥 Outerwear",o.out||"None needed"],["👟 Shoes",o.shoes],["🎒 Extras",o.acc.join(", ")||"None"]].map(([k,v])=>`<li><b>${k}:</b> ${v}</li>`).join("");
  const h=d.hourly,now=c.time.slice(0,13);let i=h.time.findIndex(t=>t.slice(0,13)>=now);if(i<0)i=0;
  $("hours").innerHTML=h.time.slice(i,i+12).map((t,k)=>{const j=i+k,hr=+t.slice(11,13);return`<div class="h"><div>${hr%12||12}${hr<12?"am":"pm"}</div><div style="font-size:1.5rem">${w(h.weather_code[j])[1]}</div><div>${Math.round(h.temperature_2m[j])}°</div><small>💧${h.precipitation_probability[j]??0}%</small></div>`}).join("");
- const D=d.daily;$("days").innerHTML=D.time.map((t,j)=>{const dt=new Date(t+"T12:00");const fl=(D.apparent_temperature_max[j]+D.apparent_temperature_min[j])/2;
+ const D=d.daily;
+ if(picked!=null&&!D.time[picked])picked=null;
+ $("days").innerHTML=D.time.map((t,j)=>{const dt=new Date(t+"T12:00");const fl=(D.apparent_temperature_max[j]+D.apparent_temperature_min[j])/2;
   const x=outfit(fl,D.precipitation_probability_max[j],D.wind_speed_10m_max[j],D.uv_index_max[j],D.weather_code[j],style);
-  return`<div class="day"><div><b>${j?dt.toLocaleDateString("en-US",{weekday:"short"}):"Today"}</b><br><small>${dt.toLocaleDateString("en-US",{month:"short",day:"numeric"})}</small></div><div style="font-size:1.6rem" title="${w(D.weather_code[j])[0]}">${w(D.weather_code[j])[1]}</div><div>${Math.round(D.temperature_2m_max[j])}° / ${Math.round(D.temperature_2m_min[j])}°<br><small>💧${D.precipitation_probability_max[j]??0}%</small></div><div class="ol">${x.out||x.top}, ${x.bot.toLowerCase()}${x.acc.length?" + "+x.acc.slice(0,2).join(" "):""}</div></div>`}).join("");
+  const name=j?dt.toLocaleDateString("en-US",{weekday:"long"}):"today";
+  return`<div class="day${picked===j?" sel":""}" data-i="${j}" role="button" tabindex="0" aria-pressed="${picked===j}" aria-label="Dress for ${name}"><div><b>${j?dt.toLocaleDateString("en-US",{weekday:"short"}):"Today"}</b><br><small>${dt.toLocaleDateString("en-US",{month:"short",day:"numeric"})}</small></div><div style="font-size:1.6rem" title="${w(D.weather_code[j])[0]}">${w(D.weather_code[j])[1]}</div><div>${Math.round(D.temperature_2m_max[j])}° / ${Math.round(D.temperature_2m_min[j])}°<br><small>💧${D.precipitation_probability_max[j]??0}%</small></div><div class="ol">${x.out||x.top}, ${x.bot.toLowerCase()}${x.acc.length?" + "+x.acc.slice(0,2).join(" "):""}</div></div>`}).join("");
+ let dress=outfit(c.apparent_temperature,c.precipitation_probability,c.wind_speed_10m,c.uv_index,c.weather_code,style);
+ let sc=scene(c.weather_code,c.precipitation_probability,isNight(c.time));
+ let title="👕 Wear right now",note="Tap a day below to dress for that forecast";
+ if(picked!=null){const j=picked,dt=new Date(D.time[j]+"T12:00");
+  const fl=(D.apparent_temperature_max[j]+D.apparent_temperature_min[j])/2;
+  dress=outfit(fl,D.precipitation_probability_max[j],D.wind_speed_10m_max[j],D.uv_index_max[j],D.weather_code[j],style);
+  sc=scene(D.weather_code[j],D.precipitation_probability_max[j],false);
+  const label=j?dt.toLocaleDateString("en-US",{weekday:"long"}):"today";
+  title="👕 Wear for "+label;
+  note=label.charAt(0).toUpperCase()+label.slice(1)+" "+Math.round(D.temperature_2m_max[j])+"° / "+Math.round(D.temperature_2m_min[j])+"° · tap again for right now";
+ }
+ applyCharacter(dress,sc.sky,sc.night,title,note);
  $("upd").textContent="Last updated: "+new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});}
 async function load(){$("msg").textContent="";try{const u=`https://api.open-meteo.com/v1/forecast?latitude=${st.lat}&longitude=${st.lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,precipitation_probability,uv_index&hourly=temperature_2m,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,precipitation_probability_max,wind_speed_10m_max,uv_index_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=${encodeURIComponent(st.tz)}&forecast_days=7`;
  const r=await fetch(u);if(!r.ok)throw 0;last=await r.json();render(last);}catch(e){$("msg").innerHTML='<span class="err">Couldn\'t load weather. Check your connection and try again.</span>';}}
 async function search(){const q=$("q").value.trim();if(!q)return;try{const r=await(await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=1&language=en&format=json`)).json();
  if(!r.results||!r.results.length){$("msg").innerHTML='<span class="err">City not found.</span>';return;}const p=r.results[0];
- st={lat:p.latitude,lon:p.longitude,name:[p.name,p.admin1,p.country_code].filter(Boolean).join(", "),tz:"auto"};load();}catch(e){$("msg").innerHTML='<span class="err">Search failed.</span>';}}
+ st={lat:p.latitude,lon:p.longitude,name:[p.name,p.admin1,p.country_code].filter(Boolean).join(", "),tz:"auto"};picked=null;load();}catch(e){$("msg").innerHTML='<span class="err">Search failed.</span>';}}
+function pickDay(row){if(!row||!last)return;const j=+row.dataset.i;picked=picked===j?null:j;render(last);}
 $("go").onclick=search;$("q").onkeydown=e=>{if(e.key==="Enter")search()};
 $("loc").onclick=()=>{if(!navigator.geolocation){$("msg").textContent="Location isn't supported here; showing "+st.name+".";return;}
- $("msg").textContent="Finding you…";navigator.geolocation.getCurrentPosition(p=>{st={lat:p.coords.latitude,lon:p.coords.longitude,name:"My location",tz:"auto"};load();},
+ $("msg").textContent="Finding you…";navigator.geolocation.getCurrentPosition(p=>{st={lat:p.coords.latitude,lon:p.coords.longitude,name:"My location",tz:"auto"};picked=null;load();},
  ()=>{$("msg").textContent="Location access denied; showing "+st.name+" instead.";},{timeout:10000});};
 document.querySelectorAll("#styles button").forEach(b=>b.onclick=()=>{style=b.dataset.s;document.querySelectorAll("#styles button").forEach(x=>x.classList.toggle("on",x===b));if(last)render(last);});
+$("days").onclick=e=>pickDay(e.target.closest(".day"));
+$("days").onkeydown=e=>{if(e.key!=="Enter"&&e.key!==" ")return;const row=e.target.closest(".day");if(!row)return;e.preventDefault();pickDay(row);};
 load();setInterval(load,15*60*1000);
 </script></body></html>
