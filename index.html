@@ -2,162 +2,417 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Weather & Outfit</title>
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:linear-gradient(160deg,#1e3c72,#2a5298 60%,#6dd5ed);color:#fff;min-height:100vh}
-.wrap{max-width:960px;margin:auto;padding:16px}h1{font-size:1.5rem;margin:8px 0}
-.bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}.bar input{flex:1;min-width:160px;padding:10px;border-radius:10px;border:0;font-size:1rem}
-button{padding:10px 14px;border:0;border-radius:10px;background:#ffffff26;color:#fff;font-size:.95rem;cursor:pointer}button:hover,button.on{background:#fff;color:#1e3c72}
-.card{background:#ffffff1f;backdrop-filter:blur(8px);border-radius:16px;padding:16px;margin-bottom:14px}
+*{box-sizing:border-box}html,body{overflow-x:hidden}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:linear-gradient(165deg,#16345f,#2a5298 55%,#6ec8e0);color:#fff;min-height:100vh}
+.wrap{max-width:960px;margin:auto;padding:16px}h1{font-size:1.45rem;margin:8px 0 12px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}.bar input{flex:1 1 140px;min-width:0;padding:10px 12px;border-radius:12px;border:0;font-size:1rem;color:#17324f}
+button{padding:10px 14px;border:0;border-radius:12px;background:#ffffff26;color:#fff;font-size:.95rem;cursor:pointer}button:hover,button.on{background:#fff;color:#1e3c72}
+.card{background:#ffffff1c;backdrop-filter:blur(10px);border-radius:18px;padding:16px;margin-bottom:14px}
 .now{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}@media(max-width:640px){.now{grid-template-columns:1fr}}
-.big{font-size:3.5rem;font-weight:700}.stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:.95rem;margin-top:8px}
-.outfit{text-align:center}.outfit h3{margin:0 0 4px}.outfit ul{padding:0;margin:8px 0 0;list-style:none;text-align:center}.outfit li{margin:3px 0}
-.stage{width:min(100%,280px);margin:0 auto;border-radius:22px;overflow:hidden;box-shadow:inset 0 0 0 2px #ffffff40;background:linear-gradient(#4da3e8,#b9e6ff)}
+.big{font-size:3.4rem;font-weight:720;letter-spacing:-.03em;line-height:1}.stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:.95rem;margin-top:8px}
+.outfit{text-align:center}.outfit h3{margin:0 0 6px}.outfit ul{padding:0;margin:8px 0 0;list-style:none}.outfit li{margin:3px 0}
+.stage{width:min(100%,340px);margin:0 auto;border-radius:28px;overflow:hidden;background:linear-gradient(#69b7ee,#d7f3ff 72%,#c6e6b4);box-shadow:0 12px 28px #04142833,inset 0 0 0 1px #ffffff66}
 .stage svg{width:100%;height:auto;display:block}
-.stage.sky-sun{background:linear-gradient(#4da3e8,#ffe9a8 70%,#b7e4a8)}
-.stage.sky-partly{background:linear-gradient(#6eb6ef,#e7f4ff 70%,#b7e4a8)}
-.stage.sky-cloud{background:linear-gradient(#8aa4b8,#d5e2ea 72%,#9bb592)}
-.stage.sky-rain{background:linear-gradient(#4d6275,#8ea0b0 70%,#6f8a68)}
-.stage.sky-snow{background:linear-gradient(#d5e4f2,#f7fbff 68%,#eef3f8)}
-.stage.sky-night{background:linear-gradient(#0b1026,#243b6b 72%,#1a2a22)}
+.stage.sky-sun{background:linear-gradient(#4ea4e8,#f6e7b2 68%,#b7e4a4)}
+.stage.sky-partly{background:linear-gradient(#6eb4ea,#e7f3ff 70%,#c5e6b0)}
+.stage.sky-cloud{background:linear-gradient(#8aa4b8,#e3ebf0 72%,#b7c9a4)}
+.stage.sky-rain{background:linear-gradient(#4c6274,#9aafbf 70%,#7d9474)}
+.stage.sky-snow{background:linear-gradient(#d5e3f0,#f7fbff 66%,#e7eef6)}
+.stage.sky-night{background:linear-gradient(#0c1228,#243864 70%,#1a2822)}
 .stage.is-night.sky-rain{background:linear-gradient(#141c2c,#3d5166 70%,#243028)}
-.stage.is-night.sky-snow{background:linear-gradient(#1a2740,#6d7f99 68%,#d5deea)}
-.stage.look-men{--c1:#3a7fc1;--c2:#24588f;--pants:#2f3e50;--short:#2a4f7c;--jacket:#4e6e8a;--sweater:#2f6f4e}
-.stage.look-women{--c1:#ef8bb8;--c2:#d4608f;--pants:#5a4572;--short:#c44b86;--jacket:#c46b8a;--sweater:#b85c8a}
-.stage.look-neutral{--c1:#63c2b3;--c2:#2f9e8f;--pants:#355e56;--short:#21786e;--jacket:#5f8f86;--sweater:#3e8f9a}
-.skin{fill:#ffd2b0}.ground{fill:#00000022}
-.sky-night .ground,.is-night .ground{fill:#00000055}
-.part,.hair,.bg .sun,.bg .clouds,.bg .rain,.bg .snow,.bg .stars,.bg .moon,.only-men,.only-women,.only-neutral{display:none}
-.stage.show-tee .part-tee,.stage.show-long .part-long,.stage.show-sweater .part-sweater,.stage.show-light .part-light,.stage.show-puffer .part-puffer,.stage.show-rain .part-rain,.stage.show-shorts .part-shorts,.stage.show-pants .part-pants,.stage.show-sneakers .part-sneakers,.stage.show-boots .part-boots,.stage.show-umbrella .part-umbrella,.stage.show-beanie .part-beanie,.stage.show-scarf .part-scarf,.stage.show-gloves .part-gloves,.stage.show-sunglasses .part-sunglasses,.stage.show-cap .part-cap{display:inline}
-.stage.look-men .hair-men,.stage.look-women .hair-women,.stage.look-neutral .hair-neutral{display:inline}
-.stage.look-men .only-men,.stage.look-women .only-women,.stage.look-neutral .only-neutral{display:inline}
-.sky-sun .sun{display:inline}.sky-partly .sun,.sky-partly .clouds{display:inline}.sky-cloud .clouds{display:inline}
-.sky-rain .clouds,.sky-rain .rain{display:inline}.sky-snow .clouds,.sky-snow .snow{display:inline}.sky-night .stars,.sky-night .moon{display:inline}
-.sun .ball{animation:glow 3s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
-.clouds{animation:drift 8s ease-in-out infinite}
-.rain line{stroke:#e7f7ff;stroke-width:3;stroke-linecap:round;animation:fall 1.25s linear infinite}
-.rain line:nth-child(odd){animation-duration:1.5s}
-.snow circle{fill:#fff;stroke:#6d8eae;stroke-width:1.4;animation:snowfall 4.2s linear infinite}
-.snow circle:nth-child(2){animation-delay:-.6s}.snow circle:nth-child(3){animation-delay:-1.3s}.snow circle:nth-child(4){animation-delay:-2.1s}.snow circle:nth-child(5){animation-delay:-2.8s}.snow circle:nth-child(6){animation-delay:-3.4s}.snow circle:nth-child(7){animation-delay:-1.8s}
-.stars circle{fill:#fff;animation:twinkle 2.6s ease-in-out infinite}
-.moon{animation:glow 4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
-@keyframes glow{50%{transform:scale(1.08)}}
-@keyframes drift{50%{transform:translateX(12px)}}
-@keyframes fall{0%{transform:translateY(-24px);opacity:0}12%{opacity:.95}100%{transform:translateY(340px);opacity:.15}}
-@keyframes snowfall{0%{transform:translateY(-16px);opacity:0}15%{opacity:1}100%{transform:translate(10px,330px);opacity:.25}}
-@keyframes twinkle{50%{opacity:.25}}
-@media (prefers-reduced-motion:reduce){.stage *{animation:none !important}}
+.stage.is-night.sky-snow{background:linear-gradient(#1a2740,#6d7f99 66%,#d5deea)}
+.stage.look-neutral{--tee:#3f8f86;--tee-d:#2c6b64;--shirt:#f7f4ee;--shirt-d:#e3ddd2;--hoodie:#5d6d8e;--hoodie-d:#45516e;--jacket:#8b978f;--jacket-d:#66716b;--coat:#3c4d64;--coat-d:#2a384b;--parka:#2d3f52;--parka-d:#1c2a38;--fur:#f3eadf;--rain:#e0b03a;--rain-d:#b88822;--wind:#d7e6ee;--wind-d:#b5c8d2;--denim:#3c4d6e;--denim-d:#2a3854;--pants:#4a4452;--shorts:#2f7384;--glove:#3e4654;--scarf:#d08a56;--hat:#3f6f86;--accent:#e07a4c;--hair:#5a3d32;--hair-d:#3a271f;--hair-hi:#8d624c}
+.stage.look-men{--tee:#3a6ea5;--tee-d:#2a527c;--shirt:#eef3f8;--shirt-d:#d5dee8;--hoodie:#3e5270;--hoodie-d:#2c3b54;--jacket:#667887;--jacket-d:#4c5b68;--coat:#2e3f54;--coat-d:#1e2b3b;--parka:#243446;--parka-d:#162230;--shorts:#2c4f78;--scarf:#2f4f73;--hat:#2f4f73;--hair:#2c241f;--hair-d:#1a1512;--hair-hi:#5a4638;--accent:#d86a3a}
+.stage.look-women{--tee:#e38b9a;--tee-d:#c46d7e;--shirt:#fbf3f4;--shirt-d:#f0dfe3;--hoodie:#8d6a86;--hoodie-d:#6d4e68;--jacket:#c98b9c;--jacket-d:#a86d7e;--coat:#6d4c62;--coat-d:#513648;--parka:#5c4158;--parka-d:#3e2c3c;--shorts:#c96b86;--scarf:#d46b7e;--hat:#b85c78;--hair:#7a4636;--hair-d:#4e2c22;--hair-hi:#c4896a;--accent:#e7b23c}
+.ink{stroke:#2b2623;stroke-width:2.15;stroke-linejoin:round;stroke-linecap:round}
+.thin{fill:none;stroke:#2b2623;stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round}
+.seam{fill:none;stroke:#2b2623;stroke-width:1.2;stroke-linecap:round;opacity:.35}
+.shade{fill:#000;opacity:.12;stroke:none}.shine{fill:#fff;opacity:.28;stroke:none}
+.skin{fill:#f6c7aa}.skin-d{fill:#e7ae90}.blush{fill:#f0a090;opacity:.55;stroke:none}
+.part{opacity:0;transform:translateY(8px);transition:opacity .55s ease,transform .55s ease}
+.hair{opacity:0;transition:opacity .55s ease}
+.stage.show-tee .part-tee,.stage.show-shirt .part-shirt,.stage.show-hoodie .part-hoodie,.stage.show-jacket .part-jacket,.stage.show-coat .part-coat,.stage.show-parka .part-parka,.stage.show-rain .part-rain,.stage.show-wind .part-wind,.stage.show-shorts .part-shorts,.stage.show-jeans .part-jeans,.stage.show-warmpants .part-warmpants,.stage.show-sneakers .part-sneakers,.stage.show-boots .part-boots,.stage.show-rainboots .part-rainboots,.stage.show-snowboots .part-snowboots,.stage.show-gloves .part-gloves,.stage.show-scarf .part-scarf,.stage.show-hat .part-hat,.stage.show-sunglasses .part-sunglasses,.stage.show-umbrella .part-umbrella{opacity:1;transform:translateY(0)}
+.stage.look-neutral .hair-neutral,.stage.look-men .hair-men,.stage.look-women .hair-women{opacity:1}
+.cut-men,.cut-women,.cut-neutral{display:none}
+.stage.look-men .cut-men,.stage.look-women .cut-women,.stage.look-neutral .cut-neutral{display:inline}
+.fx{opacity:0;transition:opacity .4s ease}
+.sky-sun .sun,.sky-partly .sun,.sky-partly .clouds,.sky-cloud .clouds,.sky-rain .clouds,.sky-rain .drops,.sky-snow .clouds,.sky-snow .flakes,.sky-night .stars,.sky-night .moon{opacity:1}
+.stage.wind-1 .gusts,.stage.wind-2 .gusts{opacity:.8}
+#fig{transform-box:view-box;transform-origin:180px 575px;animation:breathe 4.4s ease-in-out infinite}
+.sway{transform-box:view-box}
+.sway-hair{transform-origin:180px 70px}.sway-scarf{transform-origin:180px 175px}.sway-hem{transform-origin:180px 300px}.sway-back{transform-origin:160px 120px}
+.stage.wind-1 .sway-hair,.stage.wind-1 .sway-back{animation:swayA 2.8s ease-in-out infinite}
+.stage.wind-1 .sway-scarf,.stage.wind-1 .sway-hem{animation:swayA 2.4s ease-in-out infinite}
+.stage.wind-2 .sway-hair,.stage.wind-2 .sway-back{animation:swayB 1.45s ease-in-out infinite}
+.stage.wind-2 .sway-scarf,.stage.wind-2 .sway-hem{animation:swayB 1.25s ease-in-out infinite}
+.lid{transform-box:fill-box;transform-origin:center top;animation:blink 6.2s infinite}
+.drops path{animation:fall 1.35s linear infinite}.drops path:nth-child(odd){animation-duration:1.6s}
+.flakes path{animation:snowfall 4.4s linear infinite}
+.flakes path:nth-child(2){animation-delay:-.7s}.flakes path:nth-child(3){animation-delay:-1.5s}.flakes path:nth-child(4){animation-delay:-2.3s}.flakes path:nth-child(5){animation-delay:-3.1s}.flakes path:nth-child(6){animation-delay:-1.1s}
+.gusts path{animation:blow 1.8s linear infinite}
+@keyframes breathe{0%,100%{transform:scale(1,1)}50%{transform:scale(1.01,1.016)}}
+@keyframes swayA{0%,100%{transform:rotate(-1.6deg)}50%{transform:rotate(2.4deg)}}
+@keyframes swayB{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(5.5deg)}}
+@keyframes blink{0%,88%,100%{transform:scaleY(.06)}91%,95%{transform:scaleY(1)}93%{transform:scaleY(.12)}}
+@keyframes fall{0%{transform:translateY(-20px);opacity:0}18%{opacity:.9}100%{transform:translateY(560px);opacity:.15}}
+@keyframes snowfall{0%{transform:translateY(-16px);opacity:0}15%{opacity:1}100%{transform:translate(12px,520px);opacity:.2}}
+@keyframes blow{0%{transform:translateX(-16px);opacity:0}20%{opacity:.7}100%{transform:translateX(40px);opacity:0}}
+@media(prefers-reduced-motion:reduce){.stage *,#fig,.sway,.lid,.drops path,.flakes path,.gusts path{animation:none !important;transition:none !important}}
 .strip{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px}.h{min-width:70px;text-align:center;background:#ffffff1a;border-radius:12px;padding:8px}
 .day{display:grid;grid-template-columns:90px 40px 90px 1fr;gap:8px;align-items:center;padding:10px 8px;border-bottom:1px solid #ffffff22;border-radius:12px;cursor:pointer;text-align:left;width:100%}
 .day:last-child{border-bottom:0}.day:hover,.day:focus-visible{background:#ffffff18;outline:none}.day.sel{background:#ffffff33;box-shadow:inset 0 0 0 2px #fff}
-@media(max-width:640px){.day{grid-template-columns:70px 30px 80px}.day .ol{grid-column:1/-1;font-size:.9rem}}
-small,.muted{opacity:.8}.err{color:#ffd2d2}.note{display:block;margin-top:6px}
+@media(max-width:640px){.day{grid-template-columns:70px 30px 80px}.day .ol{grid-column:1/-1;font-size:.9rem}.big{font-size:3rem}}
+small,.muted{opacity:.85}.err{color:#ffd2d2}.note{display:block;margin-top:6px;line-height:1.35}
 </style></head><body><div class="wrap">
 <h1>🌤️ Weather & What to Wear</h1>
-<div class="bar"><input id="q" placeholder="Search a city…"><button id="go">Search</button><button id="loc">📍 Use my location</button></div>
+<div class="bar"><input id="q" placeholder="Search a city…" autocomplete="off"><button id="go">Search</button><button id="loc">📍 Use my location</button></div>
 <div class="bar" id="styles"><button data-s="men">Men's</button><button data-s="women">Women's</button><button data-s="neutral" class="on">Neutral</button></div>
 <div id="msg" class="muted"></div>
-<div class="card now"><div><div id="place" style="font-size:1.2rem">Loading…</div><div class="big" id="temp">--</div><div id="desc"></div>
+<div class="card now"><div><div id="place" style="font-size:1.15rem">Loading…</div><div class="big" id="temp">--</div><div id="desc"></div>
 <div class="stats" id="stats"></div></div>
 <div class="outfit"><h3 id="wear-title">👕 Wear right now</h3>
-<div class="stage look-neutral sky-sun show-tee show-shorts show-sneakers" id="stage">
-<svg id="person" viewBox="0 0 240 330" role="img" aria-label="Character dressed for the weather">
-<g class="bg">
-  <g class="sun"><circle class="ball" cx="188" cy="52" r="18" fill="#ffe36b"/><g stroke="#ffe36b" stroke-width="4" stroke-linecap="round"><line x1="188" y1="22" x2="188" y2="30"/><line x1="188" y1="74" x2="188" y2="82"/><line x1="158" y1="52" x2="166" y2="52"/><line x1="210" y1="52" x2="218" y2="52"/><line x1="166" y1="30" x2="172" y2="36"/><line x1="204" y1="68" x2="210" y2="74"/><line x1="166" y1="74" x2="172" y2="68"/><line x1="204" y1="36" x2="210" y2="30"/></g></g>
-  <g class="moon"><circle cx="186" cy="54" r="16" fill="#f4f1c8"/><circle cx="178" cy="48" r="12" fill="#243b6b"/></g>
-  <g class="stars"><circle cx="40" cy="36" r="1.6"/><circle cx="70" cy="58" r="1.2"/><circle cx="108" cy="28" r="1.8"/><circle cx="146" cy="48" r="1.3"/><circle cx="48" cy="88" r="1.1"/><circle cx="210" cy="96" r="1.4"/></g>
-  <g class="clouds" fill="#fff"><g><ellipse cx="62" cy="58" rx="26" ry="14"/><ellipse cx="86" cy="54" rx="20" ry="16"/><ellipse cx="104" cy="60" rx="18" ry="12"/></g><g><ellipse cx="150" cy="86" rx="22" ry="12"/><ellipse cx="172" cy="82" rx="16" ry="12"/></g></g>
-  <g class="rain"><line x1="24" y1="8" x2="18" y2="26"/><line x1="58" y1="0" x2="52" y2="18"/><line x1="92" y1="12" x2="86" y2="30"/><line x1="126" y1="4" x2="120" y2="22"/><line x1="160" y1="14" x2="154" y2="32"/><line x1="196" y1="2" x2="190" y2="20"/><line x1="220" y1="18" x2="214" y2="36"/><line x1="40" y1="28" x2="34" y2="46"/></g>
-  <g class="snow"><circle cx="36" cy="20" r="3"/><circle cx="78" cy="8" r="2.2"/><circle cx="120" cy="24" r="2.6"/><circle cx="168" cy="12" r="3"/><circle cx="206" cy="28" r="2"/><circle cx="54" cy="40" r="1.8"/><circle cx="146" cy="36" r="2.4"/></g>
+<div class="stage look-neutral sky-sun show-tee show-shorts show-sneakers show-sunglasses" id="stage">
+<svg id="avatar" data-character="v2" viewBox="0 0 360 620" role="img" aria-label="Character dressed for the weather">
+<g class="fx sun" fill="#ffe38a">
+  <path d="M292 36c14 0 26 12 26 26s-12 26-26 26-26-12-26-26 12-26 26-26z"/>
+  <path class="shine" d="M286 46c6-2 14 0 16 6 2 8-6 12-12 8-6-2-8-10-4-14z"/>
+  <g stroke="#ffe38a" stroke-width="4" stroke-linecap="round" fill="none"><path d="M292 18v10M292 80v10M266 62h10M308 62h12M272 40l7 7M306 76l7 7M272 84l7-7M306 48l7-7"/></g>
 </g>
-<ellipse class="ground" cx="120" cy="312" rx="52" ry="8"/>
-<g class="hair hair-women"><path d="M88 108 C58 136 62 178 88 184 C104 164 100 136 112 118" fill="#a8643c"/><path d="M152 108 C182 136 178 178 152 184 C136 164 140 136 128 118" fill="#a8643c"/></g>
-<g class="hair hair-neutral"><path d="M84 104 Q74 156 106 164 Q120 170 134 164 Q166 156 156 104 Q152 52 120 48 Q88 52 84 104" fill="#6b4634"/></g>
-<ellipse class="skin" cx="80" cy="98" rx="7" ry="9"/><ellipse class="skin" cx="160" cy="98" rx="7" ry="9"/>
-<rect class="skin" x="58" y="142" width="22" height="72" rx="11"/><rect class="skin" x="160" y="142" width="22" height="72" rx="11"/>
-<rect class="skin" x="98" y="208" width="18" height="70" rx="9"/><rect class="skin" x="124" y="208" width="18" height="70" rx="9"/>
-<g class="part part-shorts" fill="var(--short)">
-  <g class="only-men"><rect x="92" y="204" width="24" height="40" rx="7"/><rect x="124" y="204" width="24" height="40" rx="7"/></g>
-  <g class="only-women"><rect x="94" y="204" width="22" height="38" rx="9"/><rect x="124" y="204" width="22" height="38" rx="9"/></g>
-  <g class="only-neutral"><rect x="94" y="204" width="22" height="38" rx="8"/><rect x="124" y="204" width="22" height="38" rx="8"/></g>
+<g class="fx moon"><path fill="#f6f1c8" d="M300 40c12 2 20 14 18 26-8 2-18-2-24-10-6-10-4-18 6-16z"/><path fill="#243864" d="M292 46c8 0 14 6 14 8-8 4-16 2-20-4 0-4 2-4 6-4z"/></g>
+<g class="fx stars" fill="#fff"><path d="M48 40l1.4 3.2 3.2 1.4-3.2 1.4-1.4 3.2-1.4-3.2-3.2-1.4 3.2-1.4z"/><path d="M86 62l1 2.4 2.4 1-2.4 1-1 2.4-1-2.4-2.4-1 2.4-1z"/><path d="M130 34l1.2 2.6 2.6 1.2-2.6 1.2-1.2 2.6-1.2-2.6-2.6-1.2 2.6-1.2z"/><path d="M214 48l1 2.2 2.2 1-2.2 1-1 2.2-1-2.2-2.2-1 2.2-1z"/><path d="M250 28l1.3 2.8 2.8 1.3-2.8 1.3-1.3 2.8-1.3-2.8-2.8-1.3 2.8-1.3z"/></g>
+<g class="fx clouds" fill="#fff"><path d="M46 70c-12 0-18 8-16 16 2 6 10 8 16 6 2 10 16 14 26 8 8 8 22 6 28-2 10 2 20-6 16-16-2-12-16-16-26-10-6-10-22-12-28-2-4-2-10 0-16 0z"/><path opacity=".9" d="M210 96c-8 0-14 6-12 12 6 8 18 8 24 2 6 6 16 4 18-4 2-8-6-14-14-12-4-6-12-4-16 2z"/></g>
+<g class="fx drops" fill="#e7f6ff" stroke="#d5eeff" stroke-width="1"><path d="M30 20c2 8-2 14-6 18 6-2 10 2 8 8-6-8-8-18-2-26z"/><path d="M70 8c2 8-2 14-6 18 6-2 10 2 8 8-6-8-8-18-2-26z"/><path d="M112 24c2 8-2 14-6 18 6-2 10 2 8 8-6-8-8-18-2-26z"/><path d="M168 6c2 8-2 14-6 18 6-2 10 2 8 8-6-8-8-18-2-26z"/><path d="M220 18c2 8-2 14-6 18 6-2 10 2 8 8-6-8-8-18-2-26z"/><path d="M268 4c2 8-2 14-6 18 6-2 10 2 8 8-6-8-8-18-2-26z"/><path d="M318 22c2 8-2 14-6 18 6-2 10 2 8 8-6-8-8-18-2-26z"/></g>
+<g class="fx flakes" fill="#fff" stroke="#7f9cb6" stroke-width="1"><path d="M40 30l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/><path d="M96 16l1.6 4.5 4.5 1.6-4.5 1.6-1.6 4.5-1.6-4.5-4.5-1.6 4.5-1.6z"/><path d="M150 36l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><path d="M230 18l1.5 4 4 1.5-4 1.5-1.5 4-1.5-4-4-1.5 4-1.5z"/><path d="M300 40l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><path d="M188 8l1.4 3.6 3.6 1.4-3.6 1.4-1.4 3.6-1.4-3.6-3.6-1.4 3.6-1.4z"/></g>
+<g class="fx gusts" fill="none" stroke="#ffffffcc" stroke-width="2" stroke-linecap="round"><path d="M18 250c28-8 40 8 62 0"/><path d="M10 300c36-10 48 10 78 0"/><path d="M24 430c30-6 36 8 58 0"/></g>
+<path fill="#000" opacity=".16" d="M92 566c28-16 148-18 186 2 18 10-20 26-96 24-70-2-112-12-90-26z"/>
+
+<g id="fig">
+  <!-- back hair -->
+  <g class="hair hair-women sway-back"><path fill="var(--hair)" d="M132 118c-28 28-36 78-18 124 10-22 14-58 28-86 6-16 4-28-10-38z"/><path fill="var(--hair-d)" d="M228 114c30 30 38 82 16 130-12-24-14-62-30-90-8-16-2-30 14-40z"/><path class="shine" d="M146 132c-8 20-8 46 2 70 6-20 8-40 4-58-2-6-4-10-6-12z"/></g>
+  <g class="hair hair-neutral"><path fill="var(--hair)" d="M140 108c-6 24-2 52 14 66 4-20 2-40-2-54 8 8 14 6 16-2-10-8-22-12-28-10z"/><path fill="var(--hair)" d="M220 104c8 26 2 56-16 70-2-22 0-44 6-60-8 6-16 4-18-4 8-8 20-10 28-6z"/></g>
+
+  <!-- legs -->
+  <path class="skin ink" d="M148 318c-16 22-28 64-30 104-2 28 2 52 8 74 4 12 16 16 26 8 8-10 8-28 6-46 0-36 8-78 18-112 6-20 2-36-8-40-8-4-14-2-20 12z"/>
+  <path class="skin ink" d="M198 324c16 20 36 52 42 90 6 32 8 58 14 74 6 12 24 14 28 2 2-12-8-28-14-46-8-36-18-74-32-104-8-16-22-24-32-22-4 0-6 2-6 6z"/>
+  <path class="shade" d="M156 340c-8 30-12 70-8 110 8-28 10-70 14-100 2-16-2-22-6-10z"/>
+  <path class="shine" d="M210 350c8 28 14 60 12 96-6-30-10-62-16-90-2-8 2-12 4-6z"/>
+
+  <!-- shorts: three cuts -->
+  <g class="part part-shorts">
+    <path class="ink cut-neutral" fill="var(--shorts)" d="M132 308c-6 16-8 36-2 52 10 8 28 6 36-2 4-12 6-8 10-2 6 8 26 12 38 2 8-16 6-38-2-54-14-8-64-8-80 4z"/>
+    <path class="ink cut-men" fill="var(--shorts)" d="M126 304c-4 22-2 48 6 66 12 8 30 4 38-6 2-14 8-12 14-4 8 10 28 12 40 2 10-18 8-46 2-66-16-10-80-8-100 8z"/>
+    <path class="ink cut-women" fill="var(--shorts)" d="M138 312c-8 12-10 28-2 42 12 10 26 4 32-4 4-8 8-6 12-2 8 8 24 10 34 0 8-14 4-32-4-44-16-8-58-6-72 8z"/>
+    <path class="seam cut-neutral" d="M150 318c2 20 4 36 2 48M210 318c-2 20-4 36-2 48"/>
+    <path class="seam cut-men" d="M146 314c2 24 6 44 4 58M214 314c-2 24-6 44-4 58"/>
+    <path class="shine cut-neutral" d="M148 314c-2 16 0 28 4 36 4-12 4-24 2-36-2-2-4-2-6 0z"/>
+  </g>
+
+  <!-- jeans -->
+  <g class="part part-jeans">
+    <path class="ink" fill="var(--denim)" d="M140 306c-14 24-26 70-26 118-1 28 4 52 12 70 6 8 18 6 22-2 4-16 2-40-2-64 2-36 12-86 24-118 4-8-8-16-18-12-4 2-8 4-12 8z"/>
+    <path class="ink" fill="var(--denim)" d="M196 310c14 22 34 66 38 112 4 28 2 54 10 70 6 10 20 8 22-2 0-18-10-40-14-64-6-40-20-90-36-118-6-8-16-10-20 2z"/>
+    <path class="shade" d="M150 330c-8 40-10 90-4 140 8-40 10-90 12-130-2-6-6-10-8-10z"/>
+    <path class="shine" d="M214 336c8 36 10 80 6 130-8-44-12-90-16-124 2-4 6-8 10-6z"/>
+    <path class="seam" d="M158 324c-2 40-4 90 0 140M214 328c4 40 6 86 2 132"/>
+    <path class="seam" d="M168 318c10 6 18 6 26 0"/>
+    <path class="thin" d="M152 348c8 2 14 0 16-6" opacity=".45"/>
+  </g>
+
+  <!-- warm pants -->
+  <g class="part part-warmpants">
+    <path class="ink" fill="var(--pants)" d="M136 304c-12 26-22 72-20 122 2 32 8 56 16 72 8 8 20 4 22-6 2-20-2-46-4-70 0-36 10-88 22-120 2-8-12-16-24-10-4 2-8 6-12 12z"/>
+    <path class="ink" fill="var(--pants)" d="M198 308c16 24 32 70 36 118 4 30 2 56 12 72 8 10 22 6 22-6-2-22-12-46-16-72-4-40-16-92-32-118-6-8-16-8-22 6z"/>
+    <path class="shade" d="M148 328c-6 46-6 100 2 146 8-46 8-100 4-140-2-4-4-6-6-6z"/>
+    <path class="seam" d="M156 320c-2 50 0 110 4 150M218 324c4 48 6 104 2 146"/>
+    <path fill="#000" opacity=".18" d="M132 486c2 10 20 14 28 6 2-8-2-16-10-16-8 0-16 4-18 10z"/>
+    <path fill="#000" opacity=".18" d="M214 492c4 10 22 12 28 4 2-8-4-16-14-14-6 0-12 4-14 10z"/>
+  </g>
+
+  <!-- sneakers -->
+  <g class="part part-sneakers">
+    <path class="ink" fill="#f4f1ec" d="M112 528c-8 6-14 18-8 28 4 8 20 14 40 12 16-2 28-2 34-12 4-10-2-20-10-24-12-6-28-10-40-8-6 0-12 2-16 4z"/>
+    <path class="ink" fill="#f4f1ec" d="M214 524c6 2 28 2 40 10 10 6 16 16 10 26-6 8-20 12-36 10-18-2-32-8-36-18-4-10 2-22 12-26 4-2 6-2 10-2z"/>
+    <path fill="#2b2623" d="M108 550c2 8 16 14 36 12 16-2 30 0 38-8-10 6-28 8-46 4-12-2-24-4-28-8z"/>
+    <path fill="#2b2623" d="M214 552c6 8 22 12 40 8 8-2 16-6 16-10-8 6-24 8-40 4-8-2-14-2-16-2z"/>
+    <path fill="var(--accent)" d="M124 536c10-2 22-2 30 2 2 6-8 10-18 10-8 0-14-4-12-12z"/>
+    <path fill="var(--accent)" d="M236 534c12 0 22 4 26 8-2 6-14 8-24 6-8-2-10-8-2-14z"/>
+    <path class="thin" d="M132 534c4 4 8 4 12 0M140 540c4 3 8 3 12 0M230 536c6 3 10 3 14 0M238 542c5 3 9 3 13 0"/>
+  </g>
+
+  <!-- leather boots -->
+  <g class="part part-boots">
+    <path class="ink" fill="#6b4632" d="M118 470c-6 18-8 40-4 62-2 16 4 28 18 34 16 6 36 4 46-6 6-8 4-18 0-28-2-20 2-40 4-58 0-10-14-16-28-14-14 2-28 4-36 10z"/>
+    <path class="ink" fill="#6b4632" d="M214 474c8 16 18 36 22 58 4 16 16 26 32 24 12-2 18-12 14-24-4-20-2-42 2-62 2-10-10-16-24-16-16 0-34 6-46 20z"/>
+    <path class="shine" d="M132 484c-2 20 0 40 4 58 6-18 6-40 2-58-2-2-4-2-6 0z"/>
+    <path fill="#3e2a1e" d="M116 552c4 10 20 16 40 12 10-2 22-2 28-10-12 6-30 8-48 2-8-2-16-2-20-4z"/>
+    <path fill="#3e2a1e" d="M220 554c8 10 24 14 42 8 6-2 12-8 8-12-12 6-28 6-40 2-4-2-8 0-10 2z"/>
+    <path class="seam" d="M140 488c2 24 4 40 2 58M236 492c4 22 6 40 2 56"/>
+  </g>
+
+  <!-- rain boots -->
+  <g class="part part-rainboots">
+    <path class="ink" fill="#2f4f49" d="M116 456c-8 22-10 48-4 74 2 16 12 28 28 32 18 4 38 0 46-12 4-10 2-20-2-32-2-22 2-48 6-70 2-12-16-20-32-16-16 2-32 8-42 24z"/>
+    <path class="ink" fill="#2f4f49" d="M210 460c10 20 20 46 24 72 4 16 18 26 34 22 12-4 16-16 10-28-6-22-4-48 0-72 2-12-14-20-30-16-16 2-30 8-38 22z"/>
+    <path class="shine" d="M132 470c-2 24 0 48 6 70 8-22 8-48 4-72-4-2-8-2-10 2z"/>
+    <path class="shine" d="M228 476c6 22 8 46 4 68-6-22-8-46-10-66 2-2 4-2 6-2z"/>
+    <path fill="#1c3330" d="M114 548c6 12 24 18 46 12 12-4 24-6 30-16-16 8-38 10-56 4-8-2-16-2-20 0z"/>
+    <path fill="#1c3330" d="M214 552c10 12 28 16 46 8 4-4 6-10 2-14-14 8-32 8-46 2-2 0-2 2-2 4z"/>
+  </g>
+
+  <!-- snow boots -->
+  <g class="part part-snowboots">
+    <path class="ink" fill="#4d4038" d="M112 448c-10 24-12 52-4 80 4 16 16 30 34 34 20 4 42-2 50-16 4-12 2-22-2-34-4-24 0-50 6-74 2-14-18-24-36-18-18 4-36 10-48 28z"/>
+    <path class="ink" fill="#4d4038" d="M206 452c12 22 22 50 26 78 4 18 20 28 38 24 12-4 16-16 10-30-8-24-6-52 0-78 2-14-16-22-34-16-18 4-32 8-40 22z"/>
+    <path fill="#f3eadf" d="M124 448c4-10 20-16 34-12 12 2 22 0 28-8-8 10-22 14-36 12-10-2-20-2-26 8z"/>
+    <path fill="#f3eadf" d="M214 450c8-8 22-12 36-8 10 4 18 2 24-6-10 10-24 12-36 8-10-2-18-2-24 6z"/>
+    <path fill="#2c241e" d="M112 548c8 14 28 20 50 14 14-4 28-8 34-18-18 10-42 12-62 4-8-2-16-2-22 0z"/>
+    <path fill="#2c241e" d="M210 552c12 14 32 16 50 8 6-4 8-10 4-14-16 8-36 8-50 2-2 0-4 2-4 4z"/>
+    <path class="seam" d="M140 470c2 28 4 50 0 74M236 474c4 26 6 50 2 72"/>
+  </g>
+
+  <!-- torso anchor is under shirts; neck drawn with the head -->
+
+  <!-- tees -->
+  <g class="part part-tee">
+    <path class="ink cut-neutral" fill="var(--tee)" d="M122 196c-16 10-26 28-18 46 6 10 20 12 26 2 4-12 8-20 14-24 6 4 16 16 20 28 2 8 8 10 14 4 10-20 8-36-4-48-16-10-36-12-52-8z"/>
+    <path class="ink cut-neutral" fill="var(--tee)" d="M132 188c-6 8-4 20 2 28 14 6 36 8 52 4 8-12 8-24 0-32-16-8-40-8-54 0z"/>
+    <path class="ink cut-men" fill="var(--tee)" d="M114 192c-14 12-22 34-12 52 8 12 24 12 30 0 4-14 10-22 18-24 8 6 18 16 24 32 4 8 12 8 16 0 12-22 8-42-8-54-20-12-48-12-68-6z"/>
+    <path class="ink cut-women" fill="var(--tee)" d="M128 198c-14 8-22 26-16 42 6 10 18 12 24 2 6-12 12-20 20-22 8 2 16 12 22 26 4 8 12 8 14 0 8-18 6-36-8-46-18-12-40-12-56-2z"/>
+    <path class="shade" d="M196 196c16 12 22 36 12 60-10-8-16-30-18-48-2-10 2-16 6-12z"/>
+    <path class="shine" d="M146 204c-6 16-4 32 2 44 6-14 8-30 4-44-2-2-4-2-6 0z"/>
+    <path class="seam" d="M150 214c2 28 4 46 0 64M210 214c-2 28-4 46 0 64"/>
+    <path fill="var(--tee-d)" d="M158 186c6 12 18 16 28 12 8-4 14-2 16 4-10 2-24 0-32-8-6-6-10-8-12-8z"/>
+  </g>
+
+  <!-- casual shirt -->
+  <g class="part part-shirt">
+    <path class="ink" fill="var(--shirt)" d="M116 190c-18 14-24 40-12 60 8 12 22 10 28-2 4-16 12-26 22-28 8 4 16 16 22 32 4 10 14 10 18 0 14-24 10-48-8-62-22-14-50-14-70 0z"/>
+    <path class="ink" fill="var(--shirt)" d="M148 176c2 16 14 26 32 26s30-10 32-26c-8 8-20 12-32 12s-24-4-32-12z"/>
+    <path fill="var(--shirt-d)" d="M168 196c4 36 4 58 0 78 6-2 10-2 14 0 2-22 2-48 0-78-4 2-10 2-14 0z"/>
+    <path class="shade" d="M204 198c14 16 16 40 8 64-8-16-10-40-12-58 0-4 2-8 4-6z"/>
+    <path class="shine" d="M140 206c-4 18-2 36 4 50 4-16 6-34 2-50-2-2-4-2-6 0z"/>
+    <path class="thin" d="M176 214v18M176 240v16"/>
+    <path fill="#2b2623" d="M174 212h6c1 2 1 4 0 6h-6c-1-2-1-4 0-6zM174 238h6c1 2 1 4 0 6h-6c-1-2-1-4 0-6z"/>
+    <path class="ink cut-men" fill="var(--shirt-d)" d="M196 214c10 2 16 10 14 16-8 2-16-2-18-8 0-4 1-8 4-8z"/>
+    <path class="seam" d="M150 208c4 30 6 52 2 74M214 208c-4 30-6 52-2 74"/>
+  </g>
+
+  <!-- hoodie, hood behind where the head will sit -->
+  <g class="part part-hoodie">
+    <path fill="var(--hoodie-d)" d="M138 168c-16 8-24 28-18 46 8 4 24-2 34-12 10-16 28-22 48-18 16 4 28 14 34 28 8-10 6-28-4-38-16-14-64-20-94-6z"/>
+    <path class="ink" fill="var(--hoodie)" d="M112 198c-20 16-26 46-10 68 10 12 24 8 30-4 6-18 16-30 28-32 10 4 20 16 28 34 6 12 18 14 24 2 16-24 12-52-8-68-24-16-64-16-92 0z"/>
+    <path fill="var(--hoodie-d)" d="M156 300c8 8 40 10 52 0-4 12-20 18-28 16-10-2-20-6-24-16z"/>
+    <path class="ink" fill="var(--hoodie-d)" d="M158 214c8 10 20 14 32 8 6-2 8 2 4 8-14 6-32 4-42-6-4-4-2-10 6-10z"/>
+    <path class="shade" d="M206 206c16 18 18 44 8 70-10-16-12-42-14-62 0-6 2-10 6-8z"/>
+    <path class="thin" d="M168 228c-2 18 0 8-6 36M196 226c2 16 4 10 8 34" stroke="var(--hoodie-d)"/>
+    <path fill="#d9d3c6" d="M170 232c2 16-2 22 2 34-2 2-6 0-6-4 0-12 2-22 0-32 1-2 3-2 4 2z"/>
+    <path fill="#d9d3c6" d="M190 232c0 16 2 22-2 34 3 2 7 0 6-4 0-12-2-22 0-32-1-2-3-1-4 2z"/>
+    <path class="seam" d="M150 250c16 10 44 12 62 0"/>
+  </g>
+
+  <!-- light jacket, open -->
+  <g class="part part-jacket">
+    <path class="ink cut-neutral" fill="var(--jacket)" d="M108 196c-16 18-18 46-4 66 8 10 18 8 22-2l10-28c-6 20-4 36 4 48 4 8 2 14-4 16-18 4-8 10 2 10 16-2 8-18 2-34-8-22-6-40 4-54 8-10 2-22-8-24-14-4-22 0-28 2z"/>
+    <path class="ink cut-neutral" fill="var(--jacket)" d="M250 194c16 16 20 44 6 66-8 12-20 10-24-2l-8-26c8 22 6 38-2 50-6 8-2 16 6 16 16 2 10 12-2 10-18-4-8-20 0-36 8-20 6-40-4-54-6-8-2-20 8-22 12-2 16-2 20 0z"/>
+    <path class="ink cut-men" fill="var(--jacket)" d="M102 192c-14 20-16 50 0 72 8 10 20 8 24-4l8-26c-8 22-4 40 6 52 6 6 2 14-6 14-16 2-6 12 6 10 14-4 6-22-2-38 10-22 6-44-2-58-8-12-4-24-10-26-14-2-16 2-24 4z"/>
+    <path class="ink cut-men" fill="var(--jacket)" d="M256 190c16 18 18 48 2 72-10 14-22 10-26-4l-6-24c8 24 4 42-4 54-8 8-2 16 8 14 18 0 8 12-4 10-16-6-8-24 0-42 10-24 4-46-6-60-8-10 0-22-8-24-12-4-18 0-26 2z"/>
+    <path class="ink cut-women" fill="var(--jacket)" d="M118 200c-16 14-16 40-2 58 6 8 16 6 18-2l6-20c-4 16-2 28 4 38 4 8 0 14-6 14-12 2-4 10 6 8 12-2 8-14 2-26-6-16-2-32 6-44 6-8 0-18-6-20-10-4-20 2-28 6z"/>
+    <path class="ink cut-women" fill="var(--jacket)" d="M242 198c14 14 16 38 4 56-8 10-18 8-20-2l-6-18c6 16 4 30-2 40-6 8-2 16 6 14 14 0 8 10-4 8-14-4-10-16-4-28 8-18 4-34-4-46-6-8-2-18 6-20 10-2 16-2 24-4z"/>
+    <path fill="var(--jacket-d)" d="M156 188c8 10 18 14 28 10 8-2 12 2 8 8-14 8-32 6-44-4-4-4-2-12 8-14z"/>
+    <path class="seam" d="M132 230c8 20 10 28 6 46M230 228c-8 20-10 30-6 48"/>
+  </g>
+
+  <!-- winter coat -->
+  <g class="part part-coat">
+    <path class="ink" fill="var(--coat)" d="M108 186c-22 20-26 58-8 92 6 20 4 40 14 58 8 14 4 22-6 24-16 4-4 14 10 12 22-2 16-16 14-32-2-28 4-52 16-74 8-16 4-30-2-42-10-16-6-36-16-36-22-2z"/>
+    <path fill="var(--coat-d)" d="M150 176c10 16 28 22 46 16 10-4 14 2 8 10-18 10-40 8-54-6-6-6-6-16 0-20z"/>
+    <path fill="#d7c4b4" d="M164 196c6 8 16 10 24 6 4-2 6 2 2 6-12 6-26 4-32-4-2-4 2-8 6-8z"/>
+    <path class="shade" d="M210 200c18 24 20 60 8 100-12-24-16-64-16-92 0-6 4-10 8-8z"/>
+    <path class="shine" d="M132 210c-6 28-4 60 4 88 8-28 8-60 2-88-2-4-4-4-6 0z"/>
+    <path class="thin" d="M180 214v70"/>
+    <path class="sway sway-hem" fill="var(--coat-d)" d="M124 332c10 10 28 8 36-2 6 12 24 16 36 6 8 12 26 12 34-2-20 16-70 16-106-2z"/>
+    <path class="seam" d="M148 236c-4 30-2 50 4 78M214 236c4 30 2 50-4 78"/>
+    <path fill="var(--coat-d)" d="M146 268c8 4 14 2 14-4 0-4-6-8-12-6-2 2-2 8-2 10zM206 266c8 2 12 6 8 10-6 2-14-2-16-8 0-2 4-4 8-2z"/>
+  </g>
+
+  <!-- heavy parka -->
+  <g class="part part-parka">
+    <path fill="var(--parka-d)" d="M126 150c-20 16-28 40-16 58 10 6 28-4 40-18 12-16 30-22 52-16 18 6 32 18 38 34 10-14 6-36-8-50-22-18-74-24-106-8z"/>
+    <path class="ink" fill="var(--parka)" d="M100 196c-24 22-28 64-6 104 8 22 6 46 18 66 10 16 6 26-8 28-18 4-2 16 14 14 24-2 18-20 16-40-2-34 6-64 20-90 10-18 6-34-2-48-12-18-8-40-20-40-26-2z"/>
+    <path fill="var(--fur)" d="M132 168c6 10 20 18 36 18 14 0 28-6 36-16-8 16-24 24-40 22-16-2-30-12-32-24z"/>
+    <path class="shade" d="M214 210c20 30 22 70 6 112-14-28-16-74-14-104 0-6 4-10 8-8z"/>
+    <path class="seam" d="M132 240h96M128 268h104M124 298h112M120 328h116"/>
+    <path class="thin" d="M180 220v120"/>
+    <path class="sway sway-hem" fill="var(--parka-d)" d="M112 360c16 14 36 10 48-4 8 16 32 20 46 4 12 16 34 14 46-4-28 22-110 22-140 4z"/>
+    <path fill="#c5ced6" d="M168 236c4 8 4 20 0 32 4 0 8-2 8-6 0-10-2-18 0-28-2-2-6-2-8 2z"/>
+  </g>
+
+  <!-- raincoat with hood behind the face -->
+  <g class="part part-rain">
+    <path fill="var(--rain-d)" d="M124 146c-24 18-30 46-14 66 12 8 32-2 46-18 14-18 34-24 56-16 18 6 30 20 36 36 12-16 8-42-10-56-26-20-78-28-114-12z"/>
+    <path class="ink" fill="var(--rain)" d="M104 198c-22 20-24 58-4 92 8 18 8 40 18 58 8 14 4 22-6 24-16 2-4 14 12 12 20-2 14-16 12-32-4-26 4-48 16-70 8-14 2-28-4-40-10-14-4-34-14-38-20-4z"/>
+    <path class="shine" d="M132 214c-8 30-4 64 6 92 10-28 10-62 2-92-2-4-6-4-8 0z"/>
+    <path class="shade" d="M214 208c18 26 20 64 8 102-12-26-14-66-14-94 0-6 2-10 6-8z"/>
+    <path fill="var(--rain-d)" d="M176 230c2 16 2 28 0 46 5 0 8-4 8-10 0-12-2-24 0-38-2-2-6-2-8 2z"/>
+    <path fill="#2b2623" d="M174 248h8c1 3 1 5 0 8h-8c-1-3-1-5 0-8zM174 276h8c1 3 1 5 0 8h-8c-1-3-1-5 0-8z"/>
+    <path class="sway sway-hem" fill="var(--rain-d)" d="M118 348c14 12 32 8 42-4 8 14 28 16 40 2 10 14 30 12 42-4-24 18-96 18-124 6z"/>
+    <path class="seam" d="M150 236c-2 36 0 60 6 90M214 236c2 36 0 60-6 90"/>
+  </g>
+
+  <!-- windbreaker, open shell -->
+  <g class="part part-wind">
+    <path class="ink" fill="var(--wind)" d="M110 196c-16 16-16 44-2 62 8 10 18 8 22-2l8-24c-6 18-2 34 6 46 6 8 2 14-4 16-14 2-6 12 6 10 14-2 8-16 2-30-8-18-4-36 6-50 8-10 2-20-8-22-12-2-18 2-26 2z"/>
+    <path class="ink" fill="var(--wind)" d="M250 194c16 16 18 42 4 62-8 12-18 10-22-2l-8-22c8 20 6 36-2 48-6 8-2 16 6 14 16 0 8 12-4 10-16-4-10-18-2-34 8-18 4-38-6-52-6-8-2-18 8-20 12-2 16-2 22-2z"/>
+    <path class="shine" d="M126 214c-4 16-2 28 2 40 4-12 4-26 2-40-2 0-3 0-4 0z"/>
+    <path class="sway sway-hem" fill="var(--wind-d)" d="M124 312c8 8 16 6 20-2 4 8 16 10 22 2 6 8 16 8 22 0-12 10-48 10-64 0z"/>
+    <path class="seam" d="M138 236c6 16 8 28 4 46M224 234c-6 16-8 28-4 46"/>
+  </g>
+
+  <!-- arms and hands -->
+  <path class="skin ink" d="M118 200c-18 18-30 48-24 82-4 22 2 42 12 58-8 8-14 20-8 30 6 10 20 12 28 4 6-8 4-16 0-24 10-8 16-28 14-46-2-28 4-62 16-90 6-12-8-24-22-18-6 2-12 4-16 4z"/>
+  <path class="skin ink" d="M242 198c18 16 32 46 28 80 2 22-2 42-8 58 10 6 16 18 10 28-8 10-22 10-30 0-4-8-2-16 4-22-12-10-18-30-16-50 2-30-2-64-14-92-6-12 8-22 20-16 2 2 4 8 6 14z"/>
+  <path class="skin ink" d="M96 366c-10 6-16 18-8 28 8 8 20 6 26-2 2-8-2-14-8-16 8-2 14 2 16 8 4 10 2 18-6 22-10 4-22 0-26-8-2-6 0-14 6-18-2-6-2-12 0-14z"/>
+  <path class="skin ink" d="M262 360c12 4 18 16 10 26-8 8-20 6-24-4-2-6 2-12 8-12-8 0-14 6-12 14 2 8 12 12 20 8 8-4 10-14 4-20-4-6-6-12-6-12z"/>
+  <path class="shade" d="M124 220c-8 24-8 50-2 74 6-22 8-48 6-72-2-2-3-2-4-2z"/>
+
+  <!-- short sleeves sit on the upper arm -->
+  <g class="part part-tee">
+    <path class="ink" fill="var(--tee)" d="M108 206c-10 14-12 30-2 40 8 6 16 2 18-6 2-12 6-20 12-26 4-8-6-16-16-12-4 2-8 2-12 4z"/>
+    <path class="ink" fill="var(--tee)" d="M250 204c12 12 14 28 4 40-8 8-18 4-20-6-2-12-8-22-14-28-4-8 6-16 18-12 4 2 8 4 12 6z"/>
+    <path fill="var(--tee-d)" d="M104 236c6 4 16 4 20-2-6 2-14 0-18-4 0-2 0 2-2 6z"/>
+  </g>
+  <g class="part part-shirt">
+    <path class="ink" fill="var(--shirt)" d="M104 204c-14 18-14 40 0 54 8 8 18 2 18-8 0-14 6-26 14-34 2-10-8-20-18-16-6 2-10 2-14 4z"/>
+    <path class="ink" fill="var(--shirt)" d="M254 202c14 16 16 38 2 54-8 10-18 4-18-8 0-16-6-28-14-36-4-8 6-18 16-14 6 2 10 2 14 4z"/>
+    <path fill="var(--shirt-d)" d="M108 246c8 4 16 2 16-4-6 2-12 2-16 0 0-2 0 2 0 4z"/>
+  </g>
+  <g class="part part-hoodie">
+    <path class="ink" fill="var(--hoodie)" d="M102 206c-16 22-16 52 0 74 8 10 18 4 16-6-2-16 2-32 10-46 6-12-4-28-16-24-4 2-8 2-10 2z"/>
+    <path class="ink" fill="var(--hoodie)" d="M256 204c16 20 18 50 2 74-8 12-18 6-18-6 0-18-4-34-12-48-6-12 4-26 16-22 4 0 8 0 12 2z"/>
+    <path fill="var(--hoodie-d)" d="M96 268c6 8 20 10 26 2-8 2-18 0-24-6 0-2 0 2-2 4z"/>
+    <path fill="var(--hoodie-d)" d="M250 270c8 6 18 6 24 0-6 4-16 4-22 0 0-2 0 0-2 0z"/>
+  </g>
+  <g class="part part-jacket">
+    <path class="ink" fill="var(--jacket)" d="M100 204c-16 22-14 50 2 70 8 8 16 2 14-6-2-14 2-30 10-44 4-10-6-24-16-20-4 2-8 0-10 0z"/>
+    <path class="ink" fill="var(--jacket)" d="M258 202c16 20 16 48 0 70-8 10-18 4-16-6 2-16-2-32-10-46-4-10 6-22 16-18 4 0 8 0 10 0z"/>
+  </g>
+  <g class="part part-coat">
+    <path class="ink" fill="var(--coat)" d="M98 202c-18 24-16 56 2 80 10 12 20 4 16-8-2-18 2-36 12-52 6-12-6-28-18-22-4 2-8 2-12 2z"/>
+    <path class="ink" fill="var(--coat)" d="M260 200c18 22 18 54 0 80-10 14-20 6-16-8 2-20-2-38-12-54-6-12 6-26 16-20 4 0 8 0 12 2z"/>
+    <path fill="var(--coat-d)" d="M94 268c8 8 20 8 24 0-8 4-18 2-22-4 0-2 0 2-2 4z"/>
+  </g>
+  <g class="part part-parka">
+    <path class="ink" fill="var(--parka)" d="M96 204c-20 26-16 60 4 86 12 14 22 4 16-8-4-20 0-40 12-58 6-12-8-30-20-24-4 2-8 2-12 4z"/>
+    <path class="ink" fill="var(--parka)" d="M262 202c20 24 18 58-2 86-12 16-22 6-16-8 4-22 0-42-12-60-6-12 8-28 18-22 4 2 8 2 12 4z"/>
+    <path class="seam" d="M90 236h28M92 258h30M246 234h28M244 256h30"/>
+  </g>
+  <g class="part part-rain">
+    <path class="ink" fill="var(--rain)" d="M100 206c-18 24-14 54 4 76 10 12 18 4 14-6-2-16 2-32 12-48 6-10-6-26-18-22-4 2-8 0-12 0z"/>
+    <path class="ink" fill="var(--rain)" d="M258 204c18 22 16 52-2 76-10 14-18 6-14-6 2-18-2-34-12-50-6-10 6-24 16-20 4 0 8 0 12 0z"/>
+    <path class="shine" d="M108 220c-4 18-2 32 2 46 4-14 4-30 0-46-1-2-2-2-2 0z"/>
+  </g>
+  <g class="part part-wind">
+    <path class="ink" fill="var(--wind)" d="M102 206c-16 20-12 44 2 60 8 8 16 2 12-6-2-12 2-24 10-36 4-8-4-20-14-16-4 0-8 0-10-2z"/>
+    <path class="ink" fill="var(--wind)" d="M256 204c16 18 14 42 0 60-8 10-16 4-14-6 2-14-2-26-10-38-4-8 6-18 14-14 4 0 8 0 10-2z"/>
+  </g>
+
+  <!-- gloves -->
+  <g class="part part-gloves">
+    <path class="ink" fill="var(--glove)" d="M90 360c-12 8-16 22-6 32 8 8 20 4 24-6 2-6-2-12-6-12 8 0 14 6 12 14 0 8-8 14-18 12-12-2-18-12-14-22 2-8 4-16 8-18z"/>
+    <path class="ink" fill="var(--glove)" d="M258 354c14 6 18 20 8 30-10 10-22 4-24-6-2-6 4-12 10-10-8 2-12 10-8 16 6 8 18 8 24 2 6-8 2-18-4-24-2-4-6-8-6-8z"/>
+    <path class="seam" d="M100 366c6 4 14 4 18 0M256 362c8 4 14 4 18 0"/>
+  </g>
+
+  <!-- head -->
+  <path class="skin" d="M124 118c2-8 6-12 10-8 2 4-2 12-6 14-4 2-6 0-4-6z"/>
+  <path class="skin" d="M236 116c-2-8-6-12-10-8-2 4 2 12 6 14 4 2 6 0 4-6z"/>
+  <path class="skin ink" d="M176 58c28-2 50 16 54 42 4 22-2 42-16 54-12 10-26 14-40 12-28-4-50-24-52-50-2-24 16-56 54-58z"/>
+  <path class="skin" d="M158 146c2 16 12 28 26 32 12 2 24-4 30-16 2-8-4-10-10-6-8 8-20 10-30 4-8-4-14-8-16-14z"/>
+  <path class="shade" d="M204 78c16 10 24 32 18 52-10-6-16-24-18-40-2-8-2-14 0-12z"/>
+  <path class="shine" d="M156 74c-4 16 0 28 8 36 2-16 0-28-4-38-2-2-4 0-4 2z"/>
+  <path class="blush" d="M146 118c-6 2-8 10-2 14 6 2 14-2 14-8 0-4-6-8-12-6z"/>
+  <path class="blush" d="M214 116c6 2 8 10 2 14-6 4-14 0-14-8 0-4 6-8 12-6z"/>
+  <path class="thin" d="M166 112c2 6 6 8 8 4"/>
+  <path class="ink" fill="none" d="M158 96c4-6 12-8 16-4"/>
+  <path class="ink" fill="none" d="M188 92c6-6 14-6 18-2"/>
+  <path class="cut-women thin" d="M156 98c6-2 14-2 18 2M188 96c6-2 14-1 18 3" stroke-width="2"/>
+  <!-- eyes -->
+  <path class="ink" fill="#fff" d="M150 104c4-8 16-9 22-2 4 6-2 12-10 12-8 0-14-4-12-10z"/>
+  <path class="ink" fill="#fff" d="M190 102c6-8 18-8 22 0 4 6-2 12-10 12-8 2-16-4-12-12z"/>
+  <path fill="#5c3a2e" d="M158 104c3-5 11-6 14-1 2 4-2 8-7 8-5 0-9-3-7-7z"/>
+  <path fill="#5c3a2e" d="M196 103c4-5 12-5 15 0 2 4-2 8-8 8-5 0-9-3-7-8z"/>
+  <path fill="#1b1412" d="M162 104c2-3 7-3 8 0 1 3-2 5-5 5-3 0-4-2-3-5z"/>
+  <path fill="#1b1412" d="M200 103c2-3 7-3 8 1 1 3-2 5-5 5-3 0-5-3-3-6z"/>
+  <path fill="#fff" d="M164 102c1-1 3-1 3 1 0 1-1 2-2 1-1-1-1-2-1-2z"/>
+  <path fill="#fff" d="M202 102c1-1 3-1 3 1 0 1-1 2-2 1-1 0-1-1-1-2z"/>
+  <path class="lid skin" d="M150 100c6-6 16-7 22-2 2 2-4 4-10 4-6 0-12-1-12-2z"/>
+  <path class="lid skin" d="M190 98c6-6 16-6 22-1 2 2-4 4-10 4-6 0-12 0-12-3z"/>
+  <!-- smile -->
+  <path fill="#e39189" d="M166 128c4 8 16 10 24 4 2-2-2-4-6-2-6 4-12 4-16 0-2-2-4-2-2-2z"/>
+  <path class="ink" fill="none" d="M164 126c6 8 18 10 28 2"/>
+
+  <!-- front hair -->
+  <g class="hair hair-neutral sway sway-hair">
+    <path fill="var(--hair)" d="M142 96c-4-28 16-46 40-46 26 0 42 16 40 40-6-16-18-24-34-22-14 2-28 8-36 20-4 4-8 8-10 8z"/>
+    <path fill="var(--hair-d)" d="M150 78c8-8 22-10 32-4-10 2-22 2-30 8-2-2-2-4-2-4z"/>
+    <path class="shine" d="M168 58c8-2 18 2 20 8-10-2-18-2-24-4 0-2 2-4 4-4z"/>
+    <path fill="var(--hair)" d="M136 104c-6 16-2 32 8 40 2-14 0-26-2-34 2-4 0-6-6-6z"/>
+    <path fill="var(--hair)" d="M222 100c8 16 6 34-6 44-2-16 0-28 2-38-2-4 0-6 4-6z"/>
+  </g>
+  <g class="hair hair-men sway sway-hair">
+    <path fill="var(--hair)" d="M150 92c-2-24 18-40 36-38 20 2 32 16 30 34-8-14-18-20-32-16-12 2-24 8-30 18-2 2-4 2-4 2z"/>
+    <path fill="var(--hair)" d="M168 52c6-8 16-6 18 2-8 0-14 2-18 6 0-2 0-6 0-8z"/>
+    <path class="shine" d="M176 60c6 0 12 4 12 8-8-2-12-4-16-6 0-2 2-2 4-2z"/>
+    <path fill="var(--hair-d)" d="M140 108c-2 10 2 16 8 16 0-8 0-12-2-16-2-2-4-2-6 0z"/>
+    <path fill="var(--hair-d)" d="M220 106c4 8 8 14 2 18-2-8-2-14-4-16 0-2 1-2 2-2z"/>
+  </g>
+  <g class="hair hair-women sway sway-hair">
+    <path fill="var(--hair)" d="M138 100c-2-30 18-50 42-50 28 0 46 18 44 44-8-18-22-28-40-26-16 2-30 12-38 28-4 6-6 6-8 4z"/>
+    <path fill="var(--hair)" d="M128 112c-10 28-6 58 10 78 6-20 6-44 0-64 4-8 2-14-10-14z"/>
+    <path fill="var(--hair)" d="M230 108c12 26 10 58-8 80-6-22-4-48 2-68-2-8 2-12 6-12z"/>
+    <path class="shine" d="M166 58c10-4 24 0 28 10-12-2-22-2-30-6 0-2 0-4 2-4z"/>
+    <path fill="var(--hair-hi)" opacity=".35" d="M176 64c8 8 10 20 4 28-6-8-8-18-8-26 0-2 2-2 4-2z"/>
+  </g>
+
+  <!-- scarf -->
+  <g class="part part-scarf">
+    <path class="ink" fill="var(--scarf)" d="M146 156c4 14 22 22 40 18 14-4 24-2 30 8-12 8-30 8-44 0-12-6-22-8-26-18 0-4 0-8 0-8z"/>
+    <g class="sway sway-scarf">
+      <path class="ink" fill="var(--scarf)" d="M196 176c6 20 2 40 8 62 4 12-6 16-12 8-8-16-10-36-8-56 0-6 6-14 12-14z"/>
+      <path class="seam" d="M200 190c2 16 2 28 4 42"/>
+      <path fill="var(--scarf)" stroke="#2b2623" stroke-width="1.4" d="M196 242l6 8 6-10-4 12h-8z"/>
+    </g>
+  </g>
+
+  <!-- winter hat -->
+  <g class="part part-hat">
+    <path class="ink" fill="var(--hat)" d="M138 96c-4-30 18-52 44-50 28 2 44 20 40 46-8-18-22-28-40-26-16 2-32 10-40 26-2 2-4 4-4 4z"/>
+    <path class="ink" fill="var(--hat)" d="M132 92c2 12 20 18 48 18s48-6 50-18c-8 8-24 12-50 12s-42-4-48-12z"/>
+    <path fill="#fff" d="M176 40c6-10 16-8 16 2 0 8-6 12-10 8-4-2-6-4-6-10z"/>
+    <path class="shine" d="M160 64c8-6 20-4 24 4-10 0-18 0-24-2 0-2 0-2 0-2z"/>
+  </g>
+
+  <!-- sunglasses -->
+  <g class="part part-sunglasses">
+    <path fill="#1c2430" stroke="#111" stroke-width="1.6" d="M146 100c2-8 16-10 24-4 6 6 4 12-2 14-8 4-18 2-22-4-2-2-2-4 0-6z"/>
+    <path fill="#1c2430" stroke="#111" stroke-width="1.6" d="M192 98c4-8 18-8 24-2 6 6 4 14-4 16-8 2-18 0-22-6-2-4-2-6 2-8z"/>
+    <path fill="none" stroke="#111" stroke-width="2" d="M170 104h18"/>
+    <path class="shine" d="M152 100c4-2 8-2 10 0-4 1-8 1-10 0z"/>
+    <path class="shine" d="M198 98c4-2 8-1 10 1-4 1-8 0-10-1z"/>
+    <path class="thin" d="M146 102c-8 2-14 6-16 6M216 100c8 2 14 6 16 8"/>
+  </g>
+
+  <!-- umbrella, held in the left hand -->
+  <g class="part part-umbrella">
+    <path fill="#e24b4b" stroke="#2b2623" stroke-width="2" d="M28 118c2-36 26-58 58-58 30 0 54 22 56 56-20-12-40-16-58-14-18 2-38 8-56 16z"/>
+    <path fill="#b93232" d="M58 70c8 16 14 30 10 46-8-6-16-16-20-32-2-8 4-16 10-14z"/>
+    <path fill="#b93232" d="M96 66c6 18 6 32-2 48 8-8 14-22 12-38-2-8-6-14-10-10z"/>
+    <path class="shine" d="M46 78c6 10 10 16 8 26-6-6-10-16-12-24 0-2 2-2 4-2z"/>
+    <path fill="none" stroke="#fff" stroke-width="1.6" d="M86 62v52"/>
+    <path stroke="#6b442c" stroke-width="3.2" fill="none" stroke-linecap="round" d="M86 114c-6 40-8 90-2 150-4 28 6 70 14 108"/>
+    <path stroke="#6b442c" stroke-width="3.2" fill="none" stroke-linecap="round" d="M98 372c-12 8-16 16-8 20 8 2 16-6 14-14"/>
+    <path class="skin" d="M92 360c-4 8 2 16 10 16 6-6 4-14-2-16-2 0-6 0-8 0z"/>
+  </g>
 </g>
-<g class="part part-pants" fill="var(--pants)">
-  <g class="only-men"><rect x="90" y="204" width="26" height="78" rx="8"/><rect x="124" y="204" width="26" height="78" rx="8"/></g>
-  <g class="only-women"><rect x="98" y="204" width="16" height="78" rx="8"/><rect x="126" y="204" width="16" height="78" rx="8"/></g>
-  <g class="only-neutral"><rect x="94" y="204" width="22" height="78" rx="10"/><rect x="124" y="204" width="22" height="78" rx="10"/></g>
-</g>
-<g class="part part-tee">
-  <rect x="86" y="138" width="68" height="72" rx="16" fill="var(--c1)"/>
-  <rect x="62" y="140" width="28" height="28" rx="12" fill="var(--c1)"/><rect x="150" y="140" width="28" height="28" rx="12" fill="var(--c1)"/>
-  <rect class="only-men" x="98" y="158" width="14" height="12" rx="2" fill="var(--c2)"/>
-  <path class="only-women" d="M102 138 Q120 158 138 138" fill="#ffd2b0"/>
-  <rect class="only-neutral" x="86" y="168" width="68" height="8" fill="#ffffff55"/>
-</g>
-<g class="part part-long">
-  <rect x="86" y="138" width="68" height="72" rx="16" fill="var(--c1)"/>
-  <rect x="56" y="140" width="26" height="74" rx="12" fill="var(--c1)"/><rect x="158" y="140" width="26" height="74" rx="12" fill="var(--c1)"/>
-  <rect x="56" y="204" width="26" height="8" rx="3" fill="#fff"/><rect x="158" y="204" width="26" height="8" rx="3" fill="#fff"/>
-  <path class="only-women" d="M102 138 Q120 158 138 138" fill="#ffd2b0"/>
-  <rect class="only-men" x="116" y="150" width="8" height="40" rx="2" fill="#ffffff44"/>
-</g>
-<g class="part part-sweater">
-  <ellipse cx="120" cy="136" rx="30" ry="14" fill="var(--sweater)"/>
-  <rect x="80" y="134" width="80" height="82" rx="20" fill="var(--sweater)"/>
-  <rect x="52" y="138" width="30" height="76" rx="14" fill="var(--sweater)"/><rect x="158" y="138" width="30" height="76" rx="14" fill="var(--sweater)"/>
-  <rect x="98" y="168" width="44" height="24" rx="8" fill="#00000022"/>
-  <rect x="80" y="208" width="80" height="8" fill="#00000022"/>
-  <circle class="only-women" cx="120" cy="160" r="5" fill="#fff"/>
-</g>
-<g class="part part-light">
-  <rect x="54" y="140" width="44" height="74" rx="14" fill="var(--jacket)"/><rect x="142" y="140" width="44" height="74" rx="14" fill="var(--jacket)"/>
-  <rect x="78" y="136" width="32" height="84" rx="14" fill="var(--jacket)"/><rect x="130" y="136" width="32" height="84" rx="14" fill="var(--jacket)"/>
-  <path d="M106 136 L120 152 L134 136" fill="var(--jacket)"/>
-  <rect x="58" y="204" width="36" height="8" rx="3" fill="#ffffff44"/><rect x="146" y="204" width="36" height="8" rx="3" fill="#ffffff44"/>
-</g>
-<g class="part part-puffer">
-  <rect x="50" y="142" width="44" height="70" rx="16" fill="var(--c2)"/><rect x="146" y="142" width="44" height="70" rx="16" fill="var(--c2)"/>
-  <rect x="86" y="132" width="68" height="100" rx="22" fill="var(--c2)"/>
-  <path d="M96 156 H144 M96 174 H144 M96 192 H144 M96 210 H144" stroke="#ffffff66" stroke-width="3" stroke-linecap="round"/>
-  <path d="M62 160 H82 M158 160 H178 M62 182 H82 M158 182 H178" stroke="#ffffff55" stroke-width="3" stroke-linecap="round"/>
-  <rect x="104" y="128" width="32" height="16" rx="6" fill="var(--c1)"/>
-</g>
-<g class="part part-rain">
-  <path d="M80 146 Q120 46 160 146" fill="#e6c43a"/>
-  <rect x="74" y="132" width="92" height="102" rx="20" fill="#f6d453"/>
-  <rect x="52" y="138" width="30" height="80" rx="14" fill="#f6d453"/><rect x="158" y="138" width="30" height="80" rx="14" fill="#f6d453"/>
-  <circle cx="120" cy="162" r="3" fill="#c8962e"/><circle cx="120" cy="182" r="3" fill="#c8962e"/><circle cx="120" cy="202" r="3" fill="#c8962e"/>
-  <path d="M96 148 H112" stroke="#fff" stroke-width="4" opacity=".7" stroke-linecap="round"/>
-</g>
-<g class="part part-sneakers">
-  <ellipse cx="106" cy="286" rx="16" ry="7" fill="#1c1c1c"/><ellipse cx="136" cy="286" rx="16" ry="7" fill="#1c1c1c"/>
-  <path d="M92 278 Q92 264 106 264 Q122 264 122 278 Q122 286 106 288 Q92 286 92 278" fill="#fff"/>
-  <path d="M122 278 Q122 264 136 264 Q152 264 152 278 Q152 286 136 288 Q122 286 122 278" fill="#fff"/>
-  <path d="M96 272 H118 M126 272 H148" stroke="var(--c1)" stroke-width="3" stroke-linecap="round"/>
-</g>
-<g class="part part-boots" fill="#6b442c">
-  <path d="M84 250 H116 Q120 250 120 270 V286 Q120 300 100 300 Q84 300 84 284 Z"/>
-  <path d="M124 250 H156 Q160 250 160 270 V286 Q160 300 140 300 Q124 300 124 284 Z"/>
-  <rect x="86" y="246" width="30" height="10" rx="3" fill="#8b5a38"/><rect x="126" y="246" width="30" height="10" rx="3" fill="#8b5a38"/>
-</g>
-<circle class="skin" cx="69" cy="216" r="10"/><circle class="skin" cx="171" cy="216" r="10"/>
-<g class="part part-gloves"><ellipse cx="69" cy="216" rx="12" ry="14" fill="#d4534a"/><ellipse cx="171" cy="216" rx="12" ry="14" fill="#d4534a"/></g>
-<rect class="skin" x="110" y="118" width="20" height="24" rx="8"/>
-<circle class="skin" cx="120" cy="92" r="36"/>
-<g class="face">
-  <ellipse cx="108" cy="78" rx="10" ry="6" fill="#fff" opacity=".28"/>
-  <path d="M100 80 Q108 76 116 80" fill="none" stroke="#5a3a32" stroke-width="2" stroke-linecap="round"/>
-  <path d="M124 80 Q132 76 140 80" fill="none" stroke="#5a3a32" stroke-width="2" stroke-linecap="round"/>
-  <circle cx="108" cy="90" r="3.4" fill="#2a2a2a"/><circle cx="132" cy="90" r="3.4" fill="#2a2a2a"/>
-  <circle cx="109.4" cy="88.6" r="1.1" fill="#fff"/><circle cx="133.4" cy="88.6" r="1.1" fill="#fff"/>
-  <ellipse cx="98" cy="100" rx="5" ry="3" fill="#ff9b9b" opacity=".75"/><ellipse cx="142" cy="100" rx="5" ry="3" fill="#ff9b9b" opacity=".75"/>
-  <path d="M110 106 Q120 114 130 106" fill="none" stroke="#d07a6a" stroke-width="2.2" stroke-linecap="round"/>
-</g>
-<g class="hair hair-men"><path d="M118 58 L124 40 L132 58" fill="#3b2a22"/><path d="M90 84 Q86 48 120 44 Q154 48 150 84 Q136 70 120 66 Q104 70 90 84" fill="#3b2a22"/></g>
-<g class="hair hair-women"><path d="M94 80 Q120 94 146 80 Q136 58 120 56 Q104 58 94 80" fill="#a8643c"/><path d="M98 88 Q90 112 96 130" stroke="#a8643c" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M142 88 Q152 112 146 130" stroke="#a8643c" stroke-width="7" fill="none" stroke-linecap="round"/></g>
-<g class="hair hair-neutral"><path d="M96 76 Q120 94 144 76 Q134 58 120 56 Q106 58 96 76" fill="#6b4634"/></g>
-<g class="part part-scarf"><path d="M98 124 Q120 142 142 124 Q148 136 120 148 Q92 136 98 124" fill="#e35d5d"/><path d="M128 144 Q134 174 122 196" stroke="#e35d5d" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M122 160 Q130 168 118 176" stroke="#fff" stroke-width="2" fill="none"/></g>
-<g class="part part-cap"><path d="M94 82 Q96 50 120 46 Q150 50 146 80 Q120 70 94 82" fill="var(--c2)"/><ellipse cx="154" cy="80" rx="24" ry="8" fill="var(--c1)"/></g>
-<g class="part part-beanie"><path d="M92 86 Q90 48 120 42 Q150 48 148 86 Q120 76 92 86" fill="var(--sweater)"/><circle cx="120" cy="40" r="7" fill="#fff"/><rect x="96" y="78" width="48" height="10" rx="4" fill="var(--c2)"/></g>
-<g class="part part-sunglasses"><rect x="99" y="84" width="18" height="12" rx="5" fill="#1c2430"/><rect x="123" y="84" width="18" height="12" rx="5" fill="#1c2430"/><rect x="116" y="88" width="8" height="3" fill="#1c2430"/><rect x="102" y="86" width="6" height="2" rx="1" fill="#fff" opacity=".65"/></g>
-<g class="part part-umbrella"><path d="M18 72 Q18 30 54 30 Q90 30 90 72 Q54 62 18 72" fill="#ef4b4b"/><path d="M54 30 V72" stroke="#fff" stroke-width="2"/><path d="M36 36 Q40 64 30 72" stroke="#fff" stroke-width="2" fill="none"/><path d="M72 36 Q68 64 78 72" stroke="#fff" stroke-width="2" fill="none"/><line x1="54" y1="72" x2="66" y2="208" stroke="#6b442c" stroke-width="3.5" stroke-linecap="round"/><path d="M66 208 Q52 218 60 222" fill="none" stroke="#6b442c" stroke-width="3.5" stroke-linecap="round"/></g>
 </svg>
 </div>
 <ul id="outfit"></ul>
@@ -166,87 +421,139 @@ small,.muted{opacity:.8}.err{color:#ffd2d2}.note{display:block;margin-top:6px}
 <div class="card"><h3 style="margin-top:0">Next 12 hours</h3><div class="strip" id="hours"></div></div>
 <div class="card"><h3 style="margin-top:0">7-day forecast</h3><div id="days"></div></div>
 <small id="upd"></small><br><small>Data: Open-Meteo.com · refreshes every 15 min</small>
-</div><script>
+</div>
+<script>
 const WMO={0:["Clear sky","☀️"],1:["Mainly clear","🌤️"],2:["Partly cloudy","⛅"],3:["Overcast","☁️"],45:["Fog","🌫️"],48:["Icy fog","🌫️"],51:["Light drizzle","🌦️"],53:["Drizzle","🌦️"],55:["Heavy drizzle","🌧️"],56:["Freezing drizzle","🌧️"],57:["Freezing drizzle","🌧️"],61:["Light rain","🌦️"],63:["Rain","🌧️"],65:["Heavy rain","🌧️"],66:["Freezing rain","🌧️"],67:["Freezing rain","🌧️"],71:["Light snow","🌨️"],73:["Snow","🌨️"],75:["Heavy snow","❄️"],77:["Snow grains","🌨️"],80:["Rain showers","🌦️"],81:["Rain showers","🌧️"],82:["Violent showers","⛈️"],85:["Snow showers","🌨️"],86:["Heavy snow showers","❄️"],95:["Thunderstorm","⛈️"],96:["Thunderstorm w/ hail","⛈️"],99:["Thunderstorm w/ hail","⛈️"]};
-const w=c=>WMO[c]||["Unknown","❔"];const isSnow=c=>[71,73,75,77,85,86].includes(c);
+const w=c=>WMO[c]||["Unknown","❔"];
+const isSnow=c=>[71,73,75,77,85,86].includes(c);
 const RAIN=new Set([51,53,55,56,57,61,63,65,66,67,80,81,82,95,96,99]);
+const DEMOS={
+  hot:{f:90,rain:0,wind:4,uv:8,code:0},
+  warm:{f:72,rain:5,wind:6,uv:3,code:1},
+  cool:{f:60,rain:8,wind:7,uv:2,code:2},
+  cold:{f:46,rain:10,wind:8,uv:1,code:3},
+  freezing:{f:18,rain:5,wind:6,uv:0,code:3},
+  rain:{f:58,rain:80,wind:12,uv:1,code:63},
+  snow:{f:30,rain:60,wind:10,uv:1,code:73},
+  wind:{f:74,rain:0,wind:28,uv:4,code:2}
+};
 let st={lat:39.7391,lon:-75.5398,name:"Wilmington, DE",tz:"America/New_York"},style="neutral",last=null,picked=null;
 const $=id=>document.getElementById(id);
-function outfit(f,rain,wind,uv,code,s){const o={};
- if(f<25){o.top="Thermal base layer + thick sweater";o.out="Heavy insulated parka";o.bot=s=="women"?"Lined leggings or thermal-lined jeans":"Thermal-lined pants";o.shoes="Insulated waterproof boots";}
- else if(f<40){o.top=s=="women"?"Warm knit sweater":"Sweater or fleece";o.out="Insulated puffer jacket";o.bot="Jeans or warm pants";o.shoes="Boots";}
- else if(f<55){o.top=s=="women"?"Long-sleeve top or light sweater":"Long-sleeve shirt or hoodie";o.out="Light jacket";o.bot="Jeans";o.shoes="Sneakers or boots";}
- else if(f<68){o.top=s=="women"?"Blouse or long-sleeve tee":s=="men"?"Henley or long-sleeve tee":"Long-sleeve tee";o.out="Optional cardigan or overshirt";o.bot=s=="women"?"Jeans or midi skirt":"Jeans or chinos";o.shoes="Sneakers";}
- else if(f<80){o.top="T-shirt";o.bot=s=="women"?"Light pants, skirt, or shorts":s=="men"?"Chinos or shorts":"Light pants or shorts";o.shoes="Sneakers";}
- else{o.top=s=="women"?"Tank top or breezy sundress":"Breathable tee or tank";o.bot=s=="women"?"Shorts or skirt":"Shorts";o.shoes=s=="women"?"Sandals":"Sandals or light sneakers";}
- const acc=[];const snow=isSnow(code);
- if(snow||(rain>=40&&f<35)){o.shoes="Waterproof snow boots";acc.push("🧤 Gloves");}
- else if(rain>=40){acc.push("☂️ Umbrella");o.out=(o.out&&!o.out.startsWith("Optional")?o.out+" (water-resistant)":"Rain jacket");if(f<68)o.shoes="Water-resistant shoes";}
- if(f<40){acc.push("🧣 Scarf","🧢 Beanie");if(!acc.includes("🧤 Gloves"))acc.push("🧤 Gloves");}
- if(wind>=15&&!o.out)o.out="Windbreaker";else if(wind>=15)acc.push("🌬️ Windproof layer");
- if(uv>=6)acc.push("🕶️ Sunglasses","🧴 Sunscreen","👒 Sun hat");else if(uv>=3)acc.push("🕶️ Sunglasses");
- o.acc=acc;return o;}
-function layersOf(o){
- const top=(o.top||"").toLowerCase(),out=(o.out||"").toLowerCase(),bot=(o.bot||"").toLowerCase(),shoes=(o.shoes||"").toLowerCase();
- const acc=o.acc||[],has=word=>acc.some(a=>String(a).includes(word));
- let base="tee";
- if(/sweater|hoodie|fleece|knit|thermal/.test(top))base="sweater";
- else if(/long-sleeve|henley|blouse/.test(top))base="long";
- let outer="none";
- if(/parka|puffer/.test(out))outer="puffer";
- else if(/rain jacket|water-resistant/.test(out))outer="rain";
- else if(/jacket|windbreaker|cardigan|overshirt/.test(out))outer="light";
- const bottom=/jeans|leggings|thermal/.test(bot)?"pants":(/shorts|skirt/.test(bot)?"shorts":"pants");
- const shoe=/snow boot|waterproof boot|^boots$/.test(shoes.trim())?"boots":"sneakers";
- return {base,outer,bottom,shoe,umbrella:has("Umbrella"),beanie:has("Beanie"),scarf:has("Scarf"),gloves:has("Gloves"),sunglasses:has("Sunglasses"),cap:has("Sun hat")};
+function activeDemo(){
+  if(picked!=null)return null;
+  const key=(new URLSearchParams(location.search).get("demo")||"").toLowerCase();
+  return DEMOS[key]?{key,...DEMOS[key]}:null;
+}
+function addAcc(o,item){if(!o.acc.includes(item))o.acc.push(item);}
+function outfit(f,rain,wind,uv,code,s){
+  const snow=isSnow(code),rainy=!snow&&(rain>=40||RAIN.has(code)),gust=wind>=25?2:wind>=15?1:0;
+  const o={acc:[]};
+  let base,bottom,shoe,outer="none";
+  if(f>=80){
+    base="tee";bottom="shorts";shoe="sneakers";
+    o.top=s=="women"?"Fitted tee":s=="men"?"Crew-neck tee":"Relaxed tee";
+    o.bot=s=="women"?"Cuffed shorts":s=="men"?"Chino shorts":"Shorts";
+    o.shoes="Sneakers";
+  }else if(f>=68){
+    base="shirt";bottom="jeans";shoe="sneakers";
+    o.top=s=="women"?"Soft button shirt":s=="men"?"Oxford shirt":"Casual shirt";
+    o.bot="Jeans";o.shoes="Sneakers";
+  }else if(f>=55){
+    base="hoodie";bottom="jeans";shoe="sneakers";outer="jacket";
+    o.top="Hoodie";o.out="Light jacket";o.bot="Jeans";o.shoes="Sneakers";
+  }else if(f>=40){
+    base="none";bottom="warmpants";shoe="boots";outer="coat";
+    o.top="Layered knit";o.out="Winter coat";o.bot="Warm pants";o.shoes="Boots";
+    addAcc(o,"🧤 Gloves");
+  }else{
+    base="none";bottom="warmpants";shoe="boots";outer="parka";
+    o.top="Thermal layer";o.out="Heavy winter jacket";o.bot="Warm pants";o.shoes="Insulated boots";
+    addAcc(o,"🧣 Scarf");addAcc(o,"🧤 Gloves");addAcc(o,"🧢 Winter hat");
+  }
+  if(snow){
+    outer=f<45?"parka":"coat";base="none";bottom="warmpants";shoe="snowboots";
+    o.top="Warm layer";o.out=outer=="parka"?"Heavy winter jacket":"Winter coat";
+    o.bot="Warm pants";o.shoes="Snow boots";
+    addAcc(o,"🧤 Gloves");addAcc(o,"🧣 Scarf");addAcc(o,"🧢 Winter hat");
+  }else if(rainy){
+    outer="rain";base="none";shoe="rainboots";
+    o.out="Raincoat";o.shoes="Waterproof boots";
+    addAcc(o,"☂️ Umbrella");
+  }
+  if(gust&&!rainy&&!snow&&outer!=="coat"&&outer!=="parka"){
+    if(outer==="jacket")addAcc(o,"🌬️ Windproof layer");
+    else{outer="wind";o.out="Windbreaker";}
+  }else if(gust)addAcc(o,"🌬️ Windproof layer");
+  if((f>=80||uv>=6)&&!rainy&&!snow)addAcc(o,"🕶️ Sunglasses");
+  o.layers={
+    base,outer,bottom,shoe,wind:gust,
+    sunglasses:o.acc.some(a=>a.includes("Sunglasses")),
+    gloves:o.acc.some(a=>a.includes("Gloves")),
+    scarf:o.acc.some(a=>a.includes("Scarf")),
+    hat:o.acc.some(a=>a.includes("hat")),
+    umbrella:o.acc.some(a=>a.includes("Umbrella"))
+  };
+  return o;
 }
 function isNight(iso){const h=+String(iso||"").slice(11,13);return h<6||h>=20;}
 function scene(code,precip,night){
- let sky="cloud";
- if(isSnow(code))sky="snow";
- else if(RAIN.has(code)||precip>=50)sky="rain";
- else if(code===0||code===1)sky="sun";
- else if(code===2)sky="partly";
- const wet=sky==="rain"||sky==="snow";
- if(night&&!wet)sky="night";
- return {sky,night:!!(night&&wet)};
+  let sky="cloud";
+  if(isSnow(code))sky="snow";
+  else if(RAIN.has(code)||precip>=50)sky="rain";
+  else if(code===0||code===1)sky="sun";
+  else if(code===2)sky="partly";
+  const wet=sky==="rain"||sky==="snow";
+  if(night&&!wet)sky="night";
+  return {sky,night:!!(night&&wet)};
 }
 function applyCharacter(o,sky,night,title,note){
- const L=layersOf(o);
- const cls=["stage","look-"+style,"sky-"+sky,"show-"+L.base,"show-"+L.bottom,"show-"+L.shoe];
- if(L.outer!=="none")cls.push("show-"+L.outer);
- ["umbrella","beanie","scarf","gloves","sunglasses","cap"].forEach(k=>{if(L[k])cls.push("show-"+k);});
- if(night)cls.push("is-night");
- $("stage").className=cls.join(" ");
- $("wear-title").textContent=title;
- $("wear-note").textContent=note;
- $("person").setAttribute("aria-label",title.replace(/^👕\s*/,"")+": "+[o.top,o.bot,o.out||"no extra layer",o.shoes].filter(Boolean).join(", "));
- $("outfit").innerHTML=[["👕 Top",o.top],["👖 Bottom",o.bot],["🧥 Outerwear",o.out||"None needed"],["👟 Shoes",o.shoes],["🎒 Extras",o.acc.length?o.acc.join(", "):"None"]].map(([k,v])=>`<li><b>${k}:</b> ${v}</li>`).join("");
+  const L=o.layers;
+  const cls=["stage","look-"+style,"sky-"+sky];
+  if(night)cls.push("is-night");
+  if(L.wind)cls.push("wind-"+L.wind);
+  if(L.base&&L.base!=="none")cls.push("show-"+L.base);
+  if(L.outer&&L.outer!=="none")cls.push("show-"+L.outer);
+  cls.push("show-"+L.bottom,"show-"+L.shoe);
+  ["sunglasses","gloves","scarf","hat","umbrella"].forEach(k=>{if(L[k])cls.push("show-"+k);});
+  $("stage").className=cls.join(" ");
+  $("wear-title").textContent=title;
+  $("wear-note").textContent=note;
+  $("avatar").setAttribute("aria-label",title.replace(/^👕\s*/,"")+": "+[o.top,o.bot,o.out||"no extra layer",o.shoes].filter(Boolean).join(", "));
+  $("outfit").innerHTML=[["👕 Top",o.top],["👖 Bottom",o.bot],["🧥 Outerwear",o.out||"None needed"],["👟 Shoes",o.shoes],["🎒 Extras",o.acc.length?o.acc.join(", "):"None"]].map(([k,v])=>`<li><b>${k}:</b> ${v}</li>`).join("");
 }
-function render(d){const c=d.current;
- $("place").textContent=st.name;$("temp").textContent=Math.round(c.temperature_2m)+"°F";$("desc").textContent=w(c.weather_code)[1]+" "+w(c.weather_code)[0];
- $("stats").innerHTML=`<div>🌡️ Feels ${Math.round(c.apparent_temperature)}°</div><div>💨 ${Math.round(c.wind_speed_10m)} mph</div><div>🌧️ ${c.precipitation_probability??0}% rain</div><div>☀️ UV ${(c.uv_index??0).toFixed(1)}</div>`;
- const h=d.hourly,now=c.time.slice(0,13);let i=h.time.findIndex(t=>t.slice(0,13)>=now);if(i<0)i=0;
- $("hours").innerHTML=h.time.slice(i,i+12).map((t,k)=>{const j=i+k,hr=+t.slice(11,13);return`<div class="h"><div>${hr%12||12}${hr<12?"am":"pm"}</div><div style="font-size:1.5rem">${w(h.weather_code[j])[1]}</div><div>${Math.round(h.temperature_2m[j])}°</div><small>💧${h.precipitation_probability[j]??0}%</small></div>`}).join("");
- const D=d.daily;
- if(picked!=null&&!D.time[picked])picked=null;
- $("days").innerHTML=D.time.map((t,j)=>{const dt=new Date(t+"T12:00");const fl=(D.apparent_temperature_max[j]+D.apparent_temperature_min[j])/2;
-  const x=outfit(fl,D.precipitation_probability_max[j],D.wind_speed_10m_max[j],D.uv_index_max[j],D.weather_code[j],style);
-  const name=j?dt.toLocaleDateString("en-US",{weekday:"long"}):"today";
-  return`<div class="day${picked===j?" sel":""}" data-i="${j}" role="button" tabindex="0" aria-pressed="${picked===j}" aria-label="Dress for ${name}"><div><b>${j?dt.toLocaleDateString("en-US",{weekday:"short"}):"Today"}</b><br><small>${dt.toLocaleDateString("en-US",{month:"short",day:"numeric"})}</small></div><div style="font-size:1.6rem" title="${w(D.weather_code[j])[0]}">${w(D.weather_code[j])[1]}</div><div>${Math.round(D.temperature_2m_max[j])}° / ${Math.round(D.temperature_2m_min[j])}°<br><small>💧${D.precipitation_probability_max[j]??0}%</small></div><div class="ol">${x.out||x.top}, ${x.bot.toLowerCase()}${x.acc.length?" + "+x.acc.slice(0,2).join(" "):""}</div></div>`}).join("");
- let dress=outfit(c.apparent_temperature,c.precipitation_probability,c.wind_speed_10m,c.uv_index,c.weather_code,style);
- let sc=scene(c.weather_code,c.precipitation_probability,isNight(c.time));
- let title="👕 Wear right now",note="Tap a day below to dress for that forecast";
- if(picked!=null){const j=picked,dt=new Date(D.time[j]+"T12:00");
-  const fl=(D.apparent_temperature_max[j]+D.apparent_temperature_min[j])/2;
-  dress=outfit(fl,D.precipitation_probability_max[j],D.wind_speed_10m_max[j],D.uv_index_max[j],D.weather_code[j],style);
-  sc=scene(D.weather_code[j],D.precipitation_probability_max[j],false);
-  const label=j?dt.toLocaleDateString("en-US",{weekday:"long"}):"today";
-  title="👕 Wear for "+label;
-  note=label.charAt(0).toUpperCase()+label.slice(1)+" "+Math.round(D.temperature_2m_max[j])+"° / "+Math.round(D.temperature_2m_min[j])+"° · tap again for right now";
- }
- applyCharacter(dress,sc.sky,sc.night,title,note);
- $("upd").textContent="Last updated: "+new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});}
+function render(d){
+  const c=d.current,demo=activeDemo();
+  $("place").textContent=st.name;
+  const feels=demo?demo.f:c.apparent_temperature,code=demo?demo.code:c.weather_code,wind=demo?demo.wind:c.wind_speed_10m,precip=demo?demo.rain:(c.precipitation_probability??0),uv=demo?demo.uv:c.uv_index,temp=demo?demo.f:c.temperature_2m;
+  $("temp").textContent=Math.round(temp)+"°F";
+  $("desc").textContent=w(code)[1]+" "+w(code)[0]+(demo?" · demo":"");
+  $("stats").innerHTML=`<div>🌡️ Feels ${Math.round(feels)}°</div><div>💨 ${Math.round(wind)} mph</div><div>🌧️ ${precip}% rain</div><div>☀️ UV ${Number(uv).toFixed(1)}</div>`;
+  const h=d.hourly,now=c.time.slice(0,13);let i=h.time.findIndex(t=>t.slice(0,13)>=now);if(i<0)i=0;
+  $("hours").innerHTML=h.time.slice(i,i+12).map((t,k)=>{const j=i+k,hr=+t.slice(11,13);return`<div class="h"><div>${hr%12||12}${hr<12?"am":"pm"}</div><div style="font-size:1.5rem">${w(h.weather_code[j])[1]}</div><div>${Math.round(h.temperature_2m[j])}°</div><small>💧${h.precipitation_probability[j]??0}%</small></div>`}).join("");
+  const D=d.daily;
+  if(picked!=null&&!D.time[picked])picked=null;
+  $("days").innerHTML=D.time.map((t,j)=>{const dt=new Date(t+"T12:00");const fl=(D.apparent_temperature_max[j]+D.apparent_temperature_min[j])/2;
+    const x=outfit(fl,D.precipitation_probability_max[j],D.wind_speed_10m_max[j],D.uv_index_max[j],D.weather_code[j],style);
+    const name=j?dt.toLocaleDateString("en-US",{weekday:"long"}):"today";
+    return`<div class="day${picked===j?" sel":""}" data-i="${j}" role="button" tabindex="0" aria-pressed="${picked===j}" aria-label="Dress for ${name}"><div><b>${j?dt.toLocaleDateString("en-US",{weekday:"short"}):"Today"}</b><br><small>${dt.toLocaleDateString("en-US",{month:"short",day:"numeric"})}</small></div><div style="font-size:1.6rem" title="${w(D.weather_code[j])[0]}">${w(D.weather_code[j])[1]}</div><div>${Math.round(D.temperature_2m_max[j])}° / ${Math.round(D.temperature_2m_min[j])}°<br><small>💧${D.precipitation_probability_max[j]??0}%</small></div><div class="ol">${x.out||x.top}, ${x.bot.toLowerCase()}${x.acc.length?" + "+x.acc.slice(0,2).join(" "):""}</div></div>`;
+  }).join("");
+  let dress,sc,title,note;
+  if(picked!=null){
+    const j=picked,dt=new Date(D.time[j]+"T12:00"),fl=(D.apparent_temperature_max[j]+D.apparent_temperature_min[j])/2;
+    dress=outfit(fl,D.precipitation_probability_max[j],D.wind_speed_10m_max[j],D.uv_index_max[j],D.weather_code[j],style);
+    sc=scene(D.weather_code[j],D.precipitation_probability_max[j],false);
+    const label=j?dt.toLocaleDateString("en-US",{weekday:"long"}):"today";
+    title="👕 Wear for "+label;
+    note=label.charAt(0).toUpperCase()+label.slice(1)+" "+Math.round(D.temperature_2m_max[j])+"° / "+Math.round(D.temperature_2m_min[j])+"° · tap again for right now";
+  }else{
+    dress=outfit(feels,precip,wind,uv,code,style);
+    sc=scene(code,precip,demo?false:isNight(c.time));
+    title="👕 Wear right now";
+    note=demo?"Demo: "+demo.key+". Try ?demo=hot, warm, cool, cold, freezing, rain, snow, or wind.":"Tap a day below to dress for that forecast";
+  }
+  applyCharacter(dress,sc.sky,sc.night,title,note);
+  $("upd").textContent="Last updated: "+new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
+}
 async function load(){$("msg").textContent="";try{const u=`https://api.open-meteo.com/v1/forecast?latitude=${st.lat}&longitude=${st.lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,precipitation_probability,uv_index&hourly=temperature_2m,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,precipitation_probability_max,wind_speed_10m_max,uv_index_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=${encodeURIComponent(st.tz)}&forecast_days=7`;
  const r=await fetch(u);if(!r.ok)throw 0;last=await r.json();render(last);}catch(e){$("msg").innerHTML='<span class="err">Couldn\'t load weather. Check your connection and try again.</span>';}}
 async function search(){const q=$("q").value.trim();if(!q)return;try{const r=await(await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=1&language=en&format=json`)).json();
