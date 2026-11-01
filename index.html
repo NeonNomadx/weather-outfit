@@ -1,21 +1,31 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%98%80%EF%B8%8F%3C/text%3E%3C/svg%3E">
 <title>Weather & Outfit</title>
 <style>
-*{box-sizing:border-box}html,body{overflow-x:hidden}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:linear-gradient(165deg,#16345f,#2a5298 55%,#6ec8e0);color:#fff;min-height:100vh}
-.wrap{max-width:960px;margin:auto;padding:16px}h1{font-size:1.45rem;margin:8px 0 12px}
-.bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}.bar input{flex:1 1 140px;min-width:0;padding:10px 12px;border-radius:12px;border:0;font-size:1rem;color:#17324f}
-button{padding:10px 14px;border:0;border-radius:12px;background:#ffffff26;color:#fff;font-size:.95rem;cursor:pointer}button:hover,button.on{background:#fff;color:#1e3c72}
+*{box-sizing:border-box}
+html,body{overflow-x:hidden}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:linear-gradient(165deg,#16345f,#2a5298 55%,#6ec8e0);color:#fff;min-height:100vh}
+.wrap{max-width:960px;margin:auto;padding:16px}
+h1{font-size:1.45rem;margin:8px 0 12px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.bar input{flex:1 1 140px;min-width:0;padding:10px 12px;border-radius:12px;border:0;font-size:1rem;color:#17324f}
+.bar button,#styles button{padding:10px 14px;border:0;border-radius:12px;background:#ffffff26;color:#fff;font-size:.95rem;cursor:pointer}
+.bar button:hover,#styles button:hover,#styles button.on{background:#fff;color:#1e3c72}
 .card{background:#ffffff1c;backdrop-filter:blur(10px);border-radius:18px;padding:16px;margin-bottom:14px}
-.now{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}@media(max-width:640px){.now{grid-template-columns:1fr}}
-.big{font-size:3.4rem;font-weight:720;letter-spacing:-.03em;line-height:1}.stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:.95rem;margin-top:8px}
-.outfit{text-align:center}.outfit h3{margin:0 0 6px}.outfit ul{padding:0;margin:8px 0 0;list-style:none}.outfit li{margin:3px 0}
-.stage{position:relative;width:min(100%,280px);margin:0 auto;border-radius:28px;overflow:hidden;background:linear-gradient(#69b7ee,#d7f3ff 72%,#c6e6b4);box-shadow:0 12px 28px #04142833,inset 0 0 0 1px #ffffff66}
+.now-head{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:flex-end}
+.place{font-size:1.15rem}
+.big{font-size:3.4rem;font-weight:720;letter-spacing:-.03em;line-height:1}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:.95rem;margin-top:8px}
+.stage{position:relative;height:min(540px,64vh);width:calc(min(540px,64vh) * 0.5625);max-width:100%;margin:4px auto 12px;border-radius:28px;overflow:hidden;background:linear-gradient(#69b7ee,#d7f3ff 72%,#c6e6b4);box-shadow:0 12px 28px #04142833,inset 0 0 0 1px #ffffff66}
 .stage svg{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
 .ground{position:absolute;z-index:1;left:16%;right:16%;bottom:2.2%;height:16px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(0,0,0,.38),transparent 70%);pointer-events:none}
-.figure{position:absolute;left:0;top:0;z-index:2;width:100%;height:auto;opacity:0;transition:opacity .5s ease;transform-origin:50% 100%;animation:bob 4.6s ease-in-out infinite}
-.figure.on{position:relative;opacity:1}
-@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.figure{position:absolute;left:0;top:0;z-index:2;width:100%;height:100%;object-fit:contain;object-position:center bottom;opacity:0;transition:opacity .5s ease;transform-origin:50% 100%;animation:bob 4.6s ease-in-out infinite}
+.figure.on{opacity:1}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 #styles[hidden]{display:none}
 .stage.sky-sun{background:linear-gradient(#4ea4e8,#f6e7b2 68%,#b7e4a4)}
 .stage.sky-partly{background:linear-gradient(#6eb4ea,#e7f3ff 70%,#c5e6b0)}
@@ -25,61 +35,74 @@ button{padding:10px 14px;border:0;border-radius:12px;background:#ffffff26;color:
 .stage.sky-night{background:linear-gradient(#0c1228,#243864 70%,#1a2822)}
 .stage.is-night.sky-rain{background:linear-gradient(#141c2c,#3d5166 70%,#243028)}
 .stage.is-night.sky-snow{background:linear-gradient(#1a2740,#6d7f99 66%,#d5deea)}
-.stage.look-neutral{--tee:#3f8f86;--tee-d:#2c6b64;--shirt:#f7f4ee;--shirt-d:#e3ddd2;--hoodie:#5d6d8e;--hoodie-d:#45516e;--jacket:#8b978f;--jacket-d:#66716b;--coat:#3c4d64;--coat-d:#2a384b;--parka:#2d3f52;--parka-d:#1c2a38;--fur:#f3eadf;--rain:#e0b03a;--rain-d:#b88822;--wind:#d7e6ee;--wind-d:#b5c8d2;--denim:#3c4d6e;--denim-d:#2a3854;--pants:#4a4452;--shorts:#2f7384;--glove:#3e4654;--scarf:#d08a56;--hat:#3f6f86;--accent:#e07a4c;--hair:#5a3d32;--hair-d:#3a271f;--hair-hi:#8d624c}
-.stage.look-men{--tee:#3a6ea5;--tee-d:#2a527c;--shirt:#eef3f8;--shirt-d:#d5dee8;--hoodie:#3e5270;--hoodie-d:#2c3b54;--jacket:#667887;--jacket-d:#4c5b68;--coat:#2e3f54;--coat-d:#1e2b3b;--parka:#243446;--parka-d:#162230;--shorts:#2c4f78;--scarf:#2f4f73;--hat:#2f4f73;--hair:#2c241f;--hair-d:#1a1512;--hair-hi:#5a4638;--accent:#d86a3a}
-.stage.look-women{--tee:#e38b9a;--tee-d:#c46d7e;--shirt:#fbf3f4;--shirt-d:#f0dfe3;--hoodie:#8d6a86;--hoodie-d:#6d4e68;--jacket:#c98b9c;--jacket-d:#a86d7e;--coat:#6d4c62;--coat-d:#513648;--parka:#5c4158;--parka-d:#3e2c3c;--shorts:#c96b86;--scarf:#d46b7e;--hat:#b85c78;--hair:#7a4636;--hair-d:#4e2c22;--hair-hi:#c4896a;--accent:#e7b23c}
-.ink{stroke:#2b2623;stroke-width:2.15;stroke-linejoin:round;stroke-linecap:round}
-.thin{fill:none;stroke:#2b2623;stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round}
-.seam{fill:none;stroke:#2b2623;stroke-width:1.2;stroke-linecap:round;opacity:.35}
-.shade{fill:#000;opacity:.12;stroke:none}.shine{fill:#fff;opacity:.28;stroke:none}
-.skin{fill:#f6c7aa}.skin-d{fill:#e7ae90}.blush{fill:#f0a090;opacity:.55;stroke:none}
-.part,.hair{display:none}
-.stage.show-tee .part-tee,.stage.show-shirt .part-shirt,.stage.show-hoodie .part-hoodie,.stage.show-jacket .part-jacket,.stage.show-coat .part-coat,.stage.show-parka .part-parka,.stage.show-rain .part-rain,.stage.show-wind .part-wind,.stage.show-shorts .part-shorts,.stage.show-jeans .part-jeans,.stage.show-warmpants .part-warmpants,.stage.show-sneakers .part-sneakers,.stage.show-boots .part-boots,.stage.show-rainboots .part-rainboots,.stage.show-snowboots .part-snowboots,.stage.show-gloves .part-gloves,.stage.show-scarf .part-scarf,.stage.show-hat .part-hat,.stage.show-sunglasses .part-sunglasses,.stage.show-umbrella .part-umbrella{display:inline}
-.stage.look-neutral .hair-neutral,.stage.look-men .hair-men,.stage.look-women .hair-women{display:inline}
-.stage.show-umbrella .hand-left{display:none}
-.cut-men,.cut-women,.cut-neutral{display:none}
-.stage.look-men .cut-men,.stage.look-women .cut-women,.stage.look-neutral .cut-neutral{display:inline}
 .fx{opacity:0;transition:opacity .4s ease}
 .sky-sun .sun,.sky-partly .sun,.sky-partly .clouds,.sky-cloud .clouds,.sky-rain .clouds,.sky-rain .drops,.sky-snow .clouds,.sky-snow .flakes,.sky-night .stars,.sky-night .moon{opacity:1}
 .stage.wind-1 .gusts,.stage.wind-2 .gusts{opacity:.8}
-#fig{transform-box:view-box;transform-origin:180px 575px;animation:breathe 4.4s ease-in-out infinite}
-.sway{transform-box:view-box}
-.sway-hair{transform-origin:180px 70px}.sway-scarf{transform-origin:180px 175px}.sway-hem{transform-origin:180px 300px}.sway-back{transform-origin:160px 120px}
-.stage.wind-1 .sway-hair,.stage.wind-1 .sway-back{animation:swayA 2.8s ease-in-out infinite}
-.stage.wind-1 .sway-scarf,.stage.wind-1 .sway-hem{animation:swayA 2.4s ease-in-out infinite}
-.stage.wind-2 .sway-hair,.stage.wind-2 .sway-back{animation:swayB 1.45s ease-in-out infinite}
-.stage.wind-2 .sway-scarf,.stage.wind-2 .sway-hem{animation:swayB 1.25s ease-in-out infinite}
-.lid{transform-box:fill-box;transform-origin:center top;animation:blink 6.2s infinite}
-.drops path{animation:fall 1.35s linear infinite}.drops path:nth-child(odd){animation-duration:1.6s}
+.drops path{animation:fall 1.35s linear infinite}
+.drops path:nth-child(odd){animation-duration:1.6s}
 .flakes path{animation:snowfall 4.4s linear infinite}
 .flakes path:nth-child(2){animation-delay:-.7s}.flakes path:nth-child(3){animation-delay:-1.5s}.flakes path:nth-child(4){animation-delay:-2.3s}.flakes path:nth-child(5){animation-delay:-3.1s}.flakes path:nth-child(6){animation-delay:-1.1s}
 .gusts path{animation:blow 1.8s linear infinite}
-@keyframes breathe{0%,100%{transform:scale(1,1)}50%{transform:scale(1.01,1.016)}}
-@keyframes swayA{0%,100%{transform:rotate(-1.6deg)}50%{transform:rotate(2.4deg)}}
-@keyframes swayB{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(5.5deg)}}
-@keyframes blink{0%,88%,100%{transform:scaleY(.06)}91%,95%{transform:scaleY(1)}93%{transform:scaleY(.12)}}
 @keyframes fall{0%{transform:translateY(-20px);opacity:0}18%{opacity:.9}100%{transform:translateY(560px);opacity:.15}}
 @keyframes snowfall{0%{transform:translateY(-16px);opacity:0}15%{opacity:1}100%{transform:translate(12px,520px);opacity:.2}}
 @keyframes blow{0%{transform:translateX(-16px);opacity:0}20%{opacity:.7}100%{transform:translateX(40px);opacity:0}}
-@media(prefers-reduced-motion:reduce){.stage *,.figure,.sway,.lid,.drops path,.flakes path,.gusts path{animation:none !important;transition:none !important}}
-.strip{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px}.h{min-width:70px;text-align:center;background:#ffffff1a;border-radius:12px;padding:8px}
-.day{display:grid;grid-template-columns:90px 40px 90px 1fr;gap:8px;align-items:center;padding:10px 8px;border-bottom:1px solid #ffffff22;border-radius:12px;cursor:pointer;text-align:left;width:100%}
-.day:last-child{border-bottom:0}.day:hover,.day:focus-visible{background:#ffffff18;outline:none}.day.sel{background:#ffffff33;box-shadow:inset 0 0 0 2px #fff}
-@media(max-width:640px){.day{grid-template-columns:70px 30px 80px}.day .ol{grid-column:1/-1;font-size:.9rem}.big{font-size:3rem}}
-small,.muted{opacity:.85}.err{color:#ffd2d2}.note{display:block;margin-top:6px;line-height:1.35}
-</style></head><body><div class="wrap">
+@media(prefers-reduced-motion:reduce){
+  .stage *,.figure,.drops path,.flakes path,.gusts path{animation:none !important;transition:none !important}
+}
+.rec{position:relative;background:#f2f2f4;color:#1c1c1e;border-radius:22px;padding:16px 16px 14px;margin:0 0 14px;box-shadow:0 10px 28px #04142829}
+.rec h2{margin:0 36px 12px 0;font-size:1.22rem;line-height:1.2;letter-spacing:-.02em;font-weight:760}
+.rec-ico{position:absolute;top:14px;right:14px;font-size:1.25rem;line-height:1}
+.rec-cols{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px}
+.rec .k{color:#6e6e73;font-size:.98rem}
+.rec .t{font-size:2.35rem;font-weight:760;letter-spacing:-.03em;line-height:1.05;margin:2px 0 1px;color:#111}
+.rec .s{color:#6e6e73;font-size:.98rem}
+.rec hr{border:0;border-top:1px solid #d8d8de;margin:12px 0}
+.rec .items{margin:0 0 10px;font-size:1.05rem;line-height:1.38}
+.rec .items b{font-weight:760}
+.rec .tip{display:flex;gap:8px;align-items:flex-start;margin:0;font-size:1.02rem;line-height:1.38}
+.rec .tip .bulb{flex:0 0 auto;font-size:1.1rem;line-height:1.3}
+.strip{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px}
+.h{min-width:70px;text-align:center;background:#ffffff1a;border-radius:12px;padding:8px}
+.day{display:grid;grid-template-columns:90px 40px 90px 1fr;gap:8px;align-items:center;padding:10px 8px;border:0;border-bottom:1px solid #ffffff22;border-radius:12px;cursor:pointer;text-align:left;width:100%;color:inherit;background:transparent;font:inherit}
+.day:last-child{border-bottom:0}
+.day:hover,.day:focus-visible{background:#ffffff18;outline:none}
+.day.sel{background:#ffffff33;box-shadow:inset 0 0 0 2px #fff}
+@media(max-width:640px){
+  .day{grid-template-columns:70px 30px 80px}
+  .day .ol{grid-column:1/-1;font-size:.9rem}
+  .big{font-size:3rem}
+  .rec .t{font-size:2.05rem}
+}
+small,.muted{opacity:.85}
+.err{color:#ffd2d2}
+.note{display:block;margin-top:6px;line-height:1.35}
+</style>
+</head>
+<body>
+<div class="wrap">
 <h1>🌤️ Weather & What to Wear</h1>
-<div class="bar"><input id="q" placeholder="Search a city…" autocomplete="off"><button id="go">Search</button><button id="loc">📍 Use my location</button></div>
-<div class="bar" id="styles"><button data-s="men">Men's</button><button data-s="women">Women's</button><button data-s="neutral" class="on">Neutral</button></div>
+<div class="bar">
+  <input id="q" placeholder="Search a city…" autocomplete="off">
+  <button id="go" type="button">Search</button>
+  <button id="loc" type="button">📍 Use my location</button>
+</div>
+<div class="bar" id="styles">
+  <button type="button" data-s="men">Men's</button>
+  <button type="button" data-s="women">Women's</button>
+  <button type="button" data-s="neutral" class="on">Neutral</button>
+</div>
 <div id="msg" class="muted"></div>
-<div class="card now"><div><div id="place" style="font-size:1.15rem">Loading…</div><div class="big" id="temp">--</div><div id="desc"></div>
-<div class="stats" id="stats"></div></div>
-<div class="outfit"><h3 id="wear-title">👕 Wear right now</h3>
-<div class="stage look-neutral sky-sun show-tee show-shorts show-sneakers show-sunglasses" id="stage">
-<svg id="sky" class="sky" data-character="sheet" viewBox="0 0 360 620" aria-hidden="true">
+<div class="card">
+  <div class="place" id="place">Loading…</div>
+  <div class="big" id="temp">--</div>
+  <div id="desc"></div>
+  <div class="stats" id="stats"></div>
+</div>
+<div class="stage look-neutral sky-sun" id="stage">
+<svg id="sky" class="sky" viewBox="0 0 360 620" aria-hidden="true">
 <g class="fx sun" fill="#ffe38a">
   <path d="M292 36c14 0 26 12 26 26s-12 26-26 26-26-12-26-26 12-26 26-26z"/>
-  <path class="shine" d="M286 46c6-2 14 0 16 6 2 8-6 12-12 8-6-2-8-10-4-14z"/>
+  <path d="M286 46c6-2 14 0 16 6 2 8-6 12-12 8-6-2-8-10-4-14z" fill="#fff" opacity=".28"/>
   <g stroke="#ffe38a" stroke-width="4" stroke-linecap="round" fill="none"><path d="M292 18v10M292 80v10M266 62h10M308 62h12M272 40l7 7M306 76l7 7M272 84l7-7M306 48l7-7"/></g>
 </g>
 <g class="fx moon"><path fill="#f6f1c8" d="M300 40c12 2 20 14 18 26-8 2-18-2-24-10-6-10-4-18 6-16z"/><path fill="#243864" d="M292 46c8 0 14 6 14 8-8 4-16 2-20-4 0-4 2-4 6-4z"/></g>
@@ -90,46 +113,66 @@ small,.muted{opacity:.85}.err{color:#ffd2d2}.note{display:block;margin-top:6px;l
 <g class="fx gusts" fill="none" stroke="#ffffffcc" stroke-width="2" stroke-linecap="round"><path d="M18 250c28-8 40 8 62 0"/><path d="M10 300c36-10 48 10 78 0"/><path d="M24 430c30-6 36 8 58 0"/></g>
 </svg>
 <div class="ground" aria-hidden="true"></div>
-<img id="charA" class="figure on" alt="Outfit for this weather" src="assets/char-sunny-neutral.png">
-<img id="charB" class="figure" alt="">
+<img id="charA" class="figure on" alt="Outfit for this weather" width="720" height="1280" src="assets/char-sunny-neutral.webp" srcset="assets/char-sunny-neutral.webp 1x, assets/char-sunny-neutral@2x.webp 2x">
+<img id="charB" class="figure" alt="" width="720" height="1280">
 </div>
-<ul id="outfit"></ul>
+<section class="rec" id="rec" aria-live="polite">
+  <h2 id="rec-title">Outfit recommendation</h2>
+  <span class="rec-ico" id="rec-ico" aria-hidden="true">🌤️</span>
+  <div class="rec-cols">
+    <div>
+      <div class="k" id="rec-left-k">Right now</div>
+      <div class="t" id="rec-left-t">--°</div>
+      <div class="s" id="rec-left-s">Feels like --°</div>
+    </div>
+    <div>
+      <div class="k" id="rec-right-k">Later</div>
+      <div class="t" id="rec-right-t">--°</div>
+      <div class="s" id="rec-right-s">--</div>
+    </div>
+  </div>
+  <hr>
+  <p class="items" id="rec-items"><b>Recommended:</b> <span id="rec-wear">…</span></p>
+  <p class="tip"><span class="bulb" aria-hidden="true">💡</span> <span id="rec-tip">Checking the next few hours…</span></p>
+</section>
 <small class="note muted" id="wear-note">Tap a day below to dress for that forecast</small>
-</div></div>
 <div class="card"><h3 style="margin-top:0">Next 12 hours</h3><div class="strip" id="hours"></div></div>
 <div class="card"><h3 style="margin-top:0">7-day forecast</h3><div id="days"></div></div>
 <small id="upd"></small><br><small>Data: Open-Meteo.com · refreshes every 15 min</small>
 </div>
 <script>
-const WMO={0:["Clear sky","☀️"],1:["Mainly clear","🌤️"],2:["Partly cloudy","⛅"],3:["Overcast","☁️"],45:["Fog","🌫️"],48:["Icy fog","🌫️"],51:["Light drizzle","🌦️"],53:["Drizzle","🌦️"],55:["Heavy drizzle","🌧️"],56:["Freezing drizzle","🌧️"],57:["Freezing drizzle","🌧️"],61:["Light rain","🌦️"],63:["Rain","🌧️"],65:["Heavy rain","🌧️"],66:["Freezing rain","🌧️"],67:["Freezing rain","🌧️"],71:["Light snow","🌨️"],73:["Snow","🌨️"],75:["Heavy snow","❄️"],77:["Snow grains","🌨️"],80:["Rain showers","🌦️"],81:["Rain showers","🌧️"],82:["Violent showers","⛈️"],85:["Snow showers","🌨️"],86:["Heavy snow showers","❄️"],95:["Thunderstorm","⛈️"],96:["Thunderstorm w/ hail","⛈️"],99:["Thunderstorm w/ hail","⛈️"]};
+const WMO={0:["Clear","☀️"],1:["Mainly clear","🌤️"],2:["Partly cloudy","⛅"],3:["Overcast","☁️"],45:["Fog","🌫️"],48:["Icy fog","🌫️"],51:["Light drizzle","🌦️"],53:["Drizzle","🌦️"],55:["Heavy drizzle","🌧️"],56:["Freezing drizzle","🌧️"],57:["Freezing drizzle","🌧️"],61:["Light rain","🌦️"],63:["Rain","🌧️"],65:["Heavy rain","🌧️"],66:["Freezing rain","🌧️"],67:["Freezing rain","🌧️"],71:["Light snow","🌨️"],73:["Snow","🌨️"],75:["Heavy snow","❄️"],77:["Snow grains","🌨️"],80:["Rain showers","🌦️"],81:["Rain showers","🌧️"],82:["Violent showers","⛈️"],85:["Snow showers","🌨️"],86:["Heavy snow showers","❄️"],95:["Thunderstorm","⛈️"],96:["Thunderstorm w/ hail","⛈️"],99:["Thunderstorm w/ hail","⛈️"]};
 const w=c=>WMO[c]||["Unknown","❔"];
-const isSnow=c=>[71,73,75,77,85,86].includes(c);
-const RAIN=new Set([51,53,55,56,57,61,63,65,66,67,80,81,82,95,96,99]);
-const DEMOS={
-  sunny:{f:90,rain:0,wind:4,uv:8,code:0},
-  warm:{f:76,rain:5,wind:6,uv:4,code:1},
-  mild:{f:64,rain:8,wind:6,uv:3,code:2},
-  cloudy:{f:54,rain:10,wind:8,uv:2,code:3},
-  rain:{f:48,rain:80,wind:12,uv:1,code:63},
-  cold:{f:40,rain:10,wind:8,uv:1,code:3},
-  freezing:{f:24,rain:15,wind:8,uv:0,code:3}
-};
+const SNOW=new Set([71,73,75,77,85,86]);
+const FREEZING_PRECIP=new Set([56,57,66,67]);
+const RAIN_CODES=new Set([51,53,55,61,63,65,80,81,82,95,96,99]);
+const BANDS=["sunny","warm","mild","cloudy","cold","freezing"];
 const SHOW_STYLE_TOGGLE=false;
 const CHAR_STATES=["sunny","warm","mild","cloudy","rain","cold","freezing"];
-// Drop-in art: assets/char-{state}-{style}.png. Men and women use the neutral crop until those files exist.
+// state + style -> file. Men and women use the neutral art.
 const CHAR_ART=Object.fromEntries(CHAR_STATES.map(state=>[state,{
-  neutral:`assets/char-${state}-neutral.png`,
-  men:`assets/char-${state}-neutral.png`,
-  women:`assets/char-${state}-neutral.png`
+  neutral:`assets/char-${state}-neutral.webp`,
+  men:`assets/char-${state}-neutral.webp`,
+  women:`assets/char-${state}-neutral.webp`
 }]));
-const LOOKS={
-  sunny:{top:"Black tank",bot:"Cargo pants with a tied layer",out:"None needed",shoes:"Sneakers",acc:["🎧 Headphones","🕶️ Sunglasses on head"]},
-  warm:{top:"White crop top",bot:"Cargo pants",out:"White jacket",shoes:"Sneakers",acc:["🎧 Headphones"]},
-  mild:{top:"Black top",bot:"Cargo pants",out:"Soft jacket",shoes:"Sneakers",acc:["👜 Crossbody bag"]},
-  cloudy:{top:"White hoodie",bot:"Cargo pants",out:"Black jacket",shoes:"Sneakers",acc:[]},
-  rain:{top:"Dark top",bot:"Dark pants",out:"Yellow raincoat",shoes:"Yellow rain boots",acc:["☂️ Umbrella"]},
-  cold:{top:"Black top",bot:"Cargo pants",out:"Puffer jacket",shoes:"Sneakers",acc:["🧢 Beanie","🧣 Neck gaiter"]},
-  freezing:{top:"Black top",bot:"Cargo pants",out:"Fur-hood parka",shoes:"Boots",acc:["🎧 Earmuffs","🧣 Scarf"]}
+// What she is actually wearing in each illustration.
+const WEAR={
+  sunny:["a black crop top","olive cargo pants","a sweatshirt tied at the waist","white sneakers","sunglasses","headphones"],
+  warm:["a white crop top","a gray zip jacket","charcoal cargo pants","white sneakers","sunglasses"],
+  mild:["a long-sleeve crop top","black cargo pants","white sneakers","a crossbody bag"],
+  cloudy:["a cream hoodie","a black bomber jacket","blue cargo jeans","white sneakers"],
+  rain:["a black crop top","black leggings","a yellow raincoat","yellow rain boots","an umbrella"],
+  cold:["a black turtleneck","a navy puffer jacket","black cargo pants","high-top sneakers","a beanie","gloves"],
+  freezing:["a parka with a fur hood","gray cargo pants","brown boots","earmuffs","a scarf","gloves"]
+};
+const DEMOS={
+  sunny:{f:92,temp:94,rain:0,amount:0,wind:6,gust:10,uv:8,code:0,later:{temp:80,feels:78,code:1,label:"Later tonight"}},
+  warm:{f:76,temp:78,rain:5,amount:0,wind:8,gust:12,uv:5,code:1,later:{temp:66,feels:64,code:2,label:"This evening"}},
+  mild:{f:64,temp:66,rain:10,amount:0,wind:8,gust:14,uv:3,code:2,later:{temp:56,feels:54,code:3,label:"Later tonight"}},
+  cloudy:{f:54,temp:55,rain:15,amount:0,wind:10,gust:16,uv:2,code:3,later:{temp:48,feels:46,code:3,label:"Later tonight"}},
+  rain:{f:58,temp:60,rain:80,amount:1.4,wind:14,gust:22,uv:1,code:63,later:{temp:55,feels:52,code:61,label:"This evening",rain:70}},
+  cold:{f:40,temp:42,rain:10,amount:0,wind:12,gust:18,uv:1,code:3,later:{temp:34,feels:30,code:3,label:"Later tonight"}},
+  freezing:{f:24,temp:26,rain:30,amount:0.4,wind:12,gust:20,uv:0,code:71,later:{temp:22,feels:18,code:73,label:"Later tonight"}}
 };
 let st={lat:39.7391,lon:-75.5398,name:"Wilmington, DE",tz:"America/New_York"},style="neutral",last=null,picked=null,face="A",shownSrc="";
 const $=id=>document.getElementById(id);
@@ -138,106 +181,396 @@ function activeDemo(){
   const key=(new URLSearchParams(location.search).get("demo")||"").toLowerCase();
   return DEMOS[key]?{key,...DEMOS[key]}:null;
 }
-function weatherKey(f,rain,code){
-  const snow=isSnow(code),rainy=!snow&&(rain>=40||RAIN.has(code));
-  if(snow)return f>32?"cold":"freezing";
-  if(rainy)return "rain";
-  if(f>=85)return "sunny";
-  if(f>=70)return "warm";
-  if(f>=60)return "mild";
-  if(f>=50)return "cloudy";
-  if(f>=32)return "cold";
+function listPhrase(items){
+  const nice=items.slice();
+  if(!nice.length)return "";
+  nice[0]=nice[0].charAt(0).toUpperCase()+nice[0].slice(1);
+  if(nice.length===1)return nice[0];
+  if(nice.length===2)return nice[0]+" and "+nice[1];
+  return nice.slice(0,-1).join(", ")+", and "+nice[nice.length-1];
+}
+function tempBand(feels,code){
+  const clear=code===0||code===1;
+  if(feels>=85&&clear)return "sunny";
+  if(feels>=70)return "warm";
+  if(feels>=60)return "mild";
+  if(feels>=50)return "cloudy";
+  if(feels>=32)return "cold";
   return "freezing";
 }
-function figureSrc(state,styleName){
-  const row=CHAR_ART[state]||CHAR_ART.sunny;
-  return row[styleName]||row.neutral;
+function colder(band){
+  const i=BANDS.indexOf(band);
+  return BANDS[Math.min(BANDS.length-1,Math.max(0,i)+1)];
 }
-function setFigure(state,styleName){
-  const src=figureSrc(state,styleName);
-  if(src===shownSrc)return;
-  shownSrc=src;
-  const nextId=face==="A"?"charB":"charA",prevId=face==="A"?"charA":"charB";
-  const next=$(nextId),prev=$(prevId);
-  const reveal=()=>{next.classList.add("on");prev.classList.remove("on");face=face==="A"?"B":"A";next.alt=$("wear-title").textContent||"Outfit";};
-  if(next.getAttribute("src")===src&&next.complete&&next.naturalWidth){reveal();return;}
-  next.onload=()=>{next.onload=null;reveal();};
-  next.onerror=()=>{next.onerror=null;const fb=(CHAR_ART[state]||CHAR_ART.sunny).neutral;if(next.getAttribute("src")!==fb){shownSrc=fb;next.src=fb;}};
-  next.src=src;
+function strongWind(wind,gust){return (wind||0)>=20||(gust||0)>=28;}
+function wetKind(hr){
+  const code=hr.code|0;
+  if(SNOW.has(code)||FREEZING_PRECIP.has(code))return "snow";
+  if(RAIN_CODES.has(code)||(hr.pop||0)>=50||(hr.amount||0)>=0.2)return "rain";
+  return "";
 }
-function outfit(f,rain,wind,uv,code,s){
-  const key=weatherKey(f,rain,code);
-  const look=LOOKS[key];
-  const gust=wind>=25?2:wind>=15?1:0;
-  return {key,style:s,top:look.top,bot:look.bot,out:look.out,shoes:look.shoes,acc:look.acc.slice(),wind:gust};
+function classify(hours){
+  let snow=false,snowFeels=999,rain=false,minFeels=999,minCode=0,strong=false;
+  hours.forEach(hr=>{
+    const feels=+hr.feels;
+    if(feels<minFeels){minFeels=feels;minCode=hr.code|0;}
+    const kind=wetKind(hr);
+    if(kind==="snow"){snow=true;snowFeels=Math.min(snowFeels,feels);}
+    else if(kind==="rain")rain=true;
+    if(strongWind(hr.wind,hr.gust))strong=true;
+  });
+  let key,why;
+  if(snow){
+    key=snowFeels>32?"cold":"freezing";
+    if(strong&&key==="cold")key="freezing";
+    why="snow";
+  }else if(rain){
+    key="rain";
+    why="rain";
+  }else{
+    key=tempBand(minFeels,minCode);
+    if(strong){key=colder(key);why="wind";}
+    else why="temp";
+  }
+  return {key,why,minFeels,strong,rain,snow};
 }
-function isNight(iso){const h=+String(iso||"").slice(11,13);return h<6||h>=20;}
+function hourOf(iso){return +String(iso||"").slice(11,13);}
+function dayOf(iso){return String(iso||"").slice(0,10);}
+function addDays(day,n){
+  const d=new Date(day+"T12:00:00");
+  d.setDate(d.getDate()+n);
+  return d.toISOString().slice(0,10);
+}
+function periodLabel(iso,nowIso){
+  const hour=hourOf(iso),day=dayOf(iso),today=dayOf(nowIso),tomorrow=addDays(today,1);
+  const part=hour<12?"morning":hour<17?"afternoon":hour<21?"evening":"tonight";
+  if(day===today){
+    if(part==="tonight")return "Later tonight";
+    if(part==="evening")return "This evening";
+    if(part==="afternoon")return "This afternoon";
+    return "This morning";
+  }
+  if(day===tomorrow){
+    if(part==="morning")return "Tomorrow morning";
+    if(part==="afternoon")return "Tomorrow afternoon";
+    if(part==="evening")return "Tomorrow evening";
+    return "Tomorrow night";
+  }
+  const dt=new Date(day+"T12:00:00");
+  const name=dt.toLocaleDateString("en-US",{weekday:"long"});
+  return part==="tonight"?name+" night":name+" "+part;
+}
+function clock(iso){
+  const hr=hourOf(iso);
+  return (hr%12||12)+(hr<12?" AM":" PM");
+}
+function rowsFrom(d){
+  const h=d.hourly,c=d.current;
+  let i=h.time.findIndex(t=>t.slice(0,13)>=c.time.slice(0,13));
+  if(i<0)i=0;
+  const out=[];
+  for(let j=i;j<h.time.length;j++){
+    out.push({
+      time:h.time[j],
+      temp:h.temperature_2m[j],
+      feels:h.apparent_temperature[j],
+      code:h.weather_code[j],
+      wind:h.wind_speed_10m[j],
+      gust:h.wind_gusts_10m?h.wind_gusts_10m[j]:0,
+      pop:h.precipitation_probability?h.precipitation_probability[j]:0,
+      amount:h.precipitation?h.precipitation[j]:0,
+      uv:h.uv_index?h.uv_index[j]:0
+    });
+  }
+  return out;
+}
+function nearestHour(rows,day,hour){
+  let best=null,score=99;
+  rows.forEach(hr=>{
+    if(dayOf(hr.time)!==day)return;
+    const diff=Math.abs(hourOf(hr.time)-hour);
+    if(diff<score){score=diff;best=hr;}
+  });
+  return best;
+}
+function pickLater(rows){
+  const now=rows[0];
+  const span=rows.slice(1,18);
+  const nowWet=wetKind(now);
+  const onset=span.find(hr=>wetKind(hr)&&wetKind(hr)!==nowWet);
+  if(onset)return {hour:onset,why:"precip"};
+  let swing=null,swingN=0;
+  span.slice(0,14).forEach(hr=>{
+    const d=Math.abs(hr.temp-now.temp);
+    if(d>swingN){swingN=d;swing=hr;}
+  });
+  if(swing&&swingN>=8)return {hour:swing,why:"temp"};
+  const gusty=span.find(hr=>(hr.gust||0)>=(now.gust||0)+8&&strongWind(hr.wind,hr.gust)&&!strongWind(now.wind,now.gust));
+  if(gusty)return {hour:gusty,why:"wind"};
+  const bright=span.find(hr=>(hr.uv||0)>=7&&hourOf(hr.time)>=10&&hourOf(hr.time)<=16);
+  if(bright&&(now.uv||0)<7)return {hour:bright,why:"uv"};
+  const h=hourOf(now.time);
+  let targetDay=dayOf(now.time),targetHour=15;
+  if(h<11)targetHour=15;
+  else if(h<17)targetHour=20;
+  else {targetDay=addDays(targetDay,1);targetHour=8;}
+  return {hour:nearestHour(rows,targetDay,targetHour)||span[Math.min(5,span.length-1)]||now,why:"next"};
+}
+function tipFor(decision,rows,later,dayMode){
+  const now=rows[0];
+  const ahead=later&&later.hour?later.hour:null;
+  const drop=ahead?now.temp-ahead.temp:0;
+  const rise=ahead?ahead.temp-now.temp:0;
+  if(dayMode){
+    const morn=dayMode.morning,eve=dayMode.evening;
+    if(morn&&eve){
+      const eveWet=wetKind(eve),mornWet=wetKind(morn);
+      if(eveWet==="rain"&&mornWet!=="rain")return "Rain is more likely in the evening. Pack the umbrella even if the morning looks fine.";
+      if(mornWet==="rain"&&eveWet!=="rain")return "The morning is the wet part of the day. The umbrella matters more on the way out than on the way home.";
+      if(eveWet==="snow"||mornWet==="snow")return "Snow is in the mix. Boots and the warmer coat are the right call for the whole day.";
+      if(eve.temp<=morn.temp-8)return "The evening is much colder than the morning. Leave with the extra layer so you're not stuck later.";
+      if(morn.temp<=eve.temp-8)return "It warms up by evening. A layer you can take off will feel better than starting out too light.";
+      if(strongWind(eve.wind,eve.gust)&&!strongWind(morn.wind,morn.gust))return "Wind picks up later in the day. Dress a step warmer than the morning temperature suggests.";
+    }
+  }
+  if(ahead&&wetKind(ahead)==="rain"&&wetKind(now)!=="rain"){
+    return "Rain moves in around "+clock(ahead.time)+". Take the umbrella so you're covered on the way.";
+  }
+  if(ahead&&wetKind(ahead)==="snow"&&wetKind(now)!=="snow"){
+    return "Snow shows up around "+clock(ahead.time)+". The warmer coat and boots are worth wearing from the start.";
+  }
+  if(decision.key==="rain")return "It's wet enough for the raincoat and umbrella. Keep both handy until the rain lets up.";
+  if(decision.key==="freezing"||decision.why==="snow")return "It's cold enough that the parka, scarf, and boots earn their keep. Cover up before you head out.";
+  if(drop>=8)return "Bring your jacket even if you feel comfortable now. It'll be colder when you're heading home.";
+  if(rise>=10)return "It warms up later, so a layer you can take off will be more comfortable than starting too light.";
+  if(ahead&&later.why==="wind")return "Wind picks up around "+clock(ahead.time)+". An extra layer will matter more than the temperature suggests.";
+  if(decision.why==="wind")return "The wind makes it feel colder, so this is one step warmer than the thermometer alone.";
+  const uv=Math.max(now.uv||0,ahead?ahead.uv||0:0);
+  if(uv>=7)return "UV is high. Sunglasses help, and don't stay in the direct sun too long.";
+  return "Conditions stay steady for the next few hours. What she's wearing should be comfortable.";
+}
+function shortOutfit(key){
+  const items=WEAR[key]||WEAR.mild;
+  const focus=items.filter(s=>/jacket|hoodie|coat|parka|raincoat|umbrella|boots|beanie|scarf/.test(s));
+  const shown=(focus.length?focus:items).slice(0,2);
+  return shown.join(", ");
+}
+function windLevel(wind,gust){
+  const g=Math.max(wind||0,gust||0);
+  return g>=28?2:g>=16?1:0;
+}
+function isNight(iso){const h=hourOf(iso);return h<6||h>=20;}
 function scene(code,precip,night){
   let sky="cloud";
-  if(isSnow(code))sky="snow";
-  else if(RAIN.has(code)||precip>=50)sky="rain";
+  if(SNOW.has(code|0))sky="snow";
+  else if(RAIN_CODES.has(code|0)||FREEZING_PRECIP.has(code|0)||precip>=50)sky="rain";
   else if(code===0||code===1)sky="sun";
   else if(code===2)sky="partly";
   const wet=sky==="rain"||sky==="snow";
   if(night&&!wet)sky="night";
   return {sky,night:!!(night&&wet)};
 }
-function applyCharacter(o,sky,night,title,note){
-  const cls=["stage","look-"+style,"sky-"+sky];
-  if(night)cls.push("is-night");
-  if(o.wind)cls.push("wind-"+o.wind);
-  $("stage").className=cls.join(" ");
-  $("wear-title").textContent=title;
-  $("wear-note").textContent=note;
-  $("outfit").innerHTML=[["👕 Top",o.top],["👖 Bottom",o.bot],["🧥 Outerwear",o.out||"None needed"],["👟 Shoes",o.shoes],["🎒 Extras",o.acc.length?o.acc.join(", "):"None"]].map(([k,v])=>`<li><b>${k}:</b> ${v}</li>`).join("");
-  setFigure(o.key,style);
+function figureSrc(state,styleName){
+  const row=CHAR_ART[state]||CHAR_ART.mild;
+  return row[styleName]||row.neutral;
+}
+function setFigure(state,styleName){
+  const src=figureSrc(state,styleName);
+  if(src===shownSrc)return;
+  shownSrc=src;
+  const hi=src.replace(".webp","@2x.webp");
+  const nextId=face==="A"?"charB":"charA",prevId=face==="A"?"charA":"charB";
+  const next=$(nextId),prev=$(prevId);
+  const reveal=()=>{next.classList.add("on");prev.classList.remove("on");face=face==="A"?"B":"A";next.alt="Outfit for this weather";};
+  const applySrc=()=>{next.srcset=src+" 1x, "+hi+" 2x";next.src=src;};
+  if(next.getAttribute("src")===src&&next.complete&&next.naturalWidth){reveal();return;}
+  next.onload=()=>{next.onload=null;reveal();};
+  next.onerror=()=>{next.onerror=null;const fb=(CHAR_ART[state]||CHAR_ART.mild).neutral;if(next.getAttribute("src")!==fb){shownSrc=fb;next.srcset="";next.src=fb;}};
+  applySrc();
+}
+function fillCard(opts){
+  $("rec-title").textContent=opts.title;
+  $("rec-ico").textContent=opts.icon;
+  $("rec-left-k").textContent=opts.leftK;
+  $("rec-left-t").textContent=opts.leftT;
+  $("rec-left-s").textContent=opts.leftS;
+  $("rec-right-k").textContent=opts.rightK;
+  $("rec-right-t").textContent=opts.rightT;
+  $("rec-right-s").textContent=opts.rightS;
+  $("rec-wear").textContent=listPhrase(WEAR[opts.key]||WEAR.mild)+".";
+  $("rec-tip").textContent=opts.tip;
 }
 function render(d){
   const c=d.current,demo=activeDemo();
-  $("place").textContent=st.name;
-  const feels=demo?demo.f:c.apparent_temperature,code=demo?demo.code:c.weather_code,wind=demo?demo.wind:c.wind_speed_10m,precip=demo?demo.rain:(c.precipitation_probability??0),uv=demo?demo.uv:c.uv_index,temp=demo?demo.f:c.temperature_2m;
+  const rows=rowsFrom(d);
+  $("place").textContent=st.name+(demo?" · demo":"");
+  const temp=demo?demo.temp:c.temperature_2m;
+  const feels=demo?demo.f:c.apparent_temperature;
+  const code=demo?demo.code:c.weather_code;
+  const wind=demo?demo.wind:c.wind_speed_10m;
+  const gust=demo?demo.gust:(c.wind_gusts_10m||0);
+  const precip=demo?demo.rain:(c.precipitation_probability??0);
+  const uv=demo?demo.uv:c.uv_index;
   $("temp").textContent=Math.round(temp)+"°F";
-  $("desc").textContent=w(code)[1]+" "+w(code)[0]+(demo?" · demo":"");
-  $("stats").innerHTML=`<div>🌡️ Feels ${Math.round(feels)}°</div><div>💨 ${Math.round(wind)} mph</div><div>🌧️ ${precip}% rain</div><div>☀️ UV ${Number(uv).toFixed(1)}</div>`;
-  const h=d.hourly,now=c.time.slice(0,13);let i=h.time.findIndex(t=>t.slice(0,13)>=now);if(i<0)i=0;
-  $("hours").innerHTML=h.time.slice(i,i+12).map((t,k)=>{const j=i+k,hr=+t.slice(11,13);return`<div class="h"><div>${hr%12||12}${hr<12?"am":"pm"}</div><div style="font-size:1.5rem">${w(h.weather_code[j])[1]}</div><div>${Math.round(h.temperature_2m[j])}°</div><small>💧${h.precipitation_probability[j]??0}%</small></div>`}).join("");
+  $("desc").textContent=w(code)[1]+" "+w(code)[0];
+  const gustBit=gust&&Math.round(gust)>Math.round(wind)+3?" · gusts "+Math.round(gust):"";
+  $("stats").innerHTML=`<div>🌡️ Feels ${Math.round(feels)}°</div><div>💨 ${Math.round(wind)} mph${gustBit}</div><div>🌧️ ${Math.round(precip)}% rain</div><div>☀️ UV ${Number(uv).toFixed(1)}</div>`;
+  const h=d.hourly,nowH=c.time.slice(0,13);
+  let i=h.time.findIndex(t=>t.slice(0,13)>=nowH);if(i<0)i=0;
+  $("hours").innerHTML=h.time.slice(i,i+12).map((t,k)=>{const j=i+k,hr=hourOf(t);return `<div class="h"><div>${hr%12||12}${hr<12?"am":"pm"}</div><div style="font-size:1.5rem">${w(h.weather_code[j])[1]}</div><div>${Math.round(h.temperature_2m[j])}°</div><small>💧${h.precipitation_probability[j]??0}%</small></div>`;}).join("");
   const D=d.daily;
   if(picked!=null&&!D.time[picked])picked=null;
-  $("days").innerHTML=D.time.map((t,j)=>{const dt=new Date(t+"T12:00");const fl=(D.apparent_temperature_max[j]+D.apparent_temperature_min[j])/2;
-    const x=outfit(fl,D.precipitation_probability_max[j],D.wind_speed_10m_max[j],D.uv_index_max[j],D.weather_code[j],style);
+  const dayDecision=j=>{
+    const day=D.time[j];
+    const span=rows.filter(hr=>dayOf(hr.time)===day&&hourOf(hr.time)>=7&&hourOf(hr.time)<=21);
+    const use=span.length?span:[{feels:(D.apparent_temperature_max[j]+D.apparent_temperature_min[j])/2,code:D.weather_code[j],wind:D.wind_speed_10m_max[j],gust:D.wind_gusts_10m_max?D.wind_gusts_10m_max[j]:0,pop:D.precipitation_probability_max[j]||0,amount:D.precipitation_sum?D.precipitation_sum[j]:0,temp:D.temperature_2m_max[j]}];
+    return classify(use);
+  };
+  $("days").innerHTML=D.time.map((t,j)=>{
+    const dt=new Date(t+"T12:00:00");
+    const x=dayDecision(j);
     const name=j?dt.toLocaleDateString("en-US",{weekday:"long"}):"today";
-    return`<div class="day${picked===j?" sel":""}" data-i="${j}" role="button" tabindex="0" aria-pressed="${picked===j}" aria-label="Dress for ${name}"><div><b>${j?dt.toLocaleDateString("en-US",{weekday:"short"}):"Today"}</b><br><small>${dt.toLocaleDateString("en-US",{month:"short",day:"numeric"})}</small></div><div style="font-size:1.6rem" title="${w(D.weather_code[j])[0]}">${w(D.weather_code[j])[1]}</div><div>${Math.round(D.temperature_2m_max[j])}° / ${Math.round(D.temperature_2m_min[j])}°<br><small>💧${D.precipitation_probability_max[j]??0}%</small></div><div class="ol">${x.out||x.top}, ${x.bot.toLowerCase()}${x.acc.length?" + "+x.acc.slice(0,2).join(" "):""}</div></div>`;
+    return `<button type="button" class="day${picked===j?" sel":""}" data-i="${j}" aria-pressed="${picked===j}" aria-label="Dress for ${name}"><div><b>${j?dt.toLocaleDateString("en-US",{weekday:"short"}):"Today"}</b><br><small>${dt.toLocaleDateString("en-US",{month:"short",day:"numeric"})}</small></div><div style="font-size:1.6rem" title="${w(D.weather_code[j])[0]}">${w(D.weather_code[j])[1]}</div><div>${Math.round(D.temperature_2m_max[j])}° / ${Math.round(D.temperature_2m_min[j])}°<br><small>💧${D.precipitation_probability_max[j]??0}%</small></div><div class="ol">${shortOutfit(x.key)}</div></button>`;
   }).join("");
-  let dress,sc,title,note;
+  let key,skyCode,skyPrecip,night,card,windNow;
   if(picked!=null){
-    const j=picked,dt=new Date(D.time[j]+"T12:00"),fl=(D.apparent_temperature_max[j]+D.apparent_temperature_min[j])/2;
-    dress=outfit(fl,D.precipitation_probability_max[j],D.wind_speed_10m_max[j],D.uv_index_max[j],D.weather_code[j],style);
-    sc=scene(D.weather_code[j],D.precipitation_probability_max[j],false);
+    const j=picked,day=D.time[j],dt=new Date(day+"T12:00:00");
     const label=j?dt.toLocaleDateString("en-US",{weekday:"long"}):"today";
-    title="👕 Wear for "+label;
-    note=label.charAt(0).toUpperCase()+label.slice(1)+" "+Math.round(D.temperature_2m_max[j])+"° / "+Math.round(D.temperature_2m_min[j])+"° · tap again for right now";
+    const morning=nearestHour(rows,day,8),evening=nearestHour(rows,day,18);
+    const decided=dayDecision(j);
+    key=decided.key;
+    const span=rows.filter(hr=>dayOf(hr.time)===day);
+    skyCode=(evening||morning||{code:D.weather_code[j]}).code;
+    skyPrecip=Math.max(morning?morning.pop:0,evening?evening.pop:0,D.precipitation_probability_max[j]||0);
+    night=false;
+    windNow=windLevel(D.wind_speed_10m_max[j],D.wind_gusts_10m_max?D.wind_gusts_10m_max[j]:0);
+    const nice=label.charAt(0).toUpperCase()+label.slice(1);
+    card={
+      title:nice+" outfit",
+      icon:w(skyCode)[1],
+      leftK:"Morning",
+      leftT:morning?Math.round(morning.temp)+"°F":"--",
+      leftS:morning?"Feels like "+Math.round(morning.feels)+"°F":"",
+      rightK:"Evening",
+      rightT:evening?Math.round(evening.temp)+"°F":"--",
+      rightS:evening?w(evening.code)[0]:"",
+      key,
+      tip:tipFor(decided,span.length?span:rows,{hour:evening,why:"temp"},{morning,evening})
+    };
+    $("wear-note").textContent=nice+" · morning and evening · tap again for right now";
+  }else if(demo){
+    key=demo.key;
+    skyCode=demo.code;skyPrecip=demo.rain;night=false;
+    windNow=windLevel(demo.wind,demo.gust);
+    card={
+      title:"Outfit recommendation",
+      icon:w(demo.code)[1],
+      leftK:"Right now",
+      leftT:Math.round(demo.temp)+"°F",
+      leftS:"Feels like "+Math.round(demo.f)+"°F",
+      rightK:demo.later.label,
+      rightT:Math.round(demo.later.temp)+"°F",
+      rightS:w(demo.later.code)[0],
+      key,
+      tip:({
+        sunny:"It's hot and clear. Sunglasses stay on, and the sweatshirt at your waist covers a breeze later tonight.",
+        warm:"Comfortable now, cooler this evening. The zip jacket is the piece you'll want on the way home.",
+        mild:"A mild day. The long sleeves are enough, and it cools off later tonight.",
+        cloudy:"Overcast and cool. The hoodie under the bomber is the right weight.",
+        rain:"Rain is the story. Keep the raincoat on and the umbrella with you.",
+        cold:"Cold enough for the puffer, beanie, and gloves. It dips further later tonight.",
+        freezing:"It's freezing, with snow in the mix. The parka, scarf, and boots are the whole outfit."
+      })[demo.key]
+    };
+    $("wear-note").textContent="Demo: "+demo.key+". Try ?demo=sunny, warm, mild, cloudy, rain, cold, or freezing.";
   }else{
-    dress=outfit(feels,precip,wind,uv,code,style);
-    sc=scene(code,precip,demo?false:isNight(c.time));
-    title="👕 Wear right now";
-    note=demo?"Demo: "+demo.key+". Try ?demo=sunny, warm, mild, cloudy, rain, cold, or freezing.":"Tap a day below to dress for that forecast";
+    const windowHours=rows.slice(0,7);
+    const decided=classify(windowHours.length?windowHours:[{feels,code,wind,gust,pop:precip,amount:c.precipitation||0,temp,uv}]);
+    key=decided.key;
+    const later=pickLater(rows.length?rows:[{time:c.time,temp,feels,code,wind,gust,pop:precip,amount:0,uv}]);
+    skyCode=code;skyPrecip=precip;night=isNight(c.time);
+    windNow=windLevel(wind,gust);
+    card={
+      title:"Outfit recommendation",
+      icon:w(code)[1],
+      leftK:"Right now",
+      leftT:Math.round(temp)+"°F",
+      leftS:"Feels like "+Math.round(feels)+"°F",
+      rightK:periodLabel(later.hour.time,c.time),
+      rightT:Math.round(later.hour.temp)+"°F",
+      rightS:w(later.hour.code)[0],
+      key,
+      tip:tipFor(decided,rows.length?rows:[{time:c.time,temp,feels,code,wind,gust,pop:precip,uv}],later,null)
+    };
+    $("wear-note").textContent="Tap a day below to dress for that forecast";
   }
-  applyCharacter(dress,sc.sky,sc.night,title,note);
-  $("upd").textContent="Last updated: "+new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
+  const sc=scene(skyCode,skyPrecip,demo?false:night);
+  const cls=["stage","sky-"+sc.sky];
+  if(sc.night)cls.push("is-night");
+  if(windNow)cls.push("wind-"+windNow);
+  $("stage").className=cls.join(" ");
+  fillCard(card);
+  setFigure(key,style);
+  $("upd").textContent="Last updated: "+new Date().toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});
 }
-async function load(){$("msg").textContent="";try{const u=`https://api.open-meteo.com/v1/forecast?latitude=${st.lat}&longitude=${st.lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,precipitation_probability,uv_index&hourly=temperature_2m,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,precipitation_probability_max,wind_speed_10m_max,uv_index_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=${encodeURIComponent(st.tz)}&forecast_days=7`;
- const r=await fetch(u);if(!r.ok)throw 0;last=await r.json();render(last);}catch(e){$("msg").innerHTML='<span class="err">Couldn\'t load weather. Check your connection and try again.</span>';}}
-async function search(){const q=$("q").value.trim();if(!q)return;try{const r=await(await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=1&language=en&format=json`)).json();
- if(!r.results||!r.results.length){$("msg").innerHTML='<span class="err">City not found.</span>';return;}const p=r.results[0];
- st={lat:p.latitude,lon:p.longitude,name:[p.name,p.admin1,p.country_code].filter(Boolean).join(", "),tz:"auto"};picked=null;load();}catch(e){$("msg").innerHTML='<span class="err">Search failed.</span>';}}
-function pickDay(row){if(!row||!last)return;const j=+row.dataset.i;picked=picked===j?null:j;render(last);}
-$("go").onclick=search;$("q").onkeydown=e=>{if(e.key==="Enter")search()};
-$("loc").onclick=()=>{if(!navigator.geolocation){$("msg").textContent="Location isn't supported here; showing "+st.name+".";return;}
- $("msg").textContent="Finding you…";navigator.geolocation.getCurrentPosition(p=>{st={lat:p.coords.latitude,lon:p.coords.longitude,name:"My location",tz:"auto"};picked=null;load();},
- ()=>{$("msg").textContent="Location access denied; showing "+st.name+" instead.";},{timeout:10000});};
-document.querySelectorAll("#styles button").forEach(b=>b.onclick=()=>{style=b.dataset.s;document.querySelectorAll("#styles button").forEach(x=>x.classList.toggle("on",x===b));if(last)render(last);});
+async function load(){
+  $("msg").textContent="";
+  try{
+    const u=`https://api.open-meteo.com/v1/forecast?latitude=${st.lat}&longitude=${st.lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_gusts_10m,precipitation,precipitation_probability,uv_index&hourly=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_gusts_10m,precipitation,precipitation_probability,uv_index&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,precipitation_probability_max,precipitation_sum,wind_speed_10m_max,wind_gusts_10m_max,uv_index_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=${encodeURIComponent(st.tz)}&forecast_days=7`;
+    const r=await fetch(u);
+    if(!r.ok)throw 0;
+    last=await r.json();
+    render(last);
+  }catch(e){
+    $("msg").innerHTML='<span class="err">Couldn\'t load weather. Check your connection and try again.</span>';
+  }
+}
+async function search(){
+  const q=$("q").value.trim();
+  if(!q)return;
+  try{
+    const r=await(await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=1&language=en&format=json`)).json();
+    if(!r.results||!r.results.length){$("msg").innerHTML='<span class="err">City not found.</span>';return;}
+    const p=r.results[0];
+    st={lat:p.latitude,lon:p.longitude,name:[p.name,p.admin1,p.country_code].filter(Boolean).join(", "),tz:"auto"};
+    picked=null;
+    load();
+  }catch(e){$("msg").innerHTML='<span class="err">Search failed.</span>';}
+}
+function pickDay(row){
+  if(!row||!last)return;
+  const j=+row.dataset.i;
+  picked=picked===j?null:j;
+  render(last);
+}
+$("go").onclick=search;
+$("q").onkeydown=e=>{if(e.key==="Enter")search();};
+$("loc").onclick=()=>{
+  if(!navigator.geolocation){$("msg").textContent="Location isn't supported here; showing "+st.name+".";return;}
+  $("msg").textContent="Finding you…";
+  navigator.geolocation.getCurrentPosition(p=>{
+    st={lat:p.coords.latitude,lon:p.coords.longitude,name:"My location",tz:"auto"};
+    picked=null;
+    load();
+  },()=>{$("msg").textContent="Location access denied; showing "+st.name+" instead.";},{timeout:10000});
+};
+document.querySelectorAll("#styles button").forEach(b=>b.onclick=()=>{
+  style=b.dataset.s;
+  document.querySelectorAll("#styles button").forEach(x=>x.classList.toggle("on",x===b));
+  shownSrc="";
+  if(last)render(last);
+});
 if(!SHOW_STYLE_TOGGLE)$("styles").hidden=true;
 $("days").onclick=e=>pickDay(e.target.closest(".day"));
-$("days").onkeydown=e=>{if(e.key!=="Enter"&&e.key!==" ")return;const row=e.target.closest(".day");if(!row)return;e.preventDefault();pickDay(row);};
-load();setInterval(load,15*60*1000);
-</script></body></html>
+$("days").onkeydown=e=>{
+  if(e.key!=="Enter"&&e.key!==" ")return;
+  const row=e.target.closest(".day");
+  if(!row)return;
+  e.preventDefault();
+  pickDay(row);
+};
+load();
+setInterval(load,15*60*1000);
+</script>
+</body>
+</html>
