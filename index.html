@@ -26,7 +26,9 @@ h1{font-size:1.45rem;margin:8px 0 12px}
 .place{font-size:1.15rem}
 .big{font-size:3.4rem;font-weight:720;letter-spacing:-.03em;line-height:1}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:.95rem;margin-top:8px}
-.stage{position:relative;height:min(540px,64vh);width:calc(min(540px,64vh) * 0.5625);max-width:100%;margin:4px auto 12px;border-radius:28px;overflow:hidden;background:linear-gradient(#69b7ee,#d7f3ff 72%,#c6e6b4);box-shadow:0 12px 28px #04142833,inset 0 0 0 1px #ffffff66}
+/* Width-based portrait sizing stays stable when mobile browser controls show or hide. */
+.stage{position:relative;width:303.75px;max-width:100%;height:auto;aspect-ratio:9/16;margin:4px auto 12px;border-radius:28px;overflow:hidden;background:linear-gradient(#69b7ee,#d7f3ff 72%,#c6e6b4);box-shadow:0 12px 28px #04142833,inset 0 0 0 1px #ffffff66}
+@supports not (aspect-ratio:9/16){.stage::before{content:"";display:block;padding-top:177.777778%}}
 .stage svg{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
 .ground{position:absolute;z-index:1;left:16%;right:16%;bottom:2.2%;height:16px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(0,0,0,.38),transparent 70%);pointer-events:none}
 .figure{position:absolute;left:0;top:0;z-index:2;width:100%;height:100%;object-fit:contain;object-position:center bottom;opacity:0;transition:opacity .5s ease;transform-origin:50% 100%;animation:bob 4.6s ease-in-out infinite}
@@ -490,6 +492,33 @@ function fillCard(opts){
   $("rec-wear").textContent=listPhrase(WEAR[opts.key]||WEAR.mild)+".";
   $("rec-tip").textContent=opts.tip;
 }
+// Keep forecast controls mounted during selection and background refresh.
+// Replacing a focused button can make mobile browsers lose their scroll anchor.
+function syncForecastDays(markup){
+  const panel=$("days"),template=document.createElement("template");
+  template.innerHTML=markup;
+  const next=Array.from(template.content.children),current=Array.from(panel.children);
+  if(current.length!==next.length||current.some((button,j)=>button.dataset.date!==next[j].dataset.date)){
+    panel.replaceChildren(...next);
+    return;
+  }
+  current.forEach((button,j)=>{
+    const updated=next[j];
+    button.className=updated.className;
+    button.dataset.i=updated.dataset.i;
+    button.setAttribute("aria-pressed",updated.getAttribute("aria-pressed"));
+    button.setAttribute("aria-label",updated.getAttribute("aria-label"));
+    if(button.innerHTML!==updated.innerHTML)button.innerHTML=updated.innerHTML;
+  });
+}
+let lastHourlyMarkup="";
+function syncHourlyForecast(markup){
+  if(markup===lastHourlyMarkup)return;
+  const strip=$("hours"),position=strip.scrollLeft;
+  strip.innerHTML=markup;
+  strip.scrollLeft=position;
+  lastHourlyMarkup=markup;
+}
 function render(d){
   const c=d.current,demo=activeDemo();
   const rows=rowsFrom(d);
@@ -507,7 +536,7 @@ function render(d){
   $("stats").innerHTML=`<div>🌡️ Feels ${Math.round(feels)}°</div><div>💨 ${Math.round(wind)} mph${gustBit}</div><div>🌧️ ${Math.round(precip)}% rain</div><div>☀️ UV ${Number(uv).toFixed(1)}</div>`;
   const h=d.hourly,nowH=c.time.slice(0,13);
   let i=h.time.findIndex(t=>t.slice(0,13)>=nowH);if(i<0)i=0;
-  $("hours").innerHTML=h.time.slice(i,i+12).map((t,k)=>{const j=i+k,hr=hourOf(t);return `<div class="h"><div>${hr%12||12}${hr<12?"am":"pm"}</div><div style="font-size:1.5rem">${weatherIcon(h.weather_code[j],t,d)}</div><div>${Math.round(h.temperature_2m[j])}°</div><small>💧${h.precipitation_probability[j]??0}%</small></div>`;}).join("");
+  syncHourlyForecast(h.time.slice(i,i+12).map((t,k)=>{const j=i+k,hr=hourOf(t);return `<div class="h"><div>${hr%12||12}${hr<12?"am":"pm"}</div><div style="font-size:1.5rem">${weatherIcon(h.weather_code[j],t,d)}</div><div>${Math.round(h.temperature_2m[j])}°</div><small>💧${h.precipitation_probability[j]??0}%</small></div>`;}).join(""));
   const D=d.daily;
   if(picked!=null&&!D.time[picked])picked=null;
   const dayDecision=j=>{
@@ -518,12 +547,12 @@ function render(d){
     if(hour)return classify([hour]);
     return classify([{feels:D.apparent_temperature_max[j],code:D.weather_code[j],wind:D.wind_speed_10m_max[j],gust:D.wind_gusts_10m_max?D.wind_gusts_10m_max[j]:0,pop:D.precipitation_probability_max[j]||0,amount:D.precipitation_sum?D.precipitation_sum[j]:0,temp:D.temperature_2m_max[j]}]);
   };
-  $("days").innerHTML=D.time.map((t,j)=>{
+  syncForecastDays(D.time.map((t,j)=>{
     const dt=new Date(t+"T12:00:00");
     const x=dayDecision(j);
     const name=j?dt.toLocaleDateString("en-US",{weekday:"long"}):"today";
-    return `<button type="button" class="day${picked===j?" sel":""}" data-i="${j}" aria-pressed="${picked===j}" aria-label="Dress for ${name}"><div><b>${j?dt.toLocaleDateString("en-US",{weekday:"short"}):"Today"}</b><br><small>${dt.toLocaleDateString("en-US",{month:"short",day:"numeric"})}</small></div><div style="font-size:1.6rem" title="${w(D.weather_code[j])[0]}">${w(D.weather_code[j])[1]}</div><div>${Math.round(D.temperature_2m_max[j])}° / ${Math.round(D.temperature_2m_min[j])}°<br><small>💧${D.precipitation_probability_max[j]??0}%</small></div><div class="ol">${shortOutfit(x.key)}</div></button>`;
-  }).join("");
+    return `<button type="button" class="day${picked===j?" sel":""}" data-i="${j}" data-date="${t}" aria-pressed="${picked===j}" aria-label="Dress for ${name}"><div><b>${j?dt.toLocaleDateString("en-US",{weekday:"short"}):"Today"}</b><br><small>${dt.toLocaleDateString("en-US",{month:"short",day:"numeric"})}</small></div><div style="font-size:1.6rem" title="${w(D.weather_code[j])[0]}">${w(D.weather_code[j])[1]}</div><div>${Math.round(D.temperature_2m_max[j])}° / ${Math.round(D.temperature_2m_min[j])}°<br><small>💧${D.precipitation_probability_max[j]??0}%</small></div><div class="ol">${shortOutfit(x.key)}</div></button>`;
+  }).join(""));
   let key,skyCode,skyPrecip,night,card,windNow;
   const departDay=picked!=null&&D.time[picked]?D.time[picked]:"";
   const trip=tripMode&&!demo?planTrip(rows,c.time,departDay,$("out-time").value,$("home-time").value):null;
@@ -714,3 +743,4 @@ setInterval(load,15*60*1000);
 </script>
 </body>
 </html>
+
