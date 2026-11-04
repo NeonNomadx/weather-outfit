@@ -95,8 +95,11 @@ small,.muted{opacity:.85}
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#1e3c72">
+<link rel="stylesheet" href="weather-scene.css?v=1">
+<script defer src="weather-scene.js?v=1"></script>
 </head>
-<body>
+<body data-sky="partly">
+<div class="weather-world" aria-hidden="true"><div class="world-sun"></div><div class="world-moon"></div><div class="world-cloud"></div><div class="world-cloud cloud-two"></div><div class="world-cloud cloud-three"></div><div class="world-stars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="world-rain"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="world-snow"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><svg class="world-landscape" viewBox="0 0 1440 400" preserveAspectRatio="none"><path class="far-hill" d="M0 190Q180 20 420 170T900 155T1440 100V400H0Z"/><path class="near-hill" d="M0 290Q260 120 530 270T1030 240T1440 200V400H0Z"/><g class="trees"><path d="M55 300h20v-95h34l-45-60-43 60h31v35H9l55-75 53 75H75v60Zm1260 80h20v-110h37l-47-70-46 70h35v30h-45l56-85 57 85h-47v80Zm85-35h15v-75h25l-32-50-32 50h24v75Z"/></g></svg></div>
 <div class="wrap">
 <h1>🌤️ Weather & What to Wear</h1>
 <div class="bar">
@@ -104,11 +107,7 @@ small,.muted{opacity:.85}
   <button id="go" type="button">Search</button>
   <button id="loc" type="button">📍 Use my location</button>
 </div>
-<div class="bar" id="styles">
-  <button type="button" data-s="men">Men's</button>
-  <button type="button" data-s="women">Women's</button>
-  <button type="button" data-s="neutral" class="on">Neutral</button>
-</div>
+<div class="bar character-bar" id="styles" role="group" aria-label="Character and animation controls"><span class="character-label">Character</span><button type="button" data-s="neutral" class="on" aria-pressed="true">Skye</button><button type="button" data-s="kai" aria-pressed="false">Kai</button><button id="motion-toggle" type="button" aria-pressed="true">Motion: on</button></div>
 <div id="msg" class="muted" role="status"></div>
 <div id="cities" class="bar" aria-label="Matching cities"></div>
 <div class="bar trip-bar">
@@ -140,6 +139,7 @@ small,.muted{opacity:.85}
 <img id="charA" class="figure on" alt="Outfit for this weather" width="720" height="1280" src="assets/char-sunny-neutral.webp" srcset="assets/char-sunny-neutral.webp 1x, assets/char-sunny-neutral@2x.webp 2x">
 <img id="charB" class="figure" alt="" width="720" height="1280">
 </div>
+<p class="character-caption" id="character-caption" role="status">Skye · weather-ready wardrobe</p>
 <section class="rec" id="rec" aria-live="polite">
   <h2 id="rec-title">Outfit recommendation</h2>
   <span class="rec-ico" id="rec-ico" aria-hidden="true">🌤️</span>
@@ -171,15 +171,16 @@ const SNOW=new Set([71,73,75,77,85,86]);
 const FREEZING_PRECIP=new Set([56,57,66,67]);
 const RAIN_CODES=new Set([51,53,55,61,63,65,80,81,82,95,96,99]);
 const BANDS=["sunny","warm","mild","cloudy","cold","freezing"];
-const SHOW_STYLE_TOGGLE=false;
+const SHOW_STYLE_TOGGLE=true;
 const CHAR_STATES=["sunny","warm","mild","cloudy","rain","cold","freezing"];
 // state + style -> file. Men and women use the neutral art.
 const CHAR_ART=Object.fromEntries(CHAR_STATES.map(state=>[state,{
   neutral:`assets/char-${state}-neutral.webp`,
+  kai:`assets/char-${state}-kai.webp`,
   men:`assets/char-${state}-neutral.webp`,
   women:`assets/char-${state}-neutral.webp`
 }]));
-// What she is actually wearing in each illustration.
+// What Skye is wearing in each illustration.
 const WEAR={
   sunny:["a black crop top","olive cargo pants","a sweatshirt tied at the waist","white sneakers","sunglasses","headphones"],
   warm:["a white crop top","a gray zip jacket","charcoal cargo pants","white sneakers","sunglasses"],
@@ -189,6 +190,16 @@ const WEAR={
   cold:["a black turtleneck","a navy puffer jacket","black cargo pants","high-top sneakers","a beanie","gloves"],
   freezing:["a parka with a fur hood","gray cargo pants","brown boots","earmuffs","a scarf","gloves"]
 };
+const KAI_WEAR={
+ sunny:["a mint T-shirt","tan cargo pants","white sneakers","sunglasses"],
+ warm:["a sky-blue T-shirt","a lavender zip hoodie","charcoal cargo pants","white sneakers"],
+ mild:["a lavender long-sleeve top","black cargo pants","white sneakers","a crossbody bag"],
+ cloudy:["a cream hoodie","a navy bomber jacket","blue cargo jeans","white sneakers"],
+ rain:["a yellow raincoat","dark trousers","yellow rain boots","an umbrella"],
+ cold:["a navy puffer jacket","black cargo pants","winter boots","a beanie","gloves"],
+ freezing:["a fur-lined parka","gray cargo pants","brown snow boots","a burgundy scarf","gloves"]
+};
+function wornFor(key){const wardrobe=style==="kai"?KAI_WEAR:WEAR;return wardrobe[key]||wardrobe.mild;}
 const DEMOS={
   sunny:{f:92,temp:94,rain:0,amount:0,wind:6,gust:10,uv:8,code:0,later:{temp:80,feels:78,code:1,label:"Later tonight"}},
   warm:{f:76,temp:78,rain:5,amount:0,wind:8,gust:12,uv:5,code:1,later:{temp:66,feels:64,code:2,label:"This evening"}},
@@ -200,6 +211,7 @@ const DEMOS={
 };
 let tripMode=false;
 let st={lat:39.7391,lon:-75.5398,name:"Wilmington, DE",tz:"America/New_York"},style="neutral",last=null,picked=null,face="A",shownSrc="";
+try{if(localStorage.getItem("weather-outfit-character")==="kai")style="kai";}catch{}
 const US_STATE={"Alabama":"AL","Alaska":"AK","Arizona":"AZ","Arkansas":"AR","California":"CA","Colorado":"CO","Connecticut":"CT","Delaware":"DE","District of Columbia":"DC","Florida":"FL","Georgia":"GA","Hawaii":"HI","Idaho":"ID","Illinois":"IL","Indiana":"IN","Iowa":"IA","Kansas":"KS","Kentucky":"KY","Louisiana":"LA","Maine":"ME","Maryland":"MD","Massachusetts":"MA","Michigan":"MI","Minnesota":"MN","Mississippi":"MS","Missouri":"MO","Montana":"MT","Nebraska":"NE","Nevada":"NV","New Hampshire":"NH","New Jersey":"NJ","New Mexico":"NM","New York":"NY","North Carolina":"NC","North Dakota":"ND","Ohio":"OH","Oklahoma":"OK","Oregon":"OR","Pennsylvania":"PA","Rhode Island":"RI","South Carolina":"SC","South Dakota":"SD","Tennessee":"TN","Texas":"TX","Utah":"UT","Vermont":"VT","Virginia":"VA","Washington":"WA","West Virginia":"WV","Wisconsin":"WI","Wyoming":"WY"};
 function placeName(p){
   const region=p.country_code==="US"&&US_STATE[p.admin1]?US_STATE[p.admin1]:p.admin1;
@@ -243,7 +255,7 @@ function wetKind(hr){
 }
 function classify(hours){
   // The outfit matches the current hour only. A colder, wetter, or windier
-  // hour later stays in the card tip and does not change what she's wearing.
+  // hour later stays in the card tip and does not change the current outfit.
   const now=hours[0]||{};
   const feels=+now.feels;
   const kind=wetKind(now);
@@ -358,7 +370,7 @@ function tripTip(span,decision){
   else if(decision.key==="rain"&&+coldest.feels<50)tip+=" It also gets cold on the way, so layer under the raincoat.";
   else if(decision.key!=="rain"&&span.some(hr=>wetKind(hr)==="rain"))tip+=" Rain shows up during the trip, so take the umbrella too.";
   else if(+end.feels<=+start.feels-8)tip+=" It's colder when you head home, so don't leave the extra layer behind.";
-  else if(decision.key==="cold"||decision.key==="freezing")tip+=" She's dressed for the coldest part of the trip.";
+  else if(decision.key==="cold"||decision.key==="freezing")tip+=" The outfit covers the coldest part of the trip.";
   return tip;
 }
 function whenLabel(iso){
@@ -419,10 +431,10 @@ function tipFor(decision,rows,later,dayMode){
   if(decision.why==="wind")return "The wind makes it feel colder, so this is one step warmer than the thermometer alone.";
   const uv=Math.max(now.uv||0,ahead?ahead.uv||0:0);
   if(uv>=7)return "UV is high. Sunglasses help, and don't stay in the direct sun too long.";
-  return "Conditions stay steady for the next few hours. What she's wearing should be comfortable.";
+  return "Conditions stay steady for the next few hours. This outfit should be comfortable.";
 }
 function shortOutfit(key){
-  const items=WEAR[key]||WEAR.mild;
+  const items=wornFor(key);
   const focus=items.filter(s=>/jacket|hoodie|coat|parka|raincoat|umbrella|boots|beanie|scarf/.test(s));
   const shown=(focus.length?focus:items).slice(0,2);
   return shown.join(", ");
@@ -481,7 +493,7 @@ function setFigure(state,styleName){
     prev.classList.remove("on");
     face=nextId==="charA"?"A":"B";
     prev.alt="";
-    next.alt="Outfit for this weather";
+    next.alt=(styleName==="kai"?"Kai":"Skye")+" in the "+state+" weather outfit";
   };
   const applySrc=()=>{next.srcset=src+" 1x, "+hi+" 2x";next.src=src;};
   if(next.getAttribute("src")===src&&next.complete&&next.naturalWidth){reveal();return;}
@@ -499,7 +511,7 @@ function fillCard(opts){
   $("rec-right-k").textContent=opts.rightK;
   $("rec-right-t").textContent=opts.rightT;
   $("rec-right-s").textContent=opts.rightS;
-  $("rec-wear").textContent=listPhrase(WEAR[opts.key]||WEAR.mild)+".";
+  $("rec-wear").textContent=listPhrase(wornFor(opts.key))+".";
   $("rec-tip").textContent=opts.tip;
 }
 // Keep forecast controls mounted during selection and background refresh.
@@ -628,8 +640,8 @@ function render(d){
       rightS:w(demo.later.code)[0],
       key,
       tip:({
-        sunny:"It's hot and clear. Sunglasses stay on, and the sweatshirt at your waist covers a breeze later tonight.",
-        warm:"Comfortable now, cooler this evening. The zip jacket is the piece you'll want on the way home.",
+        sunny:style==="kai"?"It's hot and clear. Short sleeves and sunglasses fit the heat; pack a layer if you are staying out late.":"It's hot and clear. Sunglasses stay on, and the sweatshirt at your waist covers a breeze later tonight.",
+        warm:"Comfortable now, cooler this evening. The zip layer is the piece you'll want on the way home.",
         mild:"A mild day. The long sleeves are enough, and it cools off later tonight.",
         cloudy:"Overcast and cool. The hoodie under the bomber is the right weight.",
         rain:"Rain is the story. Keep the raincoat on and the umbrella with you.",
@@ -664,7 +676,10 @@ function render(d){
   const cls=["stage","sky-"+sc.sky];
   if(sc.night)cls.push("is-night");
   if(windNow)cls.push("wind-"+windNow);
+  if($("stage").classList.contains("scene-offscreen"))cls.push("scene-offscreen");
   $("stage").className=cls.join(" ");
+  document.body.dataset.sky=sc.sky;
+  document.body.classList.toggle("world-night",!!night);
   fillCard(card);
   const tripBtn=$("trip");
   if(tripBtn){tripBtn.classList.toggle("on",tripMode);tripBtn.setAttribute("aria-pressed",tripMode?"true":"false");}
@@ -733,12 +748,16 @@ $("loc").onclick=()=>{
     load();
   },()=>{$("msg").textContent="Location access denied; showing "+st.name+" instead.";},{timeout:10000});
 };
-document.querySelectorAll("#styles button").forEach(b=>b.onclick=()=>{
+document.querySelectorAll("#styles button[data-s]").forEach(b=>b.onclick=()=>{
   style=b.dataset.s;
-  document.querySelectorAll("#styles button").forEach(x=>x.classList.toggle("on",x===b));
+  try{localStorage.setItem("weather-outfit-character",style);}catch{}
+  document.querySelectorAll("#styles button[data-s]").forEach(x=>{x.classList.toggle("on",x===b);x.setAttribute("aria-pressed",String(x===b));});
+  $("character-caption").textContent=(style==="kai"?"Kai":"Skye")+" · weather-ready wardrobe";
   shownSrc="";
-  if(last)render(last);
+  if(last)render(last);else setFigure("mild",style);
 });
+document.querySelectorAll("#styles button[data-s]").forEach(b=>{const selected=b.dataset.s===style;b.classList.toggle("on",selected);b.setAttribute("aria-pressed",String(selected));});
+$("character-caption").textContent=(style==="kai"?"Kai":"Skye")+" · weather-ready wardrobe";
 if(!SHOW_STYLE_TOGGLE)$("styles").hidden=true;
 $("days").onclick=e=>pickDay(e.target.closest(".day"));
 $("days").onkeydown=e=>{
@@ -753,5 +772,6 @@ setInterval(load,15*60*1000);
 </script>
 </body>
 </html>
+
 
 
