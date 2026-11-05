@@ -29,6 +29,16 @@ function forecast() {
       });
       await page.goto(pathToFileURL(path.resolve(__dirname,'../index.html')).href);
       await page.waitForSelector('.day');
+      const overflow=await page.evaluate(()=>{
+        const axis=el=>{const s=getComputedStyle(el);return {x:s.overflowX,y:s.overflowY};};
+        return {html:axis(document.documentElement),body:axis(document.body),strip:axis(document.getElementById('hours')),world:axis(document.querySelector('.weather-world'))};
+      });
+      assert.equal(overflow.body.x,'visible','Body must not be a horizontal scroll container');
+      assert.equal(overflow.body.y,'visible','Body must not be a nested vertical scroll container');
+      assert.notEqual(overflow.html.y,'auto','Clipping horizontal overflow must not force a second document scrollport');
+      assert.notEqual(overflow.strip.y,'auto','The hourly strip must not capture vertical scrolling');
+      assert.equal(overflow.world.x,overflow.world.y,'The fixed scenery must clip both axes without scrolling');
+      assert.notEqual(overflow.world.y,'auto');
       const height=await page.locator('#stage').evaluate(el=>el.offsetHeight);
       await page.setViewportSize({width,height:740});
       assert.equal(await page.locator('#stage').evaluate(el=>el.offsetHeight),height,'Browser height changes must not resize the portrait');
@@ -52,9 +62,26 @@ function forecast() {
       assert(Math.abs(state.scrollY-before.scrollY)<=2,'Background refresh must not jump the page');
       assert.equal(state.strip,before.strip,'Changed hourly weather must preserve horizontal forecast position');
       await page.keyboard.press('Enter');assert.equal(await day.getAttribute('aria-pressed'),'false');
-      await page.evaluate(()=>window.scrollTo(0,300));
-      const mid=await page.evaluate(()=>scrollY);await page.mouse.wheel(0,180);await page.waitForTimeout(250);
-      assert((await page.evaluate(()=>scrollY))>mid,'Ordinary scrolling must still work');
+      await page.evaluate(()=>window.scrollTo(0,0));
+      const pathY=[];
+      for(let step=0;step<6;step++){
+        await page.mouse.wheel(0,140);
+        await page.waitForTimeout(40);
+        pathY.push(await page.evaluate(()=>scrollY));
+      }
+      await page.waitForTimeout(400);
+      const settled=await page.evaluate(()=>scrollY);
+      assert(pathY.every((y,i)=>i===0||y+1>=pathY[i-1]),'Downward scrolling must not jump back up');
+      assert(settled+1>=pathY.at(-1),'Scroll position must stay where the gesture left it');
+      assert(pathY.at(-1)>pathY[0],'Ordinary scrolling must still work');
+      const stripScroll=await page.locator('#hours').evaluate(strip=>{
+        const max=strip.scrollWidth-strip.clientWidth;
+        const target=Math.min(40,max);
+        strip.scrollLeft=target;
+        return {target,actual:strip.scrollLeft,max};
+      });
+      assert.equal(stripScroll.actual,stripScroll.target,'The hourly forecast must still scroll sideways');
+      if(width<1024)assert(stripScroll.max>0,'Narrow layouts keep a sideways hour scroller');
       assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
       assert.deepEqual(errors,[]);
       await page.close();console.log(`${width}px: stable portrait, day selection/focus, refresh, horizontal forecast, and scrolling passed`);
