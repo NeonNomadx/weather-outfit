@@ -6,7 +6,8 @@
 <title>Weather & Outfit</title>
 <style>
 *{box-sizing:border-box}
-html,body{overflow-x:hidden}
+/* clip keeps horizontal overflow from widening the page without turning overflow-y into auto. hidden on both html and body made two scrollports, and mobile/desktop scrolling snapped back up. */
+html{overflow-x:hidden;overflow-x:clip}
 body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:linear-gradient(165deg,#16345f,#2a5298 55%,#6ec8e0);color:#fff;min-height:100vh}
 .wrap{max-width:960px;margin:auto;padding:16px}
 h1{font-size:1.45rem;margin:8px 0 12px}
@@ -68,7 +69,8 @@ h1{font-size:1.45rem;margin:8px 0 12px}
 .rec .items b{font-weight:760}
 .rec .tip{display:flex;gap:8px;align-items:flex-start;margin:0;font-size:1.02rem;line-height:1.38}
 .rec .tip .bulb{flex:0 0 auto;font-size:1.1rem;line-height:1.3}
-.strip{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px}
+/* Explicit overflow-y stops overflow-x:auto from becoming a vertical scrollport that pulls the page back. */
+.strip{display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;overflow-y:clip;overscroll-behavior-x:contain;padding-bottom:6px;touch-action:pan-x pan-y}
 .h{min-width:70px;text-align:center;background:#ffffff1a;border-radius:12px;padding:8px}
 .day{display:grid;grid-template-columns:90px 40px 90px 1fr;gap:8px;align-items:center;padding:10px 8px;border:0;border-bottom:1px solid #ffffff22;border-radius:12px;cursor:pointer;text-align:left;width:100%;color:inherit;background:transparent;font:inherit}
 .day:last-child{border-bottom:0}
@@ -95,7 +97,7 @@ small,.muted{opacity:.85}
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#1e3c72">
-<link rel="stylesheet" href="weather-scene.css?v=1">
+<link rel="stylesheet" href="weather-scene.css?v=2">
 <script defer src="weather-scene.js?v=1"></script>
 </head>
 <body data-sky="partly">

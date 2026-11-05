@@ -10,7 +10,7 @@ body[data-sky="night"],body.world-night{--world-top:#0c1732;--world-bottom:#253d
 .card{background:linear-gradient(135deg,#133555eb,#17324de8);border:1px solid #d7efff28;backdrop-filter:none;box-shadow:0 10px 26px #091c3220}
 .bar button{min-height:44px}.bar input{min-height:44px}
 .bar button:focus-visible,.day:focus-visible{outline:3px solid #d0f1ff;outline-offset:3px}
-.weather-world{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;contain:strict}
+.weather-world{position:fixed;inset:0;z-index:0;overflow:hidden;overflow:clip;pointer-events:none;contain:strict}
 .world-sun{position:absolute;right:9%;top:7%;width:112px;height:112px;border-radius:50%;background:#ffe29b;box-shadow:0 0 0 18px #ffe29b12,0 0 75px #ffdc8580;opacity:0;transition:opacity .7s}
 .world-sun:before{content:"";position:absolute;inset:-24px;border:2px dashed #ffe7aa60;border-radius:50%;animation:world-orbit 65s linear infinite}
 body[data-sky="sun"] .world-sun,body[data-sky="partly"] .world-sun{opacity:.9}
@@ -28,7 +28,7 @@ body[data-sky="night"] .world-cloud{opacity:.06}
 body[data-sky="night"] .world-stars{opacity:1}
 .world-stars i{position:absolute;left:8%;top:13%;width:3px;height:3px;border-radius:50%;background:#f5f6ff;animation:world-twinkle 5s ease-in-out infinite alternate;box-shadow:0 0 7px #cde6ff}
 .world-stars i:nth-child(2){left:31%;top:6%;animation-delay:-2s}.world-stars i:nth-child(3){left:54%;top:16%;animation-delay:-4s}.world-stars i:nth-child(4){left:74%;top:4%;animation-delay:-1s}.world-stars i:nth-child(5){left:91%;top:29%;animation-delay:-3s}.world-stars i:nth-child(6){left:18%;top:45%;animation-delay:-2.5s}.world-stars i:nth-child(7){left:66%;top:34%;animation-delay:-.5s}.world-stars i:nth-child(8){left:44%;top:53%;animation-delay:-3.5s}
-.world-rain,.world-snow{position:absolute;inset:0;display:none;overflow:hidden}
+.world-rain,.world-snow{position:absolute;inset:0;display:none;overflow:hidden;overflow:clip}
 body[data-sky="rain"] .world-rain,body[data-sky="snow"] .world-snow{display:block}
 .world-rain i,.world-snow i{position:absolute;left:8%;top:-30px;animation:world-fall 1.7s linear infinite;animation-delay:-.7s}
 .world-rain i{width:1px;height:24px;background:linear-gradient(transparent,#d9f1ff99);opacity:.4}
