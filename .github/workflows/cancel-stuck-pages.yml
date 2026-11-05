@@ -1,0 +1,38 @@
+name: Cancel stuck Pages deployment
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/cancel-stuck-pages.yml
+permissions:
+  pages: write
+  id-token: write
+jobs:
+  cancel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel stuck Pages deployments
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const ids = [
+              "8c0e54ebbfcc70c4de5f3b2b93df8675b5efabfe",
+              "36ef030a44e8051e95f623c360d5195348a73991",
+              "b22a09ba74afe50104ae9c2b6f8c02306bf0558c"
+            ];
+            let failed = 0;
+            for (const pages_deployment_id of ids) {
+              try {
+                const res = await github.request("POST /repos/{owner}/{repo}/pages/deployments/{pages_deployment_id}/cancel", {
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pages_deployment_id
+                });
+                core.info(`canceled ${pages_deployment_id} (${res.status})`);
+              } catch (error) {
+                failed++;
+                core.warning(`cancel ${pages_deployment_id} failed: ${error.status || ""} ${error.message}`);
+              }
+            }
+            if (failed === ids.length) core.setFailed("Could not cancel any Pages deployment");
