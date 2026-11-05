@@ -107,7 +107,7 @@ small,.muted{opacity:.85}
   <button id="go" type="button">Search</button>
   <button id="loc" type="button">📍 Use my location</button>
 </div>
-<div class="bar character-bar" id="styles" role="group" aria-label="Character and animation controls"><span class="character-label">Character</span><button type="button" data-s="neutral" class="on" aria-pressed="true">Skye</button><button type="button" data-s="kai" aria-pressed="false">Kai</button><button id="motion-toggle" type="button" aria-pressed="true">Motion: on</button></div>
+<div class="bar character-bar" id="styles" role="group" aria-label="Character and animation controls"><span class="character-label">Character</span><button type="button" data-s="neutral" class="on" aria-pressed="true">Skye</button><button type="button" data-s="kai" aria-pressed="false">Kai</button><button type="button" data-s="men" aria-pressed="false">Men</button><button type="button" data-s="women" aria-pressed="false">Women</button><button id="motion-toggle" type="button" aria-pressed="true">Motion: on</button></div>
 <div id="msg" class="muted" role="status"></div>
 <div id="cities" class="bar" aria-label="Matching cities"></div>
 <div class="bar trip-bar">
@@ -173,12 +173,12 @@ const RAIN_CODES=new Set([51,53,55,61,63,65,80,81,82,95,96,99]);
 const BANDS=["sunny","warm","mild","cloudy","cold","freezing"];
 const SHOW_STYLE_TOGGLE=true;
 const CHAR_STATES=["sunny","warm","mild","cloudy","rain","cold","freezing"];
-// state + style -> file. Men and women use the neutral art.
+// state + style -> file.
 const CHAR_ART=Object.fromEntries(CHAR_STATES.map(state=>[state,{
   neutral:`assets/char-${state}-neutral.webp`,
   kai:`assets/char-${state}-kai.webp`,
-  men:`assets/char-${state}-neutral.webp`,
-  women:`assets/char-${state}-neutral.webp`
+  men:`assets/char-${state}-men.webp`,
+  women:`assets/char-${state}-women.webp`
 }]));
 // What Skye is wearing in each illustration.
 const WEAR={
@@ -199,7 +199,30 @@ const KAI_WEAR={
  cold:["a navy puffer jacket","black cargo pants","winter boots","a beanie","gloves"],
  freezing:["a fur-lined parka","gray cargo pants","brown snow boots","a burgundy scarf","gloves"]
 };
-function wornFor(key){const wardrobe=style==="kai"?KAI_WEAR:WEAR;return wardrobe[key]||wardrobe.mild;}
+const MEN_WEAR={
+  sunny:["a white T-shirt","olive cargo shorts","white sneakers","sunglasses","a silver chain"],
+  warm:["a sky-blue T-shirt","a light gray zip hoodie","charcoal cargo pants","white sneakers"],
+  mild:["a lavender long-sleeve top","black cargo pants","white sneakers","a crossbody bag"],
+  cloudy:["a cream hoodie","a navy bomber jacket","blue cargo jeans","white sneakers"],
+  rain:["a yellow raincoat","dark trousers","yellow rain boots","an umbrella"],
+  cold:["a navy puffer jacket","black cargo pants","winter boots","a beanie","gloves"],
+  freezing:["a fur-lined parka","gray cargo pants","brown snow boots","a burgundy scarf","gloves"]
+};
+const WOMEN_WEAR={
+  sunny:["a sage crop tank","beige cargo pants","white sneakers","sunglasses","gold hoops"],
+  warm:["a white crop top","a light gray zip jacket","charcoal cargo pants","white sneakers","sunglasses"],
+  mild:["a long-sleeve crop top","black cargo pants","white sneakers","a crossbody bag"],
+  cloudy:["a cream hoodie","a black bomber jacket","blue cargo jeans","white sneakers"],
+  rain:["a black crop top","black leggings","a yellow raincoat","yellow rain boots","an umbrella"],
+  cold:["a black turtleneck","a navy puffer jacket","black cargo pants","high-top sneakers","a beanie","gloves"],
+  freezing:["a parka with a fur hood","gray cargo pants","brown boots","earmuffs","a scarf","gloves"]
+};
+const CHARACTER_STYLES=new Set(["neutral","kai","men","women"]);
+function characterName(styleName){return {neutral:"Skye",kai:"Kai",men:"Men",women:"Women"}[styleName]||"Skye";}
+function wornFor(key){
+  const wardrobe=style==="men"?MEN_WEAR:style==="women"?WOMEN_WEAR:style==="kai"?KAI_WEAR:WEAR;
+  return wardrobe[key]||wardrobe.mild;
+}
 const DEMOS={
   sunny:{f:92,temp:94,rain:0,amount:0,wind:6,gust:10,uv:8,code:0,later:{temp:80,feels:78,code:1,label:"Later tonight"}},
   warm:{f:76,temp:78,rain:5,amount:0,wind:8,gust:12,uv:5,code:1,later:{temp:66,feels:64,code:2,label:"This evening"}},
@@ -211,7 +234,7 @@ const DEMOS={
 };
 let tripMode=false;
 let st={lat:39.7391,lon:-75.5398,name:"Wilmington, DE",tz:"America/New_York"},style="neutral",last=null,picked=null,face="A",shownSrc="";
-try{if(localStorage.getItem("weather-outfit-character")==="kai")style="kai";}catch{}
+try{const saved=localStorage.getItem("weather-outfit-character");if(CHARACTER_STYLES.has(saved))style=saved;}catch{}
 const US_STATE={"Alabama":"AL","Alaska":"AK","Arizona":"AZ","Arkansas":"AR","California":"CA","Colorado":"CO","Connecticut":"CT","Delaware":"DE","District of Columbia":"DC","Florida":"FL","Georgia":"GA","Hawaii":"HI","Idaho":"ID","Illinois":"IL","Indiana":"IN","Iowa":"IA","Kansas":"KS","Kentucky":"KY","Louisiana":"LA","Maine":"ME","Maryland":"MD","Massachusetts":"MA","Michigan":"MI","Minnesota":"MN","Mississippi":"MS","Missouri":"MO","Montana":"MT","Nebraska":"NE","Nevada":"NV","New Hampshire":"NH","New Jersey":"NJ","New Mexico":"NM","New York":"NY","North Carolina":"NC","North Dakota":"ND","Ohio":"OH","Oklahoma":"OK","Oregon":"OR","Pennsylvania":"PA","Rhode Island":"RI","South Carolina":"SC","South Dakota":"SD","Tennessee":"TN","Texas":"TX","Utah":"UT","Vermont":"VT","Virginia":"VA","Washington":"WA","West Virginia":"WV","Wisconsin":"WI","Wyoming":"WY"};
 function placeName(p){
   const region=p.country_code==="US"&&US_STATE[p.admin1]?US_STATE[p.admin1]:p.admin1;
@@ -483,6 +506,7 @@ function setFigure(state,styleName){
   shownSrc=src;
   const request=++figureRequest;
   const hi=src.replace(".webp","@2x.webp");
+  const hasRetina=styleName==="neutral"||styleName==="kai";
   const nextId=face==="A"?"charB":"charA",prevId=face==="A"?"charA":"charB";
   const next=$(nextId),prev=$(prevId);
   let revealed=false;
@@ -493,14 +517,29 @@ function setFigure(state,styleName){
     prev.classList.remove("on");
     face=nextId==="charA"?"A":"B";
     prev.alt="";
-    next.alt=(styleName==="kai"?"Kai":"Skye")+" in the "+state+" weather outfit";
+    next.alt=characterName(styleName)+" in the "+state+" weather outfit";
   };
-  const applySrc=()=>{next.srcset=src+" 1x, "+hi+" 2x";next.src=src;};
+  const applySrc=()=>{next.srcset=hasRetina?src+" 1x, "+hi+" 2x":"";next.src=src;};
   if(next.getAttribute("src")===src&&next.complete&&next.naturalWidth){reveal();return;}
   next.onload=()=>{next.onload=null;reveal();};
   next.onerror=()=>{next.onerror=null;const fb=(CHAR_ART[state]||CHAR_ART.mild).neutral;if(next.getAttribute("src")!==fb){shownSrc=fb;next.srcset="";next.src=fb;if(next.complete&&next.naturalWidth)reveal();}};
   applySrc();
   if(next.complete&&next.naturalWidth)reveal();
+}
+function demoTip(key){
+  if(key==="sunny"){
+    if(style==="kai")return "It's hot and clear. Short sleeves and sunglasses fit the heat; pack a layer if you are staying out late.";
+    if(style==="neutral")return "It's hot and clear. Sunglasses stay on, and the sweatshirt at your waist covers a breeze later tonight.";
+    return "It's hot and clear. Sunglasses fit the heat; pack a light layer if you are staying out late.";
+  }
+  return {
+    warm:"Comfortable now, cooler this evening. The zip layer is the piece you'll want on the way home.",
+    mild:"A mild day. The long sleeves are enough, and it cools off later tonight.",
+    cloudy:"Overcast and cool. The hoodie under the bomber is the right weight.",
+    rain:"Rain is the story. Keep the raincoat on and the umbrella with you.",
+    cold:"Cold enough for the puffer, beanie, and gloves. It dips further later tonight.",
+    freezing:"It's freezing, with snow in the mix. The parka, scarf, and boots are the whole outfit."
+  }[key];
 }
 function fillCard(opts){
   $("rec-title").textContent=opts.title;
@@ -639,15 +678,7 @@ function render(d){
       rightT:Math.round(demo.later.temp)+"°F",
       rightS:w(demo.later.code)[0],
       key,
-      tip:({
-        sunny:style==="kai"?"It's hot and clear. Short sleeves and sunglasses fit the heat; pack a layer if you are staying out late.":"It's hot and clear. Sunglasses stay on, and the sweatshirt at your waist covers a breeze later tonight.",
-        warm:"Comfortable now, cooler this evening. The zip layer is the piece you'll want on the way home.",
-        mild:"A mild day. The long sleeves are enough, and it cools off later tonight.",
-        cloudy:"Overcast and cool. The hoodie under the bomber is the right weight.",
-        rain:"Rain is the story. Keep the raincoat on and the umbrella with you.",
-        cold:"Cold enough for the puffer, beanie, and gloves. It dips further later tonight.",
-        freezing:"It's freezing, with snow in the mix. The parka, scarf, and boots are the whole outfit."
-      })[demo.key]
+      tip:demoTip(demo.key)
     };
     $("wear-note").textContent="Demo: "+demo.key+". Try ?demo=sunny, warm, mild, cloudy, rain, cold, or freezing.";
   }else{
@@ -752,12 +783,12 @@ document.querySelectorAll("#styles button[data-s]").forEach(b=>b.onclick=()=>{
   style=b.dataset.s;
   try{localStorage.setItem("weather-outfit-character",style);}catch{}
   document.querySelectorAll("#styles button[data-s]").forEach(x=>{x.classList.toggle("on",x===b);x.setAttribute("aria-pressed",String(x===b));});
-  $("character-caption").textContent=(style==="kai"?"Kai":"Skye")+" · weather-ready wardrobe";
+  $("character-caption").textContent=characterName(style)+" · weather-ready wardrobe";
   shownSrc="";
   if(last)render(last);else setFigure("mild",style);
 });
 document.querySelectorAll("#styles button[data-s]").forEach(b=>{const selected=b.dataset.s===style;b.classList.toggle("on",selected);b.setAttribute("aria-pressed",String(selected));});
-$("character-caption").textContent=(style==="kai"?"Kai":"Skye")+" · weather-ready wardrobe";
+$("character-caption").textContent=characterName(style)+" · weather-ready wardrobe";
 if(!SHOW_STYLE_TOGGLE)$("styles").hidden=true;
 $("days").onclick=e=>pickDay(e.target.closest(".day"));
 $("days").onkeydown=e=>{

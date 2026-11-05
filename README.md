@@ -8,7 +8,7 @@ The site is published with GitHub Pages from the workflow in `.github/workflows/
 
 ## Living scenery and characters
 
-Choose Skye or Kai for seven weather-specific wardrobes. Recommendations follow the selected character's illustrated clothes. Clouds, sun, moon, stars, rain and snow respond to the selected forecast; night colors follow sunrise and sunset. A Motion control pauses scenery and character animation. Device reduced-motion settings are respected, hidden tabs pause animation, and off-screen portraits pause to conserve resources.
+Choose Skye, Kai, Men, or Women for seven weather-specific wardrobes. Recommendations follow the selected character's illustrated clothes. Clouds, sun, moon, stars, rain and snow respond to the selected forecast; night colors follow sunrise and sunset. A Motion control pauses scenery and character animation. Device reduced-motion settings are respected, hidden tabs pause animation, and off-screen portraits pause to conserve resources.
 
 Character and animation preferences are saved only in this browser's localStorage. Weather data still comes directly from Open-Meteo; no server-side accounts or storage were added.
 

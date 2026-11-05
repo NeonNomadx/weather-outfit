@@ -21,12 +21,22 @@ function forecast(code=3,time='12:00'){
    const base=pathToFileURL(path.resolve(__dirname,'../index.html')).href;
    for(const [key,sky]of [['sunny','sun'],['warm','sun'],['mild','partly'],['cloudy','cloud'],['rain','rain'],['cold','cloud'],['freezing','snow']]){
     await p.goto(base+'?demo='+key,{waitUntil:'domcontentloaded'});await p.waitForSelector('.day');
-    await p.locator('[data-s="kai"]').click();
-    await p.waitForFunction(k=>{const img=document.querySelector('.figure.on');return img?.getAttribute('src')?.endsWith('char-'+k+'-kai.webp')&&img.complete&&img.naturalWidth>0;},key);
-    assert.equal(await p.locator('[data-s="kai"]').getAttribute('aria-pressed'),'true');
+    for(const who of ['kai','men','women']){
+     await p.locator(`[data-s="${who}"]`).click();
+     await p.waitForFunction(({k,who})=>{const img=document.querySelector('.figure.on');return img?.getAttribute('src')?.endsWith('char-'+k+'-'+who+'.webp')&&img.complete&&img.naturalWidth>0&&img.alt.startsWith(who==='kai'?'Kai':who==='men'?'Men':'Women');},{k:key,who});
+     assert.equal(await p.locator(`[data-s="${who}"]`).getAttribute('aria-pressed'),'true');
+     const wear=(await p.locator('#rec-wear').innerText()).toLowerCase();
+     if(who==='kai')assert(!wear.includes('crop'));
+     if(who==='men'&&key==='sunny')assert(wear.includes('cargo shorts')&&wear.includes('silver chain'));
+     if(who==='women'&&key==='sunny')assert(wear.includes('sage crop tank')&&wear.includes('gold hoops'));
+     if(who==='men'&&key==='rain')assert(wear.includes('yellow raincoat')&&!wear.includes('crop'));
+     if(who==='women'&&key==='freezing')assert(wear.includes('earmuffs'));
+     const caption=await p.locator('#character-caption').innerText();
+     assert.equal(caption,(who==='kai'?'Kai':who==='men'?'Men':'Women')+' · weather-ready wardrobe');
+    }
     assert.equal(await p.locator('body').getAttribute('data-sky'),sky);
-    assert(!((await p.locator('#rec-wear').innerText()).includes('crop top')));
     assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+    await p.locator('[data-s="kai"]').click();
     if(width===390&&key==='rain'){await p.waitForTimeout(750);await p.evaluate(()=>scrollTo(0,0));await p.screenshot({path:'/workspace/projects/weather-outfit/rain-phone.png'});}
    }
    await p.goto(base);await p.waitForSelector('.day');
@@ -40,9 +50,13 @@ function forecast(code=3,time='12:00'){
    data=forecast(3,'22:00');await p.evaluate(()=>load());assert.equal(await p.locator('body').getAttribute('data-sky'),'cloud');assert(await p.locator('body').evaluate(e=>e.classList.contains('world-night')));
    await p.emulateMedia({reducedMotion:'reduce'});await p.waitForFunction(()=>document.getElementById('motion-toggle').disabled);assert(await p.locator('#motion-toggle').isDisabled());assert.equal(await p.locator('.world-cloud').first().evaluate(e=>getComputedStyle(e).animationName),'none');
    await p.locator('[data-s="neutral"]').click();await p.waitForFunction(()=>document.querySelector('.figure.on')?.src.includes('-neutral.webp'));
+   await p.locator('[data-s="men"]').click();await p.reload();await p.waitForSelector('.day');
+   assert.equal(await p.locator('[data-s="men"]').getAttribute('aria-pressed'),'true','Men choice persists');
+   await p.locator('[data-s="women"]').click();await p.reload();await p.waitForSelector('.day');
+   assert.equal(await p.locator('[data-s="women"]').getAttribute('aria-pressed'),'true','Women choice persists');
    await p.emulateMedia({reducedMotion:'no-preference'});await p.waitForFunction(()=>!document.getElementById('motion-toggle').disabled);await p.evaluate(()=>scrollTo(0,0));
    if(width===1440)await p.screenshot({path:'/workspace/projects/weather-outfit/night-desktop.png'});
-   assert.deepEqual(errors,[]);await context.close();console.log(`${width}px: seven Kai outfits, scene matching, both characters, night lighting, motion controls, saved preferences and reduced motion passed`);
+   assert.deepEqual(errors,[]);await context.close();console.log(`${width}px: seven outfits for Kai, Men, and Women, scene matching, motion controls, saved preferences and reduced motion passed`);
   }
  }finally{await b.close();}
 })().catch(e=>{console.error(e);process.exit(1)});
