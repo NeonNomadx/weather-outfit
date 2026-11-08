@@ -42,6 +42,8 @@ function forecast(code=3,time='12:00'){
    await p.goto(base);await p.waitForSelector('.day');
    assert.equal(await p.locator('[data-s="kai"]').getAttribute('aria-pressed'),'true','Character choice persists');
    assert.equal(await p.locator('#motion-toggle').count(),0,'Motion button is gone');
+   assert.equal(await p.locator('meta[name="apple-mobile-web-app-title"]').getAttribute('content'),'Weather Outfit');
+   assert.equal(await p.locator('link[rel="apple-touch-icon"]').getAttribute('href'),'icons/apple-touch-icon-v1.png');
    assert.equal(await p.locator('.world-cloud').first().evaluate(e=>getComputedStyle(e).animationName),'world-drift');
    await p.evaluate(()=>localStorage.setItem('weather-outfit-motion','off'));
    await p.reload();await p.waitForSelector('.day');
