@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Weather & Outfit</title>
 <style>
 *{box-sizing:border-box}
@@ -98,11 +98,12 @@ small,.muted{opacity:.85}
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#1e3c72">
-<link rel="stylesheet" href="weather-scene.css?v=5">
+<link rel="preload" as="image" href="assets/waterfront-sunset.webp">
+<link rel="stylesheet" href="weather-scene.css?v=waterfront1">
 <script defer src="weather-scene.js?v=4"></script>
 </head>
 <body data-sky="partly">
-<div class="weather-world" aria-hidden="true"><div class="world-sun"></div><div class="world-moon"></div><div class="world-cloud"></div><div class="world-cloud cloud-two"></div><div class="world-cloud cloud-three"></div><div class="world-stars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="world-rain"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="world-snow"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><svg class="world-landscape" viewBox="0 0 1440 400" preserveAspectRatio="none"><path class="far-hill" d="M0 190Q180 20 420 170T900 155T1440 100V400H0Z"/><path class="near-hill" d="M0 290Q260 120 530 270T1030 240T1440 200V400H0Z"/><g class="trees"><path d="M55 300h20v-95h34l-45-60-43 60h31v35H9l55-75 53 75H75v60Zm1260 80h20v-110h37l-47-70-46 70h35v30h-45l56-85 57 85h-47v80Zm85-35h15v-75h25l-32-50-32 50h24v75Z"/></g></svg></div>
+<div class="weather-world" aria-hidden="true"><img class="world-waterfront" src="assets/waterfront-sunset.webp" alt="" width="941" height="1672" fetchpriority="high" decoding="async"><div class="world-sun"></div><div class="world-moon"></div><div class="world-cloud"></div><div class="world-cloud cloud-two"></div><div class="world-cloud cloud-three"></div><div class="world-stars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="world-rain"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="world-snow"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><svg class="world-landscape" viewBox="0 0 1440 400" preserveAspectRatio="none"><path class="far-hill" d="M0 190Q180 20 420 170T900 155T1440 100V400H0Z"/><path class="near-hill" d="M0 290Q260 120 530 270T1030 240T1440 200V400H0Z"/><g class="trees"><path d="M55 300h20v-95h34l-45-60-43 60h31v35H9l55-75 53 75H75v60Zm1260 80h20v-110h37l-47-70-46 70h35v30h-45l56-85 57 85h-47v80Zm85-35h15v-75h25l-32-50-32 50h24v75Z"/></g></svg></div>
 <div class="wrap">
 <h1>🌤️ Weather & What to Wear</h1>
 <div class="bar">
@@ -926,6 +927,7 @@ setInterval(load,15*60*1000);
 </script>
 </body>
 </html>
+
 
 
 

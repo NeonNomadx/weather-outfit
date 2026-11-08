@@ -56,3 +56,21 @@ body.world-night .world-landscape{opacity:.9}
 @media(prefers-reduced-motion:reduce){.weather-world *,.stage *{animation:none!important;transition:none!important}}
 /* Time fields stay compact inside their vertical flex labels. */
 .trip-bar input{flex:0 0 auto;height:44px;min-height:44px}
+
+
+/* Decorative sunset waterfront: a separate fixed layer preserves document scrolling. */
+body{background:#142b49}
+.weather-world .world-waterfront{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 54%;z-index:0;user-select:none;-webkit-user-drag:none}
+.weather-world::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,#07162c30,#101b302b 48%,#09162d5c);pointer-events:none}
+.weather-world > :not(.world-waterfront){z-index:2}
+.world-landscape{display:none}
+.world-cloud{opacity:.09}
+body[data-sky="rain"] .world-cloud,body[data-sky="cloud"] .world-cloud{opacity:.19}
+body.world-night .weather-world::after{background:linear-gradient(180deg,#07112766,#0b183b55 55%,#08102580)}
+.wrap{padding:calc(16px + env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) calc(28px + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+h1{text-shadow:0 2px 10px #061529b3}
+.card{background:linear-gradient(135deg,#13263ff2,#1a2c46ed);border-color:#dae8ff45;backdrop-filter:none}
+.bar button,#styles button{background:#344c65ed;border:1px solid #deebff30}
+.bar button:hover,#styles button:hover,#styles button.on,#styles button[aria-pressed="true"],#trip.on{background:#fff;color:#1e3c72}
+.character-label,.trip-bar label,#upd,.wrap>small,.character-caption{color:#f0f5ff;text-shadow:0 1px 6px #07162be6}
+@media(min-width:1000px){.weather-world .world-waterfront{object-position:center 58%}}
