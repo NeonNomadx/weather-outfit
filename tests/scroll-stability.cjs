@@ -82,6 +82,30 @@ function forecast() {
       });
       assert.equal(stripScroll.actual,stripScroll.target,'The hourly forecast must still scroll sideways');
       if(width<1024)assert(stripScroll.max>0,'Narrow layouts keep a sideways hour scroller');
+      const gesture=await page.evaluate(()=>{
+        const stage=document.getElementById('stage'),strip=document.getElementById('hours'),rec=document.getElementById('rec');
+        const y=rec.getBoundingClientRect().top+scrollY-12;
+        window.scrollTo(0,Math.max(0,y));
+        return {
+          stageOverflow:getComputedStyle(stage).overflowY,
+          stripTouch:getComputedStyle(strip).touchAction,
+          y:scrollY,
+          stageTop:stage.getBoundingClientRect().top,
+          recTop:rec.getBoundingClientRect().top
+        };
+      });
+      assert.equal(gesture.stageOverflow,'clip','The character portrait must not be a nested scroll container');
+      assert.equal(gesture.stripTouch,'pan-x','The hourly strip must not claim vertical scrolling');
+      assert(gesture.stageTop<0,'The white outfit card is below the character');
+      await page.waitForTimeout(700);
+      const parked=await page.evaluate(()=>({
+        y:scrollY,
+        stageTop:document.getElementById('stage').getBoundingClientRect().top,
+        recTop:document.getElementById('rec').getBoundingClientRect().top
+      }));
+      assert(Math.abs(parked.y-gesture.y)<=2,'Stopping at the white card before the forecast must not move the page');
+      assert(parked.stageTop<0,'Stopping there must not snap back to the character');
+      assert(Math.abs(parked.recTop-gesture.recTop)<=2);
       assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
       // Chromium scroll-anchors this update away. WebKit does not, so the forecast
       // slides down while scrollY stays put. Force that behavior and require the app to hold the view.

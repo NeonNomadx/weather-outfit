@@ -26,12 +26,14 @@ h1{font-size:1.45rem;margin:8px 0 12px}
 .place{font-size:1.15rem}
 .big{font-size:3.4rem;font-weight:720;letter-spacing:-.03em;line-height:1}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:.95rem;margin-top:8px}
-/* Width-based portrait sizing stays stable when mobile browser controls show or hide. */
-.stage{position:relative;width:303.75px;max-width:100%;height:auto;aspect-ratio:9/16;margin:4px auto 12px;border-radius:28px;overflow:hidden;background:linear-gradient(#69b7ee,#d7f3ff 72%,#c6e6b4);box-shadow:0 12px 28px #04142833,inset 0 0 0 1px #ffffff66}
+/* Width-based portrait sizing stays stable when mobile browser controls show or hide.
+   overflow:clip keeps the rounded mask without making the portrait a scroll container.
+   overflow:hidden is one, and iOS snaps the page back to it when the finger lifts just below. */
+.stage{position:relative;width:303.75px;max-width:100%;height:auto;aspect-ratio:9/16;margin:4px auto 12px;border-radius:28px;overflow:hidden;overflow:clip;touch-action:pan-y;background:linear-gradient(#69b7ee,#d7f3ff 72%,#c6e6b4);box-shadow:0 12px 28px #04142833,inset 0 0 0 1px #ffffff66}
 @supports not (aspect-ratio:9/16){.stage::before{content:"";display:block;padding-top:177.777778%}}
 .stage svg{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
 .ground{position:absolute;z-index:1;left:16%;right:16%;bottom:2.2%;height:16px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(0,0,0,.38),transparent 70%);pointer-events:none}
-.figure{position:absolute;left:0;top:0;z-index:2;width:100%;height:100%;object-fit:contain;object-position:center bottom;opacity:0;transition:opacity .5s ease;transform-origin:50% 100%;animation:bob 4.6s ease-in-out infinite}
+.figure{position:absolute;left:0;top:0;z-index:2;width:100%;height:100%;object-fit:contain;object-position:center bottom;opacity:0;transition:opacity .5s ease;transform-origin:50% 100%;animation:bob 4.6s ease-in-out infinite;pointer-events:none;-webkit-user-drag:none}
 .figure.on{opacity:1}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 #styles[hidden]{display:none}
@@ -69,8 +71,8 @@ h1{font-size:1.45rem;margin:8px 0 12px}
 .rec .items b{font-weight:760}
 .rec .tip{display:flex;gap:8px;align-items:flex-start;margin:0;font-size:1.02rem;line-height:1.38}
 .rec .tip .bulb{flex:0 0 auto;font-size:1.1rem;line-height:1.3}
-/* Explicit overflow-y stops overflow-x:auto from becoming a vertical scrollport that pulls the page back. */
-.strip{display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;overflow-y:clip;overscroll-behavior-x:contain;padding-bottom:6px;touch-action:pan-x pan-y}
+/* Vertical pan stays with the page. pan-y here lets Safari grab this strip and, on finger-up, undo the scroll. */
+.strip{display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;overflow-y:clip;overscroll-behavior-x:contain;padding-bottom:6px;touch-action:pan-x}
 .h{min-width:70px;text-align:center;background:#ffffff1a;border-radius:12px;padding:8px}
 .day{display:grid;grid-template-columns:90px 40px 90px 1fr;gap:8px;align-items:center;padding:10px 8px;border:0;border-bottom:1px solid #ffffff22;border-radius:12px;cursor:pointer;text-align:left;width:100%;color:inherit;background:transparent;font:inherit}
 .day:last-child{border-bottom:0}
@@ -138,8 +140,8 @@ small,.muted{opacity:.85}
 <g class="fx gusts" fill="none" stroke="#ffffffcc" stroke-width="2" stroke-linecap="round"><path d="M18 250c28-8 40 8 62 0"/><path d="M10 300c36-10 48 10 78 0"/><path d="M24 430c30-6 36 8 58 0"/></g>
 </svg>
 <div class="ground" aria-hidden="true"></div>
-<img id="charA" class="figure on" alt="Outfit for this weather" width="720" height="1280" src="assets/char-sunny-neutral.webp" srcset="assets/char-sunny-neutral.webp 1x, assets/char-sunny-neutral@2x.webp 2x">
-<img id="charB" class="figure" alt="" width="720" height="1280">
+<img id="charA" class="figure on" alt="Outfit for this weather" width="720" height="1280" draggable="false" src="assets/char-sunny-neutral.webp" srcset="assets/char-sunny-neutral.webp 1x, assets/char-sunny-neutral@2x.webp 2x">
+<img id="charB" class="figure" alt="" width="720" height="1280" draggable="false">
 </div>
 <p class="character-caption" id="character-caption" role="status">Skye · weather-ready wardrobe</p>
 <section class="rec" id="rec" aria-live="polite">
