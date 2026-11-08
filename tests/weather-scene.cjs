@@ -41,20 +41,27 @@ function forecast(code=3,time='12:00'){
    }
    await p.goto(base);await p.waitForSelector('.day');
    assert.equal(await p.locator('[data-s="kai"]').getAttribute('aria-pressed'),'true','Character choice persists');
+   assert.equal(await p.locator('#motion-toggle').count(),0,'Motion button is gone');
+   assert.equal(await p.locator('meta[name="apple-mobile-web-app-title"]').getAttribute('content'),'Weather Outfit');
+   assert.equal(await p.locator('link[rel="apple-touch-icon"]').getAttribute('href'),'icons/apple-touch-icon-v1.png');
+   assert.equal(await p.locator('.world-cloud').first().evaluate(e=>getComputedStyle(e).animationName),'world-drift');
+   await p.evaluate(()=>localStorage.setItem('weather-outfit-motion','off'));
+   await p.reload();await p.waitForSelector('.day');
+   assert.equal(await p.evaluate(()=>localStorage.getItem('weather-outfit-motion')),null,'A saved off preference cannot turn motion back off');
+   assert.equal(await p.locator('body').evaluate(e=>e.classList.contains('motion-paused')),false);
    assert.equal(await p.locator('.world-cloud').first().evaluate(e=>getComputedStyle(e).animationPlayState),'running');
-   await p.locator('#motion-toggle').click();assert(await p.locator('body').evaluate(e=>e.classList.contains('motion-paused')));
-   assert.equal(await p.locator('.world-cloud').first().evaluate(e=>getComputedStyle(e).animationPlayState),'paused');
-   await p.reload();await p.waitForSelector('.day');assert.equal(await p.locator('#motion-toggle').getAttribute('aria-pressed'),'false','Motion choice persists');
-   await p.locator('#motion-toggle').click();
    data=forecast(0,'22:00');await p.evaluate(()=>load());assert.equal(await p.locator('body').getAttribute('data-sky'),'night');assert(await p.locator('body').evaluate(e=>e.classList.contains('world-night')));
    data=forecast(3,'22:00');await p.evaluate(()=>load());assert.equal(await p.locator('body').getAttribute('data-sky'),'cloud');assert(await p.locator('body').evaluate(e=>e.classList.contains('world-night')));
-   await p.emulateMedia({reducedMotion:'reduce'});await p.waitForFunction(()=>document.getElementById('motion-toggle').disabled);assert(await p.locator('#motion-toggle').isDisabled());assert.equal(await p.locator('.world-cloud').first().evaluate(e=>getComputedStyle(e).animationName),'none');
+   await p.emulateMedia({reducedMotion:'reduce'});await p.waitForFunction(()=>document.body.classList.contains('motion-paused'));
+   assert.equal(await p.locator('.world-cloud').first().evaluate(e=>getComputedStyle(e).animationName),'none','System reduced motion still stops animation');
    await p.locator('[data-s="neutral"]').click();await p.waitForFunction(()=>document.querySelector('.figure.on')?.src.includes('-neutral.webp'));
    await p.locator('[data-s="men"]').click();await p.reload();await p.waitForSelector('.day');
    assert.equal(await p.locator('[data-s="men"]').getAttribute('aria-pressed'),'true','Men choice persists');
    await p.locator('[data-s="women"]').click();await p.reload();await p.waitForSelector('.day');
    assert.equal(await p.locator('[data-s="women"]').getAttribute('aria-pressed'),'true','Women choice persists');
-   await p.emulateMedia({reducedMotion:'no-preference'});await p.waitForFunction(()=>!document.getElementById('motion-toggle').disabled);await p.evaluate(()=>scrollTo(0,0));
+   await p.emulateMedia({reducedMotion:'no-preference'});await p.waitForFunction(()=>!document.body.classList.contains('motion-paused'));
+   assert.equal(await p.locator('.figure.on').evaluate(e=>getComputedStyle(e).animationName),'bob');
+   await p.evaluate(()=>scrollTo(0,0));
    if(width===1440)await p.screenshot({path:'/workspace/projects/weather-outfit/night-desktop.png'});
    assert.deepEqual(errors,[]);await context.close();console.log(`${width}px: seven outfits for Kai, Men, and Women, scene matching, motion controls, saved preferences and reduced motion passed`);
   }

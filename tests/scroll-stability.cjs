@@ -27,8 +27,10 @@ function forecast() {
         if(/\.webp(?:\?|$)/.test(url))return route.fulfill({contentType:'image/png',body:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/l9sAAAAASUVORK5CYII=','base64')});
         return route.continue();
       });
-      await page.goto(pathToFileURL(path.resolve(__dirname,'../index.html')).href);
+      const pageUrl=pathToFileURL(path.resolve(__dirname,'../index.html')).href;
+      await page.goto(pageUrl);
       await page.waitForSelector('.day');
+      assert.equal(await page.locator('#labbar').count(),0,'Diagnostics stay hidden unless the lab flag is on');
       const overflow=await page.evaluate(()=>{
         const axis=el=>{const s=getComputedStyle(el);return {x:s.overflowX,y:s.overflowY};};
         return {html:axis(document.documentElement),body:axis(document.body),strip:axis(document.getElementById('hours')),world:axis(document.querySelector('.weather-world'))};
@@ -74,16 +76,88 @@ function forecast() {
       assert(pathY.every((y,i)=>i===0||y+1>=pathY[i-1]),'Downward scrolling must not jump back up');
       assert(settled+1>=pathY.at(-1),'Scroll position must stay where the gesture left it');
       assert(pathY.at(-1)>pathY[0],'Ordinary scrolling must still work');
-      const stripScroll=await page.locator('#hours').evaluate(strip=>{
-        const max=strip.scrollWidth-strip.clientWidth;
-        const target=Math.min(40,max);
-        strip.scrollLeft=target;
-        return {target,actual:strip.scrollLeft,max};
+      const hours=await page.locator('#hours').evaluate(strip=>{
+        const s=getComputedStyle(strip);
+        return {x:s.overflowX,y:s.overflowY,count:strip.children.length};
       });
-      assert.equal(stripScroll.actual,stripScroll.target,'The hourly forecast must still scroll sideways');
-      if(width<1024)assert(stripScroll.max>0,'Narrow layouts keep a sideways hour scroller');
+      assert.equal(hours.count,12,'The next 12 hours stay on the page');
+      assert.equal(hours.x,'visible','The hour row is not its own horizontal scroller');
+      assert.equal(hours.y,'visible','The hour row is not a vertical scroller');
+      const gesture=await page.evaluate(()=>{
+        const stage=document.getElementById('stage'),rec=document.getElementById('rec');
+        const y=rec.getBoundingClientRect().top+scrollY-12;
+        window.scrollTo(0,Math.max(0,y));
+        return {
+          stageOverflow:getComputedStyle(stage).overflowY,
+          stageTouch:getComputedStyle(stage).touchAction,
+          y:scrollY,
+          stageTop:stage.getBoundingClientRect().top,
+          recTop:rec.getBoundingClientRect().top
+        };
+      });
+      assert.equal(gesture.stageOverflow,'clip','The character portrait must not be a nested scroll container');
+      assert.equal(gesture.stageTouch,'auto','The portrait must not claim the vertical pan');
+      assert(gesture.stageTop<0,'The white outfit card is below the character');
+      await page.waitForTimeout(700);
+      const parked=await page.evaluate(()=>({
+        y:scrollY,
+        stageTop:document.getElementById('stage').getBoundingClientRect().top,
+        recTop:document.getElementById('rec').getBoundingClientRect().top
+      }));
+      assert(Math.abs(parked.y-gesture.y)<=2,'Stopping at the white card before the forecast must not move the page');
+      assert(parked.stageTop<0,'Stopping there must not snap back to the character');
+      assert(Math.abs(parked.recTop-gesture.recTop)<=2);
       assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+      // Chromium scroll-anchors this update away. WebKit does not, so the forecast
+      // slides down while scrollY stays put. Force that behavior and require the app to hold the view.
+      await page.addStyleTag({content:'*{overflow-anchor:none !important}'});
+      const held=await page.evaluate(()=>{
+        window.scrollTo(0,1100);
+        const day=document.querySelectorAll('.day')[3];
+        window.visualMarker=day;
+        return {top:day.getBoundingClientRect().top,y:scrollY};
+      });
+      await page.evaluate(()=>{
+        st.name='South San Francisco International Airport District, a very long wrapped place name';
+        last.current.wind_gusts_10m=70;
+        last.current.temperature_2m=41;
+        render(last);
+      });
+      const shifted=await page.evaluate(()=>({
+        top:window.visualMarker.getBoundingClientRect().top,
+        y:scrollY,
+        connected:window.visualMarker.isConnected
+      }));
+      assert(shifted.connected,'The forecast row must stay mounted');
+      assert(Math.abs(shifted.top-held.top)<=2,`A weather update moved the forecast by ${shifted.top-held.top}px`);
+      assert(shifted.y>200,'A weather update must not jump back to the top');
+      const stageH=await page.locator('#stage').evaluate(el=>el.offsetHeight);
+      const beforeResize=await page.evaluate(()=>({y:scrollY,top:window.visualMarker.getBoundingClientRect().top}));
+      await page.setViewportSize({width,height:width<500?820:900});
+      const afterResize=await page.evaluate(()=>({y:scrollY,top:window.visualMarker.getBoundingClientRect().top,stage:document.getElementById('stage').offsetHeight}));
+      assert.equal(afterResize.stage,stageH,'Toolbar resizing must not resize the portrait');
+      assert(Math.abs(afterResize.y-beforeResize.y)<=2,'Toolbar resizing must not reset scroll');
+      assert(Math.abs(afterResize.top-beforeResize.top)<=2,'Toolbar resizing must not move the forecast');
+      const fixed=await page.evaluate(()=>{
+        const box=document.querySelector('.weather-world').getBoundingClientRect();
+        return {top:box.top,h:box.height,ih:innerHeight};
+      });
+      assert(Math.abs(fixed.top)<=1&&Math.abs(fixed.h-fixed.ih)<=1,'The backdrop stays fixed to the viewport');
       assert.deepEqual(errors,[]);
+      if(width===390){
+        await page.goto(pageUrl+'?lab=1&demo=rain');
+        await page.waitForSelector('#labbar');
+        assert.match(await page.locator('#labbuild').innerText(),/pr3-lab2/);
+        await page.locator('[data-lab="portrait"]').click();
+        assert.equal(await page.evaluate(()=>document.body.classList.contains('lab-portrait')),true);
+        assert.equal(await page.locator('#stage').evaluate(el=>getComputedStyle(el).overflowY),'visible');
+        await page.locator('[data-lab="strip"]').click();
+        assert.equal(await page.locator('#hours').evaluate(el=>getComputedStyle(el).touchAction),'auto');
+        await page.locator('[data-lab="pause"]').click();
+        assert.equal(await page.evaluate(()=>document.body.classList.contains('lab-pause')),true);
+        await page.locator('[data-lab="current"]').click();
+        assert.equal(await page.locator('#stage').evaluate(el=>getComputedStyle(el).overflowY),'clip');
+      }
       await page.close();console.log(`${width}px: stable portrait, day selection/focus, refresh, horizontal forecast, and scrolling passed`);
     }
   } finally {await browser.close();}

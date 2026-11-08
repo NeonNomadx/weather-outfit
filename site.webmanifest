@@ -1,7 +1,7 @@
 {
   "id": "./",
-  "name": "Weather & Outfit",
-  "short_name": "Weather Fit",
+  "name": "Weather Outfit",
+  "short_name": "Weather Outfit",
   "description": "Local forecasts and outfit recommendations for your day.",
   "start_url": "./",
   "scope": "./",
@@ -10,6 +10,12 @@
   "theme_color": "#1e3c72",
   "lang": "en",
   "icons": [
+    {
+      "src": "icons/apple-touch-icon-v1.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "icons/app-icon-192-v1.png",
       "sizes": "192x192",
