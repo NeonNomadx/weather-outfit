@@ -83,6 +83,41 @@ function forecast() {
       assert.equal(stripScroll.actual,stripScroll.target,'The hourly forecast must still scroll sideways');
       if(width<1024)assert(stripScroll.max>0,'Narrow layouts keep a sideways hour scroller');
       assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+      // Chromium scroll-anchors this update away. WebKit does not, so the forecast
+      // slides down while scrollY stays put. Force that behavior and require the app to hold the view.
+      await page.addStyleTag({content:'*{overflow-anchor:none !important}'});
+      const held=await page.evaluate(()=>{
+        window.scrollTo(0,1100);
+        const day=document.querySelectorAll('.day')[3];
+        window.visualMarker=day;
+        return {top:day.getBoundingClientRect().top,y:scrollY};
+      });
+      await page.evaluate(()=>{
+        st.name='South San Francisco International Airport District, a very long wrapped place name';
+        last.current.wind_gusts_10m=70;
+        last.current.temperature_2m=41;
+        render(last);
+      });
+      const shifted=await page.evaluate(()=>({
+        top:window.visualMarker.getBoundingClientRect().top,
+        y:scrollY,
+        connected:window.visualMarker.isConnected
+      }));
+      assert(shifted.connected,'The forecast row must stay mounted');
+      assert(Math.abs(shifted.top-held.top)<=2,`A weather update moved the forecast by ${shifted.top-held.top}px`);
+      assert(shifted.y>200,'A weather update must not jump back to the top');
+      const stageH=await page.locator('#stage').evaluate(el=>el.offsetHeight);
+      const beforeResize=await page.evaluate(()=>({y:scrollY,top:window.visualMarker.getBoundingClientRect().top}));
+      await page.setViewportSize({width,height:width<500?820:900});
+      const afterResize=await page.evaluate(()=>({y:scrollY,top:window.visualMarker.getBoundingClientRect().top,stage:document.getElementById('stage').offsetHeight}));
+      assert.equal(afterResize.stage,stageH,'Toolbar resizing must not resize the portrait');
+      assert(Math.abs(afterResize.y-beforeResize.y)<=2,'Toolbar resizing must not reset scroll');
+      assert(Math.abs(afterResize.top-beforeResize.top)<=2,'Toolbar resizing must not move the forecast');
+      const fixed=await page.evaluate(()=>{
+        const box=document.querySelector('.weather-world').getBoundingClientRect();
+        return {top:box.top,h:box.height,ih:innerHeight};
+      });
+      assert(Math.abs(fixed.top)<=1&&Math.abs(fixed.h-fixed.ih)<=1,'The backdrop stays fixed to the viewport');
       assert.deepEqual(errors,[]);
       await page.close();console.log(`${width}px: stable portrait, day selection/focus, refresh, horizontal forecast, and scrolling passed`);
     }

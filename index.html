@@ -8,7 +8,7 @@
 *{box-sizing:border-box}
 /* clip keeps horizontal overflow from widening the page without turning overflow-y into auto. hidden on both html and body made two scrollports, and mobile/desktop scrolling snapped back up. */
 html{overflow-x:hidden;overflow-x:clip}
-body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:linear-gradient(165deg,#16345f,#2a5298 55%,#6ec8e0);color:#fff;min-height:100vh}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:linear-gradient(165deg,#16345f,#2a5298 55%,#6ec8e0);color:#fff;min-height:100vh;min-height:100lvh}
 .wrap{max-width:960px;margin:auto;padding:16px}
 h1{font-size:1.45rem;margin:8px 0 12px}
 .bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
@@ -97,7 +97,7 @@ small,.muted{opacity:.85}
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#1e3c72">
-<link rel="stylesheet" href="weather-scene.css?v=2">
+<link rel="stylesheet" href="weather-scene.css?v=3">
 <script defer src="weather-scene.js?v=1"></script>
 </head>
 <body data-sky="partly">
@@ -582,7 +582,28 @@ function syncHourlyForecast(markup){
   strip.scrollLeft=position;
   lastHourlyMarkup=markup;
 }
+// Browsers without scroll anchoring leave scrollY unchanged when the conditions
+  // card grows, so the forecast slides down and the page looks like it jumped up.
+function viewAnchor(){
+  if(typeof window==="undefined"||window.scrollY<2)return null;
+  const nodes=[...document.querySelectorAll(".day"),$("hours"),$("rec"),$("stage")];
+  const mid=window.innerHeight*0.45;
+  let best=null,score=1e9;
+  for(const el of nodes){
+    if(!el||!el.getBoundingClientRect)continue;
+    const top=el.getBoundingClientRect().top;
+    const dist=Math.abs(top-mid);
+    if(dist<score){score=dist;best={el,top};}
+  }
+  return best;
+}
+function keepView(saved){
+  if(!saved||!saved.el.isConnected)return;
+  const delta=saved.el.getBoundingClientRect().top-saved.top;
+  if(Math.abs(delta)>1)window.scrollBy(0,delta);
+}
 function render(d){
+  const kept=viewAnchor();
   const c=d.current,demo=activeDemo();
   const rows=rowsFrom(d);
   $("place").textContent=st.name+(demo?" · demo":"");
@@ -718,6 +739,7 @@ function render(d){
   if(tripBtn){tripBtn.classList.toggle("on",tripMode);tripBtn.setAttribute("aria-pressed",tripMode?"true":"false");}
   setFigure(key,style);
   $("upd").textContent="Last updated: "+new Date().toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});
+  keepView(kept);
 }
 async function load(){
   $("msg").textContent="";

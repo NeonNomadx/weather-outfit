@@ -10,7 +10,8 @@ body[data-sky="night"],body.world-night{--world-top:#0c1732;--world-bottom:#253d
 .card{background:linear-gradient(135deg,#133555eb,#17324de8);border:1px solid #d7efff28;backdrop-filter:none;box-shadow:0 10px 26px #091c3220}
 .bar button{min-height:44px}.bar input{min-height:44px}
 .bar button:focus-visible,.day:focus-visible{outline:3px solid #d0f1ff;outline-offset:3px}
-.weather-world{position:fixed;inset:0;z-index:0;overflow:hidden;overflow:clip;pointer-events:none;contain:strict}
+/* Stay on the large viewport. inset/bottom:0 follows the iOS toolbar and resizes this layer while the reader scrolls. */
+.weather-world{position:fixed;top:0;left:0;width:100%;height:100vh;height:100lvh;z-index:0;overflow:hidden;overflow:clip;pointer-events:none;contain:strict}
 .world-sun{position:absolute;right:9%;top:7%;width:112px;height:112px;border-radius:50%;background:#ffe29b;box-shadow:0 0 0 18px #ffe29b12,0 0 75px #ffdc8580;opacity:0;transition:opacity .7s}
 .world-sun:before{content:"";position:absolute;inset:-24px;border:2px dashed #ffe7aa60;border-radius:50%;animation:world-orbit 65s linear infinite}
 body[data-sky="sun"] .world-sun,body[data-sky="partly"] .world-sun{opacity:.9}
