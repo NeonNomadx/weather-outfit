@@ -27,8 +27,10 @@ function forecast() {
         if(/\.webp(?:\?|$)/.test(url))return route.fulfill({contentType:'image/png',body:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/l9sAAAAASUVORK5CYII=','base64')});
         return route.continue();
       });
-      await page.goto(pathToFileURL(path.resolve(__dirname,'../index.html')).href);
+      const pageUrl=pathToFileURL(path.resolve(__dirname,'../index.html')).href;
+      await page.goto(pageUrl);
       await page.waitForSelector('.day');
+      assert.equal(await page.locator('#labbar').count(),0,'Diagnostics stay hidden unless the lab flag is on');
       const overflow=await page.evaluate(()=>{
         const axis=el=>{const s=getComputedStyle(el);return {x:s.overflowX,y:s.overflowY};};
         return {html:axis(document.documentElement),body:axis(document.body),strip:axis(document.getElementById('hours')),world:axis(document.querySelector('.weather-world'))};
@@ -143,6 +145,20 @@ function forecast() {
       });
       assert(Math.abs(fixed.top)<=1&&Math.abs(fixed.h-fixed.ih)<=1,'The backdrop stays fixed to the viewport');
       assert.deepEqual(errors,[]);
+      if(width===390){
+        await page.goto(pageUrl+'?lab=1&demo=rain');
+        await page.waitForSelector('#labbar');
+        assert.match(await page.locator('#labbuild').innerText(),/pr3-lab2/);
+        await page.locator('[data-lab="portrait"]').click();
+        assert.equal(await page.evaluate(()=>document.body.classList.contains('lab-portrait')),true);
+        assert.equal(await page.locator('#stage').evaluate(el=>getComputedStyle(el).overflowY),'visible');
+        await page.locator('[data-lab="strip"]').click();
+        assert.equal(await page.locator('#hours').evaluate(el=>getComputedStyle(el).touchAction),'auto');
+        await page.locator('[data-lab="pause"]').click();
+        assert.equal(await page.evaluate(()=>document.body.classList.contains('lab-pause')),true);
+        await page.locator('[data-lab="current"]').click();
+        assert.equal(await page.locator('#stage').evaluate(el=>getComputedStyle(el).overflowY),'clip');
+      }
       await page.close();console.log(`${width}px: stable portrait, day selection/focus, refresh, horizontal forecast, and scrolling passed`);
     }
   } finally {await browser.close();}
