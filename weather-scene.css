@@ -40,11 +40,8 @@ body[data-sky="rain"] .world-rain,body[data-sky="snow"] .world-snow{display:bloc
 .world-landscape .far-hill{fill:#93bbbc22}.world-landscape .near-hill{fill:#153f4c77}.world-landscape .trees{fill:#122d3c88;transform-origin:bottom center;animation:world-sway 12s ease-in-out infinite alternate}
 body.world-night .world-landscape{opacity:.9}
 .character-bar{align-items:center}.character-label{font-size:.85rem;color:#d6eaff;margin-right:4px}.character-bar button{min-width:58px}
-.character-bar #motion-toggle{margin-left:auto;font-size:.85rem;width:140px;min-width:140px;border:1px solid #b3d5ed44}
-.character-bar #motion-toggle[aria-pressed="false"]{background:#142d47a6;color:#d7e9ff}
 .character-caption{text-align:center;margin:0 0 14px;font-size:.8rem;color:#e0efff}
 #styles button[aria-pressed="true"]{background:#fff;color:#1e3c72}
-#motion-toggle:disabled{opacity:.75;cursor:default}
 .motion-paused .weather-world *,.motion-paused .stage *,.page-hidden .weather-world *,.page-hidden .stage *,.stage.scene-offscreen *{animation-play-state:paused!important}
 .motion-paused .figure,.page-hidden .figure{animation-play-state:paused!important}
 @keyframes world-drift{from{transform:translate3d(0,0,0) scale(var(--cloud-scale))}to{transform:translate3d(95px,12px,0) scale(var(--cloud-scale))}}
@@ -53,7 +50,7 @@ body.world-night .world-landscape{opacity:.9}
 @keyframes world-fall{to{transform:translate3d(-45px,105vh,0)}}
 @keyframes world-snowfall{0%{transform:translate3d(0,-10px,0)}50%{transform:translate3d(28px,52vh,0)}100%{transform:translate3d(5px,105vh,0)}}
 @keyframes world-sway{from{transform:rotate(-.7deg)}to{transform:rotate(.7deg)}}
-@media(max-width:640px){.world-sun{width:80px;height:80px;right:-10px;top:6%}.world-cloud{animation-duration:55s}.world-cloud.cloud-three{display:none}.world-rain i:nth-child(n+6),.world-snow i:nth-child(n+6){display:none}.world-landscape{height:22%;min-height:140px}.character-label{font-size:.8rem}.character-bar{gap:7px}.character-bar button{padding:10px 12px}.character-bar #motion-toggle{width:140px;min-width:140px}.world-moon{right:4%;width:58px;height:58px}}
+@media(max-width:640px){.world-sun{width:80px;height:80px;right:-10px;top:6%}.world-cloud{animation-duration:55s}.world-cloud.cloud-three{display:none}.world-rain i:nth-child(n+6),.world-snow i:nth-child(n+6){display:none}.world-landscape{height:22%;min-height:140px}.character-label{font-size:.8rem}.character-bar{gap:7px}.character-bar button{padding:10px 12px}.world-moon{right:4%;width:58px;height:58px}}
 @media(prefers-reduced-motion:reduce){.weather-world *,.stage *{animation:none!important;transition:none!important}}
 
 .motion-paused .weather-world *,.motion-paused .stage *{transition:none!important}
