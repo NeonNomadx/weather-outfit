@@ -76,28 +76,27 @@ function forecast() {
       assert(pathY.every((y,i)=>i===0||y+1>=pathY[i-1]),'Downward scrolling must not jump back up');
       assert(settled+1>=pathY.at(-1),'Scroll position must stay where the gesture left it');
       assert(pathY.at(-1)>pathY[0],'Ordinary scrolling must still work');
-      const stripScroll=await page.locator('#hours').evaluate(strip=>{
-        const max=strip.scrollWidth-strip.clientWidth;
-        const target=Math.min(40,max);
-        strip.scrollLeft=target;
-        return {target,actual:strip.scrollLeft,max};
+      const hours=await page.locator('#hours').evaluate(strip=>{
+        const s=getComputedStyle(strip);
+        return {x:s.overflowX,y:s.overflowY,count:strip.children.length};
       });
-      assert.equal(stripScroll.actual,stripScroll.target,'The hourly forecast must still scroll sideways');
-      if(width<1024)assert(stripScroll.max>0,'Narrow layouts keep a sideways hour scroller');
+      assert.equal(hours.count,12,'The next 12 hours stay on the page');
+      assert.equal(hours.x,'visible','The hour row is not its own horizontal scroller');
+      assert.equal(hours.y,'visible','The hour row is not a vertical scroller');
       const gesture=await page.evaluate(()=>{
-        const stage=document.getElementById('stage'),strip=document.getElementById('hours'),rec=document.getElementById('rec');
+        const stage=document.getElementById('stage'),rec=document.getElementById('rec');
         const y=rec.getBoundingClientRect().top+scrollY-12;
         window.scrollTo(0,Math.max(0,y));
         return {
           stageOverflow:getComputedStyle(stage).overflowY,
-          stripTouch:getComputedStyle(strip).touchAction,
+          stageTouch:getComputedStyle(stage).touchAction,
           y:scrollY,
           stageTop:stage.getBoundingClientRect().top,
           recTop:rec.getBoundingClientRect().top
         };
       });
       assert.equal(gesture.stageOverflow,'clip','The character portrait must not be a nested scroll container');
-      assert.equal(gesture.stripTouch,'pan-x','The hourly strip must not claim vertical scrolling');
+      assert.equal(gesture.stageTouch,'auto','The portrait must not claim the vertical pan');
       assert(gesture.stageTop<0,'The white outfit card is below the character');
       await page.waitForTimeout(700);
       const parked=await page.evaluate(()=>({
