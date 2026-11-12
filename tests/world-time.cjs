@@ -1,0 +1,30 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {localClock,periodFor}=require('../world-time.js');
+const instant=new Date('2026-11-12T23:30:00Z');
+assert.deepEqual(localClock(instant,'Asia/Tokyo'),{day:'2026-11-13',minutes:510});
+assert.deepEqual(localClock(instant,'America/New_York'),{day:'2026-11-12',minutes:1110});
+assert.deepEqual(localClock(new Date('2026-03-08T06:59:00Z'),'America/New_York'),{day:'2026-03-08',minutes:119});
+assert.deepEqual(localClock(new Date('2026-03-08T07:00:00Z'),'America/New_York'),{day:'2026-03-08',minutes:180});
+assert.deepEqual(localClock(new Date('2026-11-01T05:30:00Z'),'America/New_York'),localClock(new Date('2026-11-01T06:30:00Z'),'America/New_York'));
+assert.deepEqual(localClock(instant,'invalid/timezone',19800),{day:'2026-11-13',minutes:300});
+assert.deepEqual(localClock(instant,'auto',-18000),{day:'2026-11-12',minutes:1110});
+assert.deepEqual(localClock(instant.getTime(),'UTC'),{day:'2026-11-12',minutes:1410});
+const localExpected={day:[instant.getFullYear(),String(instant.getMonth()+1).padStart(2,'0'),String(instant.getDate()).padStart(2,'0')].join('-'),minutes:instant.getHours()*60+instant.getMinutes()};
+assert.deepEqual(localClock(instant,'invalid',999999),localExpected);
+assert.throws(()=>localClock(new Date('invalid'),'UTC'),RangeError);
+const rise='2026-11-12T06:30',set='2026-11-12T17:00';
+for(const [minute,period]of [[0,'night'],[359,'night'],[360,'morning'],[719,'morning'],[720,'afternoon'],[959,'afternoon'],[960,'evening'],[1064,'evening'],[1065,'night'],[1439,'night']])assert.equal(periodFor(minute,rise,set),period,String(minute));
+assert.equal(periodFor(300,'05:30','20:30'),'morning');
+assert.equal(periodFor(1169,'05:30','20:30'),'afternoon');
+assert.equal(periodFor(1170,'05:30','20:30'),'evening');
+assert.equal(periodFor(1275,'05:30','20:30'),'night');
+assert.equal(periodFor(720,700,730),'evening','a short day has no negative afternoon interval');
+assert.equal(periodFor(1439,20,1430),'evening','late twilight is clipped at the end of today');
+assert.equal(periodFor(0,20,1430),'morning','early dawn is clipped at the start of today');
+assert.equal(periodFor(600,'2024-02-29T07:00','2024-02-29T18:00'),'morning');
+for(const [badRise,badSet]of [['2026-02-29T07:00','2026-02-29T18:00'],['2026-11-31T07:00','2026-11-31T18:00'],['2026-11-12T25:00',set],['6:30','17:00'],['06:60','17:00'],['06:30:60','17:00'],['2026-11-12T06:30Z',set],[rise,'2026-11-13T17:00'],[900,600],[null,null],['',''],[NaN,Infinity],[-1,1500],[0,0]]){
+ assert.equal(periodFor(359,badRise,badSet),'night');assert.equal(periodFor(360,badRise,badSet),'morning');assert.equal(periodFor(720,badRise,badSet),'afternoon');assert.equal(periodFor(1020,badRise,badSet),'evening');assert.equal(periodFor(1200,badRise,badSet),'night');
+}
+for(const invalid of [NaN,Infinity,-1,1440,'700',null])assert.equal(periodFor(invalid,rise,set),'night');
+console.log('World time: IANA zones, date rollover, DST, offset fallback, seasonal/twilight boundaries and invalid/polar solar data passed');
