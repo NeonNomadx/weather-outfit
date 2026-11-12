@@ -86,6 +86,8 @@ h1{font-size:1.45rem;margin:8px 0 12px}
 small,.muted{opacity:.85}
 .err{color:#ffd2d2}
 .note{display:block;margin-top:6px;line-height:1.35}
+
+.weather-sources{margin-top:14px;padding-top:12px;border-top:1px solid #dcecff40}.weather-sources h2{font-size:.92rem;margin:0 0 5px}.weather-source-location{font-size:.82rem;line-height:1.5;color:#e5efff;margin:0 0 10px}.weather-source-actions{display:flex;gap:8px;flex-wrap:wrap}.weather-source-actions a{display:inline-flex;align-items:center;justify-content:center;gap:6px;flex:1 1 160px;min-width:0;min-height:44px;padding:10px 12px;border:1px solid #c2e5ff70;border-radius:12px;background:#244c71;color:#fff;text-align:center;text-decoration:none;font-size:.86rem;font-weight:600;line-height:1.4}.weather-source-actions a:hover{background:#336589}.weather-source-actions a:focus-visible{outline:3px solid #d0f1ff;outline-offset:3px}.weather-source-actions a[hidden]{display:none}.weather-source-note{font-size:.75rem;line-height:1.5;color:#d6e6f8;margin:9px 0 0}
 </style>
 
 <!-- App identity and iPhone Home Screen artwork -->
@@ -124,6 +126,7 @@ small,.muted{opacity:.85}
   <div class="big" id="temp">--</div>
   <div id="desc"></div>
   <div class="stats" id="stats"></div>
+<section class="weather-sources" aria-labelledby="weather-sources-title"><h2 id="weather-sources-title">Weather sources</h2><p id="weather-source-location" class="weather-source-location">Compare the forecast for Wilmington, DE.</p><nav class="weather-source-actions" aria-label="Weather Channel links"><a id="weather-channel-link" href="https://weather.com/weather/today/l/39.7391,-75.5398" target="_blank" rel="noopener noreferrer">The Weather Channel forecast ↗</a><a id="weather-channel-app" href="https://apps.apple.com/us/app/the-weather-channel-radar/id295646461" target="_blank" rel="noopener noreferrer" aria-label="The Weather Channel iPhone app on the App Store (opens in a new tab)">Weather Channel iPhone app ↗</a></nav><p class="weather-source-note">Weather and outfit estimates shown here use Open-Meteo. Compare forecasts above, or open the official iPhone app listing.</p></section>
 </div>
 <div class="stage look-neutral sky-sun" id="stage">
 <svg id="sky" class="sky" viewBox="0 0 360 620" aria-hidden="true">
@@ -751,7 +754,18 @@ function render(d){
   $("upd").textContent="Last updated: "+new Date().toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});
   keepView(kept);
 }
+function weatherChannelForecastUrl(lat,lon){
+  if(!Number.isFinite(lat)||!Number.isFinite(lon)||Math.abs(lat)>90||Math.abs(lon)>180)return "";
+  return "https://weather.com/weather/today/l/"+lat.toFixed(4)+","+lon.toFixed(4);
+}
+function updateWeatherSourceLinks(){
+  const link=$("weather-channel-link"),url=weatherChannelForecastUrl(st.lat,st.lon);
+  link.hidden=!url;
+  if(url){link.href=url;link.setAttribute("aria-label","The Weather Channel forecast for "+st.name+" (opens in a new tab)");}
+  $("weather-source-location").textContent="Compare the forecast for "+st.name+".";
+}
 async function load(){
+  updateWeatherSourceLinks();
   $("msg").textContent="";
   try{
     const u=`https://api.open-meteo.com/v1/forecast?latitude=${st.lat}&longitude=${st.lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_gusts_10m,precipitation,precipitation_probability,uv_index&hourly=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_gusts_10m,precipitation,precipitation_probability,uv_index&daily=sunrise,sunset,weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,precipitation_probability_max,precipitation_sum,wind_speed_10m_max,wind_gusts_10m_max,uv_index_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=${encodeURIComponent(st.tz)}&forecast_days=7`;
@@ -927,6 +941,7 @@ setInterval(load,15*60*1000);
 </script>
 </body>
 </html>
+
 
 
 
